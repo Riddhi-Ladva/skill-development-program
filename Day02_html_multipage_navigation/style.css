@@ -1,0 +1,33 @@
+body {
+    /* Absolute url */
+     background-image: url("https://wallpapers.com/images/hd/professional-background-2cmtz5pbgubk31mg.jpg");
+     color:antiquewhite 
+}
+ h1{
+     font-size: 50px;
+}
+ a:link {
+     color:antiquewhite;
+}
+ a:hover{
+     color:blue;
+}
+ a:visited{
+     color:antiquewhite;
+}
+ h2 {
+     background-color: hsla(0,0%,90%,0.4);
+     padding:94px;
+     margin-top: 70px;
+     color:black;
+     font-size:40px;
+}
+ ul{
+     font-size: 25px;
+}
+ li{
+     font-size: 20px;
+}
+ h3{
+     font-size: 40px;
+}
