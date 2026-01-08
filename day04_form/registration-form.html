@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Signup Page</title>
+    <link rel="stylesheet" href="form-style.css">
+</head>
+<body>
+
+<form action="/signup_page.php" class="form-style">
+    <h1>Sign Up</h1>
+
+    <!-- Full Name -->
+    <label for="fullname">Full Name</label>
+    <input class="form-style-input"
+           type="text"
+           id="fullname"
+           name="fullname"
+           placeholder="Enter your full name"
+           required>
+
+    <!-- Email -->
+    <label for="email">Email</label>
+    <input class="form-style-input"
+           type="email"
+           id="email"
+           name="email"
+           placeholder="Enter your email"
+           required>
+
+    <!-- Gender -->
+    <fieldset>
+        <legend>Gender</legend>
+        <div class="radio-gender">
+            <input type="radio" id="female" name="gender" value="female" required>
+            <label for="female">Female</label>
+
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">Male</label>
+        </div>
+    </fieldset>
+
+    <!-- Hobby -->
+    <fieldset>
+        <legend>Hobbies</legend>
+        <div class="checkbox-group">
+            <input type="checkbox" id="reading" name="hobby[]" value="Reading">
+            <label for="reading">Reading</label>
+
+            <input type="checkbox" id="travelling" name="hobby[]" value="Travelling">
+            <label for="travelling">Travelling</label>
+
+            <input type="checkbox" id="singing" name="hobby[]" value="Singing">
+            <label for="singing">Singing</label>
+        </div>
+    </fieldset>
+
+    <!-- Password -->
+    <label for="password">Password</label>
+    <input class="form-style-input"
+           type="password"
+           id="password"
+           name="password"
+           placeholder="Enter your password"
+           pattern="[A-Za-z0-9]{6,}"
+           title="Minimum 6 characters (letters & numbers)"
+           required>
+
+    <!-- Confirm Password -->
+    <label for="confirm-password">Confirm Password</label>
+    <input class="form-style-input"
+           type="password"
+           id="confirm-password"
+           name="confirm_password"
+           placeholder="Confirm your password"
+           required>
+
+    <!-- Buttons -->
+    <div class="btn">
+        <input class="login-button" type="reset" value="Reset">
+        <input class="login-button" type="submit" value="Sign Up">
+    </div>
+
+    <!-- Footer -->
+    <p style="text-align: center; font-size: 20px;">
+        Already have an account?
+        <a href="login-form.html">Login</a>
+    </p>
+
+</form>
+
+</body>
+</html>
