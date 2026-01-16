@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hidden Element</title>
+</head>
+<body>
+
+<div class="hidden">
+  <p>
+    📘 Ethical & Responsible AI (Generative AI)<br>
+    Why This Matters ⭐<br><br>
+
+    As Generative AI becomes widely used, how AI is built and used responsibly is as important as how powerful it is.<br><br>
+
+    Companies (especially Google) expect engineers to:<br>
+    Understand risks<br>
+    Reduce harm<br>
+    Use AI ethically
+  </p>
+</div>
+
+<button onclick="hideText()">Hide Text</button>
+<button onclick="document.querySelector('.hidden').style.visibility='visible'">Show Text</button>
+
+
+
+<script>
+  function hideText() {
+    document.getElementsByClassName("hidden")[0].style.visibility = "hidden";
+  }
+</script>
+
+</body>
+</html>

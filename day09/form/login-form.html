@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Form</title>
+  </head>
+  <body>
+    <h2>Simple Login Form</h2>
+
+    <form id="myForm">
+      Name:
+      <input type="text" name="username" /><br /><br />
+
+      Password:
+      <input type="password" name="password" /><br /><br />
+
+      <button type="button" onclick="showData()">Submit</button>
+    </form>
+
+    <p id="output"></p>
+
+    <script>
+      function showData() {
+        const form = document.getElementById("myForm");
+
+        const name = form.elements.username.value;
+        const pass = form.elements.password.value;
+
+        document.getElementById("output").innerText =
+          "Name: " + name + " | Password: " + pass;
+      }
+    </script>
+  </body>
+</html>
