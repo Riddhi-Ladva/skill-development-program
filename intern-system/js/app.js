@@ -218,3 +218,21 @@ function changeInternStatus(internId, nextStatus) {
   AppState.addLog(`Intern ${internId} status changed to ${nextStatus}`);
   render();
 }
+
+// app.js
+
+document.addEventListener("change", e => {
+  if (e.target.id === "status-filter") {
+    AppState.updateState(state => {
+      state.ui.filters.status = e.target.value;
+    });
+    render();
+  }
+
+  if (e.target.id === "skill-filter") {
+    AppState.updateState(state => {
+      state.ui.filters.skill = e.target.value;
+    });
+    render();
+  }
+});

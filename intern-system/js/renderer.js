@@ -70,9 +70,33 @@ function renderView(view, state) {
 // -----------------------------
 // renderer.js (modify renderInternList)
 
+// renderer.js
+
 function renderInternList(container, state) {
-  const rows = state.interns.map(intern => {
-    const taskCount = state.assignments.filter(
+  const { interns, assignments, ui } = state;
+
+  // ---- derive unique skills (NOT stored in state) ----
+  const allSkills = [...new Set(
+    interns.flatMap(i => i.skills)
+  )];
+
+  // ---- apply filters (derived) ----
+  let filteredInterns = interns;
+
+  if (ui.filters.status !== "ALL") {
+    filteredInterns = filteredInterns.filter(
+      i => i.status === ui.filters.status
+    );
+  }
+
+  if (ui.filters.skill !== "ALL") {
+    filteredInterns = filteredInterns.filter(
+      i => i.skills.includes(ui.filters.skill)
+    );
+  }
+
+  const rows = filteredInterns.map(intern => {
+    const taskCount = assignments.filter(
       a => a.internId === intern.id
     ).length;
 
@@ -97,6 +121,26 @@ function renderInternList(container, state) {
 
   container.innerHTML = `
     <h2>Interns</h2>
+
+    <!-- Filters -->
+    <div>
+      <label>Status:</label>
+      <select id="status-filter">
+        <option value="ALL">All</option>
+        <option value="ONBOARDING">ONBOARDING</option>
+        <option value="ACTIVE">ACTIVE</option>
+        <option value="EXITED">EXITED</option>
+      </select>
+
+      <label>Skill:</label>
+      <select id="skill-filter">
+        <option value="ALL">All</option>
+        ${allSkills.map(skill =>
+          `<option value="${skill}">${skill}</option>`
+        ).join("")}
+      </select>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -113,7 +157,12 @@ function renderInternList(container, state) {
       </tbody>
     </table>
   `;
+
+  // set selected values (UI sync)
+  document.getElementById("status-filter").value = ui.filters.status;
+  document.getElementById("skill-filter").value = ui.filters.skill;
 }
+
 
 
 // -----------------------------
