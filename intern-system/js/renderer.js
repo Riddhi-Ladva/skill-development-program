@@ -59,6 +59,10 @@ function renderView(view, state) {
     case "INTERN_CREATE":
       renderInternCreateForm(container);
       break;
+    // inside renderView switch
+    case "TASK_CREATE":
+      renderTaskCreateForm(container, state);
+      break;
 
     default:
       container.innerHTML = "<p>View not found</p>";
@@ -76,38 +80,37 @@ function renderInternList(container, state) {
   const { interns, assignments, ui } = state;
 
   // ---- derive unique skills (NOT stored in state) ----
-  const allSkills = [...new Set(
-    interns.flatMap(i => i.skills)
-  )];
+  const allSkills = [...new Set(interns.flatMap((i) => i.skills))];
 
   // ---- apply filters (derived) ----
   let filteredInterns = interns;
 
   if (ui.filters.status !== "ALL") {
     filteredInterns = filteredInterns.filter(
-      i => i.status === ui.filters.status
+      (i) => i.status === ui.filters.status,
     );
   }
 
   if (ui.filters.skill !== "ALL") {
-    filteredInterns = filteredInterns.filter(
-      i => i.skills.includes(ui.filters.skill)
+    filteredInterns = filteredInterns.filter((i) =>
+      i.skills.includes(ui.filters.skill),
     );
   }
 
-  const rows = filteredInterns.map(intern => {
-    const taskCount = assignments.filter(
-      a => a.internId === intern.id
-    ).length;
+  const rows = filteredInterns
+    .map((intern) => {
+      const taskCount = assignments.filter(
+        (a) => a.internId === intern.id,
+      ).length;
 
-    let actions = "";
-    if (intern.status === "ONBOARDING") {
-      actions = `<button data-action="ACTIVATE" data-id="${intern.id}">Activate</button>`;
-    } else if (intern.status === "ACTIVE") {
-      actions = `<button data-action="EXIT" data-id="${intern.id}">Exit</button>`;
-    }
+      let actions = "";
+      if (intern.status === "ONBOARDING") {
+        actions = `<button data-action="ACTIVATE" data-id="${intern.id}">Activate</button>`;
+      } else if (intern.status === "ACTIVE") {
+        actions = `<button data-action="EXIT" data-id="${intern.id}">Exit</button>`;
+      }
 
-    return `
+      return `
       <tr>
         <td>${intern.id}</td>
         <td>${intern.name}</td>
@@ -117,7 +120,8 @@ function renderInternList(container, state) {
         <td>${actions}</td>
       </tr>
     `;
-  }).join("");
+    })
+    .join("");
 
   container.innerHTML = `
     <h2>Interns</h2>
@@ -135,9 +139,9 @@ function renderInternList(container, state) {
       <label>Skill:</label>
       <select id="skill-filter">
         <option value="ALL">All</option>
-        ${allSkills.map(skill =>
-          `<option value="${skill}">${skill}</option>`
-        ).join("")}
+        ${allSkills
+          .map((skill) => `<option value="${skill}">${skill}</option>`)
+          .join("")}
       </select>
     </div>
 
@@ -162,8 +166,6 @@ function renderInternList(container, state) {
   document.getElementById("status-filter").value = ui.filters.status;
   document.getElementById("skill-filter").value = ui.filters.skill;
 }
-
-
 
 // -----------------------------
 // Task List View
@@ -225,6 +227,44 @@ function renderInternCreateForm(container) {
       </div>
 
       <button type="submit">Create Intern</button>
+    </form>
+  `;
+}
+
+// renderer.js
+
+function renderTaskCreateForm(container, state) {
+  const taskOptions = state.tasks
+    .map((t) => `<option value="${t.id}">${t.title}</option>`)
+    .join("");
+
+  container.innerHTML = `
+    <h2>Create Task</h2>
+
+    <form id="task-form">
+      <div>
+        <label>Title</label>
+        <input type="text" id="task-title" />
+      </div>
+
+      <div>
+        <label>Required Skills (comma separated)</label>
+        <input type="text" id="task-skills" placeholder="HTML, CSS, JS" />
+      </div>
+
+      <div>
+        <label>Estimated Hours</label>
+        <input type="number" id="task-hours" />
+      </div>
+
+      <div>
+        <label>Dependencies</label>
+        <select id="task-deps" multiple>
+          ${taskOptions}
+        </select>
+      </div>
+
+      <button type="submit">Create Task</button>
     </form>
   `;
 }

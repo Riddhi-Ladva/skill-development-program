@@ -22,6 +22,8 @@ function setupNavigation() {
     <button data-view="INTERN_LIST">Interns</button>
     <button data-view="INTERN_CREATE">Create Intern</button>
     <button data-view="TASK_LIST">Tasks</button>
+    <button data-view="TASK_CREATE">Create Task</button>
+
   `;
 
   nav.addEventListener("click", (e) => {
@@ -236,3 +238,79 @@ document.addEventListener("change", e => {
     render();
   }
 });
+// app.js
+
+document.addEventListener("submit", e => {
+  if (e.target.id === "task-form") {
+    e.preventDefault();
+
+    const title = document.getElementById("task-title").value;
+    const skillsInput = document.getElementById("task-skills").value;
+    const hours = Number(document.getElementById("task-hours").value);
+
+    const depsSelect = document.getElementById("task-deps");
+    const dependsOn = [...depsSelect.selectedOptions].map(o => o.value);
+
+    const requiredSkills = skillsInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    createTask({
+      title,
+      requiredSkills,
+      estimatedHours: hours,
+      dependsOn
+    });
+  }
+});
+// app.js
+
+async function createTask(formData) {
+  AppState.clearErrors();
+
+  const errors = validateTaskForm(formData);
+  if (errors.length > 0) {
+    errors.forEach(e => AppState.addError(e));
+    render();
+    return;
+  }
+
+  const state = AppState.getState();
+
+  // ---- circular dependency check ----
+  for (let dep of formData.dependsOn) {
+    if (hasCircularDependency("TEMP", dep, state.tasks)) {
+      AppState.addError("Circular dependency detected");
+      render();
+      return;
+    }
+  }
+
+  try {
+    setLoading(true);
+
+    const task = {
+      id: `TASK-${Date.now()}`,
+      title: formData.title,
+      requiredSkills: formData.requiredSkills,
+      estimatedHours: formData.estimatedHours,
+      dependsOn: formData.dependsOn,
+      status: "BLOCKED"
+    };
+
+    await FakeServer.saveTask(task);
+
+    // ---- auto status resolution ----
+    AppState.updateState(state => {
+      resolveTaskStatuses(state.tasks);
+      state.ui.currentView = "TASK_LIST";
+    });
+
+  } catch (err) {
+    AppState.addError(err.message);
+  } finally {
+    setLoading(false);
+    render();
+  }
+}
