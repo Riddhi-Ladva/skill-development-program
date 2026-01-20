@@ -4,17 +4,21 @@
 const AppState = (() => {
   // 🔒 Private internal state
   const _state = {
-    interns: [],        // all interns
-    tasks: [],          // all tasks
-    assignments: [],    // intern-task mapping
+    interns: [], // all interns
+    tasks: [], // all tasks
+    assignments: [], // intern-task mapping
 
     ui: {
       currentView: "INTERN_LIST", // navigation state
-      loading: false
+      loading: false,
+      filters: {
+        status: "ALL",
+        skill: "ALL",
+      },
     },
 
-    errors: [],         // centralized error store
-    logs: []            // optional audit logs
+    errors: [], // centralized error store
+    logs: [], // optional audit logs
   };
 
   // 🔒 Prevent direct mutation
@@ -32,26 +36,26 @@ const AppState = (() => {
 
   // ✅ Error handling
   function addError(message) {
-    updateState(state => {
+    updateState((state) => {
       state.errors.push({
         message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     });
   }
 
   function clearErrors() {
-    updateState(state => {
+    updateState((state) => {
       state.errors = [];
     });
   }
 
   // ✅ Logging (optional)
   function addLog(action) {
-    updateState(state => {
+    updateState((state) => {
       state.logs.push({
         action,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     });
   }
@@ -61,6 +65,6 @@ const AppState = (() => {
     updateState,
     addError,
     clearErrors,
-    addLog
+    addLog,
   };
 })();
