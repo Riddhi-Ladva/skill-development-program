@@ -314,3 +314,43 @@ async function createTask(formData) {
     render();
   }
 }
+// app.js
+
+function markTaskAsDone(taskId) {
+  AppState.clearErrors();
+
+  const state = AppState.getState();
+  const task = state.tasks.find(t => t.id === taskId);
+
+  if (!task) {
+    AppState.addError("Task not found");
+    render();
+    return;
+  }
+
+  // ---- dependency enforcement ----
+  if (!canMarkTaskDone(task, state.tasks)) {
+    AppState.addError("Cannot complete task. Dependencies not completed.");
+    render();
+    return;
+  }
+
+  AppState.updateState(state => {
+    const target = state.tasks.find(t => t.id === taskId);
+    target.status = "DONE";
+
+    // ---- auto status update for all tasks ----
+    resolveTaskStatuses(state.tasks);
+  });
+
+  AppState.addLog(`Task ${taskId} marked as DONE`);
+  render();
+}
+
+// app.js
+
+document.addEventListener("click", e => {
+  if (e.target.dataset.taskDone) {
+    markTaskAsDone(e.target.dataset.taskDone);
+  }
+});

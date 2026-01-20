@@ -85,3 +85,8 @@ function calculateTotalHours(internId, tasks, assignments) {
     .filter(t => assignedTaskIds.includes(t.id))
     .reduce((total, task) => total + task.estimatedHours, 0);
 }
+// rules-engine.js
+
+function canMarkTaskDone(task, allTasks) {
+  return areDependenciesCompleted(task, allTasks);
+}
