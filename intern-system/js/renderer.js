@@ -76,75 +76,59 @@ function renderView(view, state) {
 
 // renderer.js
 
+// renderer.js (modify renderInternList)
+
 function renderInternList(container, state) {
-  const { interns, assignments, ui } = state;
+  const { interns, tasks, assignments, ui } = state;
 
-  // ---- derive unique skills (NOT stored in state) ----
-  const allSkills = [...new Set(interns.flatMap((i) => i.skills))];
-
-  // ---- apply filters (derived) ----
   let filteredInterns = interns;
 
   if (ui.filters.status !== "ALL") {
     filteredInterns = filteredInterns.filter(
-      (i) => i.status === ui.filters.status,
+      i => i.status === ui.filters.status
     );
   }
 
   if (ui.filters.skill !== "ALL") {
-    filteredInterns = filteredInterns.filter((i) =>
-      i.skills.includes(ui.filters.skill),
+    filteredInterns = filteredInterns.filter(
+      i => i.skills.includes(ui.filters.skill)
     );
   }
 
-  const rows = filteredInterns
-    .map((intern) => {
-      const taskCount = assignments.filter(
-        (a) => a.internId === intern.id,
-      ).length;
+  const rows = filteredInterns.map(intern => {
+    const taskCount = assignments.filter(
+      a => a.internId === intern.id
+    ).length;
 
-      let actions = "";
-      if (intern.status === "ONBOARDING") {
-        actions = `<button data-action="ACTIVATE" data-id="${intern.id}">Activate</button>`;
-      } else if (intern.status === "ACTIVE") {
-        actions = `<button data-action="EXIT" data-id="${intern.id}">Exit</button>`;
-      }
+    // ✅ derived hours (NOT stored)
+    const totalHours = calculateTotalHours(
+      intern.id,
+      tasks,
+      assignments
+    );
 
-      return `
+    let actions = "";
+    if (intern.status === "ONBOARDING") {
+      actions = `<button data-action="ACTIVATE" data-id="${intern.id}">Activate</button>`;
+    } else if (intern.status === "ACTIVE") {
+      actions = `<button data-action="EXIT" data-id="${intern.id}">Exit</button>`;
+    }
+
+    return `
       <tr>
         <td>${intern.id}</td>
         <td>${intern.name}</td>
         <td>${intern.status}</td>
         <td>${intern.skills.join(", ")}</td>
         <td>${taskCount}</td>
+        <td>${totalHours}</td>
         <td>${actions}</td>
       </tr>
     `;
-    })
-    .join("");
+  }).join("");
 
   container.innerHTML = `
     <h2>Interns</h2>
-
-    <!-- Filters -->
-    <div>
-      <label>Status:</label>
-      <select id="status-filter">
-        <option value="ALL">All</option>
-        <option value="ONBOARDING">ONBOARDING</option>
-        <option value="ACTIVE">ACTIVE</option>
-        <option value="EXITED">EXITED</option>
-      </select>
-
-      <label>Skill:</label>
-      <select id="skill-filter">
-        <option value="ALL">All</option>
-        ${allSkills
-          .map((skill) => `<option value="${skill}">${skill}</option>`)
-          .join("")}
-      </select>
-    </div>
-
     <table>
       <thead>
         <tr>
@@ -153,19 +137,17 @@ function renderInternList(container, state) {
           <th>Status</th>
           <th>Skills</th>
           <th>Tasks</th>
+          <th>Total Hours</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        ${rows || "<tr><td colspan='6'>No interns found</td></tr>"}
+        ${rows || "<tr><td colspan='7'>No interns found</td></tr>"}
       </tbody>
     </table>
   `;
-
-  // set selected values (UI sync)
-  document.getElementById("status-filter").value = ui.filters.status;
-  document.getElementById("skill-filter").value = ui.filters.skill;
 }
+
 
 // -----------------------------
 // Task List View
