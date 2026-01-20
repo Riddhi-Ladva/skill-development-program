@@ -170,20 +170,41 @@ function renderInternList(container, state) {
 // -----------------------------
 // Task List View
 // -----------------------------
+// renderer.js (modify renderTaskList)
+
+// renderer.js (modify renderTaskList)
+
 function renderTaskList(container, state) {
-  const rows = state.tasks
-    .map(
-      (task) => `
-    <tr>
-      <td>${task.id}</td>
-      <td>${task.title}</td>
-      <td>${task.status}</td>
-      <td>${task.requiredSkills.join(", ")}</td>
-      <td>${task.estimatedHours}</td>
-    </tr>
-  `,
-    )
+  const { tasks, interns } = state;
+
+  const activeInternOptions = interns
+    .filter(i => i.status === "ACTIVE")
+    .map(i => `<option value="${i.id}">${i.name} (${i.id})</option>`)
     .join("");
+
+  const rows = tasks.map(task => {
+    let action = "";
+
+    if (task.status === "AVAILABLE") {
+      action = `
+        <select data-assign-task="${task.id}">
+          <option value="">Assign to...</option>
+          ${activeInternOptions}
+        </select>
+      `;
+    }
+
+    return `
+      <tr>
+        <td>${task.id}</td>
+        <td>${task.title}</td>
+        <td>${task.status}</td>
+        <td>${task.requiredSkills.join(", ")}</td>
+        <td>${task.estimatedHours}</td>
+        <td>${action}</td>
+      </tr>
+    `;
+  }).join("");
 
   container.innerHTML = `
     <h2>Tasks</h2>
@@ -195,14 +216,17 @@ function renderTaskList(container, state) {
           <th>Status</th>
           <th>Skills</th>
           <th>Hours</th>
+          <th>Assign</th>
         </tr>
       </thead>
       <tbody>
-        ${rows || "<tr><td colspan='5'>No tasks found</td></tr>"}
+        ${rows || "<tr><td colspan='6'>No tasks found</td></tr>"}
       </tbody>
     </table>
   `;
 }
+
+
 
 // renderer.js (add below existing code)
 

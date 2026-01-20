@@ -354,3 +354,13 @@ document.addEventListener("click", e => {
     markTaskAsDone(e.target.dataset.taskDone);
   }
 });
+// app.js
+
+document.addEventListener("change", e => {
+  const taskId = e.target.dataset.assignTask;
+  const internId = e.target.value;
+
+  if (!taskId || !internId) return;
+
+  assignTaskToIntern(internId, taskId);
+});
