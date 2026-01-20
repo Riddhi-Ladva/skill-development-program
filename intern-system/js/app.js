@@ -20,12 +20,13 @@ function setupNavigation() {
 
   nav.innerHTML = `
     <button data-view="INTERN_LIST">Interns</button>
+    <button data-view="INTERN_CREATE">Create Intern</button>
     <button data-view="TASK_LIST">Tasks</button>
   `;
 
-  nav.addEventListener("click", e => {
+  nav.addEventListener("click", (e) => {
     if (e.target.dataset.view) {
-      AppState.updateState(state => {
+      AppState.updateState((state) => {
         state.ui.currentView = e.target.dataset.view;
       });
       render();
@@ -43,7 +44,7 @@ async function createIntern(formData) {
   const validationErrors = validateInternForm(formData, state.interns);
 
   if (validationErrors.length > 0) {
-    validationErrors.forEach(msg => AppState.addError(msg));
+    validationErrors.forEach((msg) => AppState.addError(msg));
     render();
     return;
   }
@@ -58,11 +59,10 @@ async function createIntern(formData) {
       name: formData.name,
       email: formData.email,
       skills: formData.skills,
-      status: "ONBOARDING"
+      status: "ONBOARDING",
     };
 
     await FakeServer.saveIntern(intern);
-
   } catch (error) {
     AppState.addError(error.message);
   } finally {
@@ -79,7 +79,7 @@ async function createTask(formData) {
 
   const errors = validateTaskForm(formData);
   if (errors.length > 0) {
-    errors.forEach(msg => AppState.addError(msg));
+    errors.forEach((msg) => AppState.addError(msg));
     render();
     return;
   }
@@ -93,15 +93,14 @@ async function createTask(formData) {
       requiredSkills: formData.requiredSkills,
       dependsOn: formData.dependsOn || [],
       estimatedHours: formData.estimatedHours,
-      status: "BLOCKED"
+      status: "BLOCKED",
     };
 
-    AppState.updateState(state => {
+    AppState.updateState((state) => {
       resolveTaskStatuses(state.tasks.concat(task));
     });
 
     await FakeServer.saveTask(task);
-
   } catch (error) {
     AppState.addError(error.message);
   } finally {
@@ -117,12 +116,12 @@ async function assignTaskToIntern(internId, taskId) {
   AppState.clearErrors();
 
   const state = AppState.getState();
-  const intern = state.interns.find(i => i.id === internId);
-  const task = state.tasks.find(t => t.id === taskId);
+  const intern = state.interns.find((i) => i.id === internId);
+  const task = state.tasks.find((t) => t.id === taskId);
 
   const errors = validateTaskAssignment(intern, task, state.assignments);
   if (errors.length > 0) {
-    errors.forEach(msg => AppState.addError(msg));
+    errors.forEach((msg) => AppState.addError(msg));
     render();
     return;
   }
@@ -148,7 +147,26 @@ async function assignTaskToIntern(internId, taskId) {
 // Loading handler (central)
 // -----------------------------
 function setLoading(isLoading) {
-  AppState.updateState(state => {
+  AppState.updateState((state) => {
     state.ui.loading = isLoading;
   });
 }
+
+// app.js (add below existing code)
+
+document.addEventListener("submit", e => {
+  if (e.target.id === "intern-form") {
+    e.preventDefault();
+
+    const name = document.getElementById("intern-name").value;
+    const email = document.getElementById("intern-email").value;
+    const skillsInput = document.getElementById("intern-skills").value;
+
+    const skills = skillsInput
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    createIntern({ name, email, skills });
+  }
+});
