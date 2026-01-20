@@ -35,7 +35,7 @@ function renderErrors(errors) {
   errorBox.hidden = false;
   errorBox.innerHTML = `
     <ul>
-      ${errors.map(e => `<li>${e.message}</li>`).join("")}
+      ${errors.map((e) => `<li>${e.message}</li>`).join("")}
     </ul>
   `;
 }
@@ -55,6 +55,10 @@ function renderView(view, state) {
     case "TASK_LIST":
       renderTaskList(container, state);
       break;
+    // inside renderView switch
+    case "INTERN_CREATE":
+      renderInternCreateForm(container);
+      break;
 
     default:
       container.innerHTML = "<p>View not found</p>";
@@ -64,11 +68,20 @@ function renderView(view, state) {
 // -----------------------------
 // Intern List View
 // -----------------------------
+// renderer.js (modify renderInternList)
+
 function renderInternList(container, state) {
   const rows = state.interns.map(intern => {
     const taskCount = state.assignments.filter(
       a => a.internId === intern.id
     ).length;
+
+    let actions = "";
+    if (intern.status === "ONBOARDING") {
+      actions = `<button data-action="ACTIVATE" data-id="${intern.id}">Activate</button>`;
+    } else if (intern.status === "ACTIVE") {
+      actions = `<button data-action="EXIT" data-id="${intern.id}">Exit</button>`;
+    }
 
     return `
       <tr>
@@ -77,6 +90,7 @@ function renderInternList(container, state) {
         <td>${intern.status}</td>
         <td>${intern.skills.join(", ")}</td>
         <td>${taskCount}</td>
+        <td>${actions}</td>
       </tr>
     `;
   }).join("");
@@ -91,20 +105,24 @@ function renderInternList(container, state) {
           <th>Status</th>
           <th>Skills</th>
           <th>Tasks</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        ${rows || "<tr><td colspan='5'>No interns found</td></tr>"}
+        ${rows || "<tr><td colspan='6'>No interns found</td></tr>"}
       </tbody>
     </table>
   `;
 }
 
+
 // -----------------------------
 // Task List View
 // -----------------------------
 function renderTaskList(container, state) {
-  const rows = state.tasks.map(task => `
+  const rows = state.tasks
+    .map(
+      (task) => `
     <tr>
       <td>${task.id}</td>
       <td>${task.title}</td>
@@ -112,7 +130,9 @@ function renderTaskList(container, state) {
       <td>${task.requiredSkills.join(", ")}</td>
       <td>${task.estimatedHours}</td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   container.innerHTML = `
     <h2>Tasks</h2>
@@ -130,5 +150,32 @@ function renderTaskList(container, state) {
         ${rows || "<tr><td colspan='5'>No tasks found</td></tr>"}
       </tbody>
     </table>
+  `;
+}
+
+// renderer.js (add below existing code)
+
+function renderInternCreateForm(container) {
+  container.innerHTML = `
+    <h2>Create Intern</h2>
+
+    <form id="intern-form">
+      <div>
+        <label>Name</label>
+        <input type="text" id="intern-name" />
+      </div>
+
+      <div>
+        <label>Email</label>
+        <input type="email" id="intern-email" />
+      </div>
+
+      <div>
+        <label>Skills (comma separated)</label>
+        <input type="text" id="intern-skills" placeholder="HTML, CSS, JS" />
+      </div>
+
+      <button type="submit">Create Intern</button>
+    </form>
   `;
 }

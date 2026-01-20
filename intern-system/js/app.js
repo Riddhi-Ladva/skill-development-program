@@ -170,3 +170,51 @@ document.addEventListener("submit", e => {
     createIntern({ name, email, skills });
   }
 });
+// app.js (add below existing code)
+
+document.addEventListener("click", e => {
+  const action = e.target.dataset.action;
+  const internId = e.target.dataset.id;
+
+  if (!action || !internId) return;
+
+  if (action === "ACTIVATE") {
+    changeInternStatus(internId, "ACTIVE");
+  }
+
+  if (action === "EXIT") {
+    changeInternStatus(internId, "EXITED");
+  }
+});
+// app.js (add below existing code)
+
+function changeInternStatus(internId, nextStatus) {
+  AppState.clearErrors();
+
+  const state = AppState.getState();
+  const intern = state.interns.find(i => i.id === internId);
+
+  if (!intern) {
+    AppState.addError("Intern not found");
+    render();
+    return;
+  }
+
+  const allowed = canChangeStatus(intern.status, nextStatus);
+
+  if (!allowed) {
+    AppState.addError(
+      `Invalid status transition: ${intern.status} → ${nextStatus}`
+    );
+    render();
+    return;
+  }
+
+  AppState.updateState(state => {
+    const target = state.interns.find(i => i.id === internId);
+    target.status = nextStatus;
+  });
+
+  AppState.addLog(`Intern ${internId} status changed to ${nextStatus}`);
+  render();
+}
