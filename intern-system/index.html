@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intern Operations System</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <!-- Application Root -->
+  <div id="app">
+    
+    <!-- Header -->
+    <header id="app-header">
+      <h1>Intern Operations System</h1>
+    </header>
+
+    <!-- Navigation (state-driven later) -->
+    <nav id="app-nav">
+      <!-- buttons/links will be injected later -->
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-content">
+      <!-- views rendered via JS -->
+    </main>
+
+    <!-- Global Loader -->
+    <div id="app-loader" hidden>
+      Loading...
+    </div>
+
+    <!-- Global Error -->
+    <div id="app-error" hidden>
+      <!-- error messages -->
+    </div>
+
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/state.js"></script>
+  <script src="js/fake-server.js"></script>
+  <script src="js/rules-engine.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
