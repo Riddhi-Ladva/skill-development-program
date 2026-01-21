@@ -1,0 +1,109 @@
+/* Footer Layout - Site footer */
+
+#site-footer {
+  background-color: var(--color-gray-900);
+  color: var(--color-text-inverse);
+  margin-top: var(--spacing-16);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-8) var(--spacing-4);
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-content {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.footer-section h2,
+.footer-section h3 {
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-4);
+}
+
+.footer-section p {
+  color: var(--color-gray-300);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--spacing-4);
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section li {
+  margin-bottom: var(--spacing-2);
+}
+
+.footer-section a {
+  color: var(--color-gray-300);
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-fast);
+}
+
+.footer-section a:hover {
+  color: var(--color-text-inverse);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--color-gray-800);
+  padding: var(--spacing-4) 0;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+/* Minimal footer for checkout page */
+.footer-minimal {
+  background-color: var(--color-gray-900);
+  color: var(--color-text-inverse);
+  padding: var(--spacing-4) 0;
+  text-align: center;
+  margin-top: var(--spacing-16);
+}
+
+.footer-minimal p {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.footer-minimal ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-minimal a {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
+  transition: color var(--transition-fast);
+}
+
+.footer-minimal a:hover {
+  color: var(--color-text-inverse);
+}

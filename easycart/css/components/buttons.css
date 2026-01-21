@@ -1,0 +1,183 @@
+/* Buttons - Reusable button components */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-6);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-tight);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Button variants */
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.btn--secondary {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border-dark);
+}
+
+.btn--outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+/* Button sizes */
+.btn--sm {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-xs);
+}
+
+.btn--lg {
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: var(--font-size-base);
+}
+
+/* Button with icon */
+.btn--icon {
+  gap: var(--spacing-2);
+}
+
+.btn--icon-only {
+  padding: var(--spacing-3);
+  width: auto;
+}
+
+/* Special button styles */
+.cta-button {
+  background-color: var(--color-accent);
+  color: var(--color-text-inverse);
+  border-color: var(--color-accent);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-4) var(--spacing-8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cta-button:hover:not(:disabled) {
+  background-color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.login-button,
+.signup-button,
+.place-order-button {
+  width: 100%;
+  padding: var(--spacing-4);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+.apply-filters-button,
+.clear-filters-button {
+  width: 100%;
+  margin-top: var(--spacing-4);
+}
+
+/* Social buttons */
+.social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.social-button:hover {
+  border-color: var(--color-gray-400);
+  box-shadow: var(--shadow-sm);
+}
+
+.social-button.google {
+  border-color: #dadce0;
+}
+
+.social-button.google:hover {
+  background-color: #f8f9fa;
+  border-color: #dadce0;
+}
+
+.social-button.facebook {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.social-button.facebook:hover {
+  background-color: #1877f2;
+  color: var(--color-text-inverse);
+}
+
+.social-button.apple {
+  border-color: var(--color-gray-900);
+  color: var(--color-text-primary);
+}
+
+.social-button.apple:hover {
+  background-color: var(--color-gray-900);
+  color: var(--color-text-inverse);
+}
+
+.social-button .icon {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
