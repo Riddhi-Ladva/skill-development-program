@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your EasyCart order history">
+    <title>My Orders - EasyCart</title>
+    <link rel="stylesheet" href="../css/main.css">
+<body>
+    <header id="site-header">
+        <div class="header-top">
+            <div class="logo">
+                <h1><a href="../index.html">EasyCart</a></h1>
+            </div>
+            <div class="search-bar">
+                <form action="products.html" method="get" role="search">
+                    <input type="search" id="search-input" name="q" placeholder="Search products..." aria-label="Search products">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="header-actions">
+                <a href="#" class="action-link" aria-label="Logged in as John Doe">John D.</a>
+                <a href="cart.html" class="action-link" aria-label="View cart">Cart (0)</a>
+            </div>
+        </div>
+        <nav id="main-navigation" aria-label="Main navigation">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="products.html?category=electronics">Electronics</a></li>
+                <li><a href="products.html?category=clothing">Clothing</a></li>
+                <li><a href="products.html?category=home">Home & Garden</a></li>
+                <li><a href="products.html?category=sports">Sports</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <div class="account-container">
+            <aside class="account-sidebar">
+                <nav aria-label="Account navigation">
+                    <h2>My Account</h2>
+                    <ul>
+                        <li><a href="orders.html" aria-current="page">Orders</a></li>
+                        <li><a href="#">Account Details</a></li>
+                        <li><a href="#">Address Book</a></li>
+                        <li><a href="#">Payment Methods</a></li>
+                        <li><a href="#">Wishlist</a></li>
+                        <li><a href="#">Reviews</a></li>
+                        <li><a href="#">Notifications</a></li>
+                        <li><a href="login.html">Logout</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <section class="account-main">
+                <header class="page-header">
+                    <h1>My Orders</h1>
+                    <p>View and track your orders</p>
+                </header>
+
+                <section class="orders-filter">
+                    <h2 class="visually-hidden">Filter orders</h2>
+                    <form>
+                        <div class="filter-controls">
+                            <div class="filter-group">
+                                <label for="time-filter">Time Period:</label>
+                                <select id="time-filter" name="time">
+                                    <option value="all">All Orders</option>
+                                    <option value="30days">Last 30 Days</option>
+                                    <option value="6months">Last 6 Months</option>
+                                    <option value="year">This Year</option>
+                                    <option value="2025">2025</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="status-filter">Order Status:</label>
+                                <select id="status-filter" name="status">
+                                    <option value="all">All Statuses</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="search-orders">
+                                <label for="order-search" class="visually-hidden">Search orders</label>
+                                <input type="search" id="order-search" name="search" placeholder="Search by order number or product">
+                                <button type="submit">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="orders-list">
+                    <h2 class="visually-hidden">Order History</h2>
+
+                    <article class="order-card">
+                        <header class="order-header">
+                            <div class="order-info">
+                                <h3>Order #EC2026-001234</h3>
+                                <p class="order-date">Placed on January 15, 2026</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge delivered">Delivered</span>
+                            </div>
+                        </header>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Wireless Bluetooth Headphones">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=1">Wireless Bluetooth Headphones</a></h4>
+                                    <p class="item-quantity">Quantity: 1</p>
+                                    <p class="item-price">$79.99</p>
+                                </div>
+                            </div>
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Running Shoes Ultra">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=3">Running Shoes Ultra</a></h4>
+                                    <p class="item-quantity">Quantity: 1</p>
+                                    <p class="item-price">$89.99</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="order-footer">
+                            <div class="order-total">
+                                <p>Order Total: <strong>$182.56</strong></p>
+                                <p class="delivery-date">Delivered on January 18, 2026</p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="#" class="action-button">View Details</a>
+                                <a href="#" class="action-button">Track Package</a>
+                                <a href="#" class="action-button">Buy Again</a>
+                                <a href="#" class="action-button">Leave Review</a>
+                            </div>
+                        </footer>
+                    </article>
+
+                    <article class="order-card">
+                        <header class="order-header">
+                            <div class="order-info">
+                                <h3>Order #EC2026-001189</h3>
+                                <p class="order-date">Placed on January 10, 2026</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge shipped">Shipped</span>
+                            </div>
+                        </header>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Smart Watch Pro">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=2">Smart Watch Pro</a></h4>
+                                    <p class="item-quantity">Quantity: 1</p>
+                                    <p class="item-price">$199.99</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="order-footer">
+                            <div class="order-total">
+                                <p>Order Total: <strong>$215.99</strong></p>
+                                <p class="delivery-date">Expected delivery: January 22, 2026</p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="#" class="action-button primary">Track Package</a>
+                                <a href="#" class="action-button">View Details</a>
+                                <a href="#" class="action-button">Contact Support</a>
+                            </div>
+                        </footer>
+                    </article>
+
+                    <article class="order-card">
+                        <header class="order-header">
+                            <div class="order-info">
+                                <h3>Order #EC2026-001067</h3>
+                                <p class="order-date">Placed on January 5, 2026</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge processing">Processing</span>
+                            </div>
+                        </header>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Premium Coffee Maker">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=4">Premium Coffee Maker</a></h4>
+                                    <p class="item-quantity">Quantity: 1</p>
+                                    <p class="item-price">$129.99</p>
+                                </div>
+                            </div>
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Electric Kettle">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=12">Electric Kettle</a></h4>
+                                    <p class="item-quantity">Quantity: 2</p>
+                                    <p class="item-price">$59.98</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="order-footer">
+                            <div class="order-total">
+                                <p>Order Total: <strong>$205.17</strong></p>
+                                <p class="delivery-date">Processing - Ships soon</p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="#" class="action-button">View Details</a>
+                                <a href="#" class="action-button">Cancel Order</a>
+                                <a href="#" class="action-button">Contact Support</a>
+                            </div>
+                        </footer>
+                    </article>
+
+                    <article class="order-card">
+                        <header class="order-header">
+                            <div class="order-info">
+                                <h3>Order #EC2025-009821</h3>
+                                <p class="order-date">Placed on December 20, 2025</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge delivered">Delivered</span>
+                            </div>
+                        </header>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Yoga Mat Premium">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=6">Yoga Mat Premium</a></h4>
+                                    <p class="item-quantity">Quantity: 2</p>
+                                    <p class="item-price">$79.98</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="order-footer">
+                            <div class="order-total">
+                                <p>Order Total: <strong>$86.38</strong></p>
+                                <p class="delivery-date">Delivered on December 23, 2025</p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="#" class="action-button">View Details</a>
+                                <a href="#" class="action-button">Buy Again</a>
+                                <a href="#" class="action-button">Return Items</a>
+                                <a href="#" class="action-button">Write Review</a>
+                            </div>
+                        </footer>
+                    </article>
+
+                    <article class="order-card">
+                        <header class="order-header">
+                            <div class="order-info">
+                                <h3>Order #EC2025-009654</h3>
+                                <p class="order-date">Placed on December 10, 2025</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge cancelled">Cancelled</span>
+                            </div>
+                        </header>
+
+                        <div class="order-items">
+                            <div class="order-item">
+                                <div class="item-image">
+                                    <img src="#" alt="Laptop Stand Adjustable">
+                                </div>
+                                <div class="item-details">
+                                    <h4><a href="product-detail.html?id=7">Laptop Stand Adjustable</a></h4>
+                                    <p class="item-quantity">Quantity: 1</p>
+                                    <p class="item-price">$49.99</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="order-footer">
+                            <div class="order-total">
+                                <p>Order Total: <strong>$53.99</strong></p>
+                                <p class="delivery-date">Cancelled on December 11, 2025</p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="#" class="action-button">View Details</a>
+                                <a href="#" class="action-button">Reorder</a>
+                            </div>
+                        </footer>
+                    </article>
+                </section>
+
+                <nav class="pagination" aria-label="Orders pagination">
+                    <ul>
+                        <li><a href="orders.html?page=1" aria-current="page">1</a></li>
+                        <li><a href="orders.html?page=2">2</a></li>
+                        <li><a href="orders.html?page=3">3</a></li>
+                        <li><a href="orders.html?page=2" aria-label="Next page">Next</a></li>
+                    </ul>
+                </nav>
+            </section>
+        </div>
+
+        <section class="help-section">
+            <h2>Need Help with Your Order?</h2>
+            <div class="help-options">
+                <article class="help-option">
+                    <h3>Track Your Package</h3>
+                    <p>Get real-time updates on your order location</p>
+                    <a href="#">Track Order</a>
+                </article>
+                <article class="help-option">
+                    <h3>Return or Exchange</h3>
+                    <p>Easy returns within 30 days of delivery</p>
+                    <a href="#">Start Return</a>
+                </article>
+                <article class="help-option">
+                    <h3>Contact Support</h3>
+                    <p>Our team is here to help 24/7</p>
+                    <a href="#">Get Help</a>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer">
+        <div class="footer-content">
+            <section class="footer-section">
+                <h2>About EasyCart</h2>
+                <p>Your trusted online shopping destination for quality products at competitive prices.</p>
+            </section>
+            <section class="footer-section">
+                <h2>Customer Service</h2>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Shipping Information</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </section>
+            <section class="footer-section">
+                <h2>My Account</h2>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="signup.html">Create Account</a></li>
+                    <li><a href="orders.html" aria-current="page">Order History</a></li>
+                    <li><a href="cart.html">Shopping Cart</a></li>
+                </ul>
+            </section>
+            <section class="footer-section">
+                <h2>Policies</h2>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </section>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 EasyCart. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

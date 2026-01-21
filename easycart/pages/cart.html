@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your EasyCart shopping cart">
+    <title>Shopping Cart - EasyCart</title>
+    <link rel="stylesheet" href="../css/main.css">
+<body>
+    <header id="site-header">
+        <div class="header-top">
+            <div class="logo">
+                <h1><a href="../index.html">EasyCart</a></h1>
+            </div>
+            <div class="search-bar">
+                <form action="products.html" method="get" role="search">
+                    <input type="search" id="search-input" name="q" placeholder="Search products..." aria-label="Search products">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="action-link" aria-label="Login">Login</a>
+                <a href="cart.html" class="action-link" aria-label="View cart" aria-current="page">Cart (3)</a>
+            </div>
+        </div>
+        <nav id="main-navigation" aria-label="Main navigation">
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="products.html?category=electronics">Electronics</a></li>
+                <li><a href="products.html?category=clothing">Clothing</a></li>
+                <li><a href="products.html?category=home">Home & Garden</a></li>
+                <li><a href="products.html?category=sports">Sports</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section class="page-header">
+            <h1>Shopping Cart</h1>
+            <p>3 items in your cart</p>
+        </section>
+
+        <div class="cart-container">
+            <section class="cart-items">
+                <h2 class="visually-hidden">Cart Items</h2>
+                
+                <article class="cart-item">
+                    <div class="item-image">
+                        <img src="#" alt="Wireless Bluetooth Headphones">
+                    </div>
+                    <div class="item-details">
+                        <h3><a href="product-detail.html?id=1">Wireless Bluetooth Headphones</a></h3>
+                        <p class="item-brand">Brand: AudioTech</p>
+                        <dl class="item-attributes">
+                            <dt>Color:</dt>
+                            <dd>Black</dd>
+                            <dt>Warranty:</dt>
+                            <dd>1 Year Extended</dd>
+                        </dl>
+                        <p class="item-stock">In Stock</p>
+                        <p class="item-shipping">Eligible for Free Shipping</p>
+                    </div>
+                    <div class="item-quantity">
+                        <label for="quantity-1">Quantity:</label>
+                        <input type="number" id="quantity-1" name="quantity" value="1" min="1" max="10">
+                        <button type="button" class="update-quantity">Update</button>
+                    </div>
+                    <div class="item-price">
+                        <p class="unit-price">$79.99 each</p>
+                        <p class="total-price">$89.98</p>
+                        <p class="price-note">(includes warranty)</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="save-for-later">Save for Later</button>
+                        <button type="button" class="remove-item">Remove</button>
+                    </div>
+                </article>
+
+                <article class="cart-item">
+                    <div class="item-image">
+                        <img src="#" alt="Smart Watch Pro">
+                    </div>
+                    <div class="item-details">
+                        <h3><a href="product-detail.html?id=2">Smart Watch Pro</a></h3>
+                        <p class="item-brand">Brand: TechWear</p>
+                        <dl class="item-attributes">
+                            <dt>Color:</dt>
+                            <dd>Silver</dd>
+                            <dt>Size:</dt>
+                            <dd>44mm</dd>
+                        </dl>
+                        <p class="item-stock">In Stock</p>
+                        <p class="item-shipping">Eligible for Free Shipping</p>
+                    </div>
+                    <div class="item-quantity">
+                        <label for="quantity-2">Quantity:</label>
+                        <input type="number" id="quantity-2" name="quantity" value="1" min="1" max="10">
+                        <button type="button" class="update-quantity">Update</button>
+                    </div>
+                    <div class="item-price">
+                        <p class="unit-price">$199.99 each</p>
+                        <p class="total-price">$199.99</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="save-for-later">Save for Later</button>
+                        <button type="button" class="remove-item">Remove</button>
+                    </div>
+                </article>
+
+                <article class="cart-item">
+                    <div class="item-image">
+                        <img src="#" alt="Yoga Mat Premium">
+                    </div>
+                    <div class="item-details">
+                        <h3><a href="product-detail.html?id=6">Yoga Mat Premium</a></h3>
+                        <p class="item-brand">Brand: FitLife</p>
+                        <dl class="item-attributes">
+                            <dt>Color:</dt>
+                            <dd>Purple</dd>
+                            <dt>Thickness:</dt>
+                            <dd>6mm</dd>
+                        </dl>
+                        <p class="item-stock">In Stock</p>
+                        <p class="item-shipping">Eligible for Free Shipping</p>
+                    </div>
+                    <div class="item-quantity">
+                        <label for="quantity-3">Quantity:</label>
+                        <input type="number" id="quantity-3" name="quantity" value="2" min="1" max="10">
+                        <button type="button" class="update-quantity">Update</button>
+                    </div>
+                    <div class="item-price">
+                        <p class="unit-price">$39.99 each</p>
+                        <p class="total-price">$79.98</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="save-for-later">Save for Later</button>
+                        <button type="button" class="remove-item">Remove</button>
+                    </div>
+                </article>
+            </section>
+
+            <aside class="cart-summary">
+                <section class="summary-section">
+                    <h2>Order Summary</h2>
+                    <dl class="summary-details">
+                        <dt>Items (4):</dt>
+                        <dd>$369.95</dd>
+                        <dt>Shipping:</dt>
+                        <dd>FREE</dd>
+                        <dt>Tax:</dt>
+                        <dd>$29.60</dd>
+                        <dt>Order Total:</dt>
+                        <dd class="total-amount">$399.55</dd>
+                    </dl>
+                </section>
+
+                <section class="promo-code-section">
+                    <h3>Have a promo code?</h3>
+                    <form>
+                        <label for="promo-code" class="visually-hidden">Enter promo code</label>
+                        <input type="text" id="promo-code" name="promo-code" placeholder="Enter code">
+                        <button type="submit">Apply</button>
+                    </form>
+                </section>
+
+                <section class="checkout-section">
+                    <a href="checkout.html" class="checkout-button">Proceed to Checkout</a>
+                    <a href="products.html" class="continue-shopping">Continue Shopping</a>
+                </section>
+
+                <section class="payment-methods">
+                    <h3>We Accept</h3>
+                    <ul class="payment-icons">
+                        <li>Visa</li>
+                        <li>Mastercard</li>
+                        <li>American Express</li>
+                        <li>PayPal</li>
+                        <li>Apple Pay</li>
+                    </ul>
+                </section>
+
+                <section class="security-badges">
+                    <p>Secure Checkout</p>
+                    <p>256-bit SSL Encryption</p>
+                </section>
+            </aside>
+        </div>
+
+        <section class="saved-for-later">
+            <h2>Saved for Later (2 items)</h2>
+            <div class="saved-items-grid">
+                <article class="saved-item">
+                    <div class="item-image">
+                        <img src="#" alt="Portable Bluetooth Speaker">
+                    </div>
+                    <div class="item-info">
+                        <h3><a href="product-detail.html?id=9">Portable Bluetooth Speaker</a></h3>
+                        <p class="item-price">$69.99</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="move-to-cart">Move to Cart</button>
+                        <button type="button" class="delete-saved">Delete</button>
+                    </div>
+                </article>
+                <article class="saved-item">
+                    <div class="item-image">
+                        <img src="#" alt="LED Desk Lamp">
+                    </div>
+                    <div class="item-info">
+                        <h3><a href="product-detail.html?id=10">LED Desk Lamp</a></h3>
+                        <p class="item-price">$34.99</p>
+                    </div>
+                    <div class="item-actions">
+                        <button type="button" class="move-to-cart">Move to Cart</button>
+                        <button type="button" class="delete-saved">Delete</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="recommended-products">
+            <h2>Frequently Bought Together</h2>
+            <div class="product-grid">
+                <article class="product-card">
+                    <img src="#" alt="Headphone Stand">
+                    <h3><a href="product-detail.html?id=14">Headphone Stand</a></h3>
+                    <p class="product-price">$19.99</p>
+                    <button type="button" class="add-to-cart">Add to Cart</button>
+                </article>
+                <article class="product-card">
+                    <img src="#" alt="Audio Cable Premium">
+                    <h3><a href="product-detail.html?id=15">Audio Cable Premium</a></h3>
+                    <p class="product-price">$12.99</p>
+                    <button type="button" class="add-to-cart">Add to Cart</button>
+                </article>
+                <article class="product-card">
+                    <img src="#" alt="Watch Charging Dock">
+                    <h3><a href="product-detail.html?id=17">Watch Charging Dock</a></h3>
+                    <p class="product-price">$24.99</p>
+                    <button type="button" class="add-to-cart">Add to Cart</button>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer">
+        <div class="footer-content">
+            <section class="footer-section">
+                <h2>About EasyCart</h2>
+                <p>Your trusted online shopping destination for quality products at competitive prices.</p>
+            </section>
+            <section class="footer-section">
+                <h2>Customer Service</h2>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Shipping Information</a></li>
+                    <li><a href="#">Returns & Exchanges</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </section>
+            <section class="footer-section">
+                <h2>My Account</h2>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="signup.html">Create Account</a></li>
+                    <li><a href="orders.html">Order History</a></li>
+                    <li><a href="cart.html">Shopping Cart</a></li>
+                </ul>
+            </section>
+            <section class="footer-section">
+                <h2>Policies</h2>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </section>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 EasyCart. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
