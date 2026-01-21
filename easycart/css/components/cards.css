@@ -57,6 +57,7 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  box-shadow: var(--shadow-sm);
 }
 
 .product-card:hover {
@@ -70,31 +71,39 @@
   height: 200px;
   object-fit: cover;
   background-color: var(--color-bg-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.product-card:hover img {
+  transform: scale(1.05);
 }
 
 .product-card h3 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-  margin: var(--spacing-3) 0 var(--spacing-2) 0;
+  margin: var(--spacing-4) var(--spacing-4) var(--spacing-2) var(--spacing-4);
   color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
 }
 
 .product-price {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: var(--spacing-2) 0;
+  margin: var(--spacing-2) var(--spacing-4);
+  line-height: var(--line-height-tight);
 }
 
 .product-rating {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin: var(--spacing-2) 0;
+  margin: var(--spacing-2) var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  line-height: var(--line-height-normal);
 }
 
 .product-card a {
   display: inline-block;
-  margin-top: var(--spacing-4);
+  margin: 0 var(--spacing-4) var(--spacing-4) var(--spacing-4);
   color: var(--color-primary);
   font-weight: var(--font-weight-medium);
   text-decoration: none;

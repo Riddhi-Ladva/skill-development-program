@@ -9,6 +9,7 @@
   color: var(--color-text-inverse);
   padding: var(--spacing-12) 0;
   text-align: center;
+  background-image: url("https://t4.ftcdn.net/jpg/05/96/62/65/360_F_596626503_jrzjZNYStDexiWxQFqO7oCh6M8PdMlJs.jpg");
 }
 
 .hero-banner h2 {
@@ -16,6 +17,7 @@
   font-weight: var(--font-weight-bold);
   margin: 0 0 var(--spacing-4) 0;
   line-height: var(--line-height-tight);
+  color: aliceblue;
 }
 
 .hero-banner p {
@@ -222,52 +224,141 @@
   color: var(--color-primary-dark);
 }
 
+/* Promotional banner container: creates calm background, spacing and centering */
 .promotional-banner {
+  padding: var(--spacing-10) 0;
+  background-color: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+/* Promo content: card-like treatment, soft shadow, clear max-width, improved padding */
+.promotional-banner .promo-content,
+.promo-content {
+  /* Visual: feel like a contained promotional card */
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-8) var(--spacing-10);
+  max-width: 1200px;
+  width: calc(100% - var(--spacing-8));
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+  text-align: center;
+  /* Layout: center content vertically for consistent rhythm */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  justify-content: center;
+}
+
+/* Promo heading and copy: stronger hierarchy and improved leading */
+.promotional-banner .promo-content h2,
+.promo-content h2 {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--spacing-2) 0;
+  color: var(--color-text-primary);
+}
+
+.promotional-banner .promo-content p,
+.promo-content p {
+  margin: 0 0 var(--spacing-4) 0;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+/* CTA inside promo: noticeable but calm, subtle lift on hover */
+.promotional-banner .promo-content .cta-button,
+.promo-content .cta-button {
+  display: inline-block;
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--border-radius-md);
   background-color: var(--color-accent);
   color: var(--color-text-inverse);
-  padding: var(--spacing-8) 0;
-  text-align: center;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  text-decoration: none;
 }
 
-.promo-content h2 {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 var(--spacing-2) 0;
+.promotional-banner .promo-content .cta-button:hover,
+.promo-content .cta-button:hover {
+  background-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.promo-content p {
-  font-size: var(--font-size-lg);
-  margin: 0;
-  opacity: 0.9;
-}
-
-.info-sections {
-  padding: var(--spacing-12) 0;
+/* Info sections grid: consistent spacing and responsive columns */
+.info-sections,
+.info-section {
+  display: grid;
+  gap: var(--spacing-6);
+  padding: var(--spacing-6) 0;
   background-color: var(--color-bg-secondary);
 }
 
-.info-sections .info-card {
+@media (min-width: 768px) {
+  .info-sections,
+  .info-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .info-sections,
+  .info-section {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Info card: touchable, elevated, clear typography and spacing */
+.info-card {
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-6);
   text-align: center;
-  margin-bottom: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  justify-content: center;
+  min-height: 96px; /* ensures visual balance across cards */
 }
 
-.info-sections .info-card:last-child {
-  margin-bottom: 0;
-}
-
-.info-sections .info-card h3 {
+/* Headline vs body: clear contrast and line-height for scanability */
+.info-card h3 {
+  margin: 0;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-2) 0;
+  line-height: var(--line-height-tight);
 }
 
-.info-sections .info-card p {
+.info-card p {
+  margin: 0;
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
-  margin: 0;
+}
+
+/* Hover / focus states: subtle, no heavy animation */
+.info-card:hover,
+.info-card:focus-within {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--color-primary-light);
+}
+
+/* Small accessibility/fallback: ensure promo and cards don't collapse */
+.promo-content,
+.info-card {
+  word-break: break-word;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

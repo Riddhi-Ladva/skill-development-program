@@ -57,11 +57,13 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .search-bar form:focus-within {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .search-bar input {
@@ -100,12 +102,14 @@
   font-weight: var(--font-weight-medium);
   padding: var(--spacing-2) var(--spacing-3);
   border-radius: var(--border-radius-md);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: all var(--transition-fast);
+  text-decoration: none;
 }
 
 .action-link:hover {
   color: var(--color-primary);
   background-color: var(--color-bg-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .checkout-progress {

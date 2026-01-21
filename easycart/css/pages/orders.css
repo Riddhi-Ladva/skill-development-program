@@ -99,6 +99,83 @@
   margin-bottom: var(--spacing-8);
 }
 
+.orders-list table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.orders-list th,
+.orders-list td {
+  padding: var(--spacing-4) var(--spacing-6);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.orders-list th {
+  background-color: var(--color-bg-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.orders-list td {
+  color: var(--color-text-primary);
+  vertical-align: top;
+}
+
+.orders-list td ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orders-list td ul li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-1);
+}
+
+.orders-list td ul li:last-child {
+  margin-bottom: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--border-radius-full);
+  text-transform: capitalize;
+}
+
+.status-badge.delivered {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+}
+
+.status-badge.shipped {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-info);
+}
+
+.status-badge.processing {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.status-badge.cancelled {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+}
+
 .order-card {
   background-color: var(--color-bg-primary);
   border: 1px solid var(--color-border);

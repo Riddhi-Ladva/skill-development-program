@@ -23,12 +23,14 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
+  border-radius: var(--border-radius-md);
 }
 
 #main-navigation a:hover,
 #main-navigation a[aria-current="page"] {
   color: var(--color-primary);
+  background-color: rgba(37, 99, 235, 0.05);
 }
 
 #main-navigation a[aria-current="page"] {

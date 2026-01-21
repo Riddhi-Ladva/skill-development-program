@@ -1,13 +1,13 @@
 /* Forms - Form styling and components */
 
 .form-group {
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-5);
 }
 
 .form-row {
   display: flex;
   gap: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-5);
 }
 
 @media (max-width: 640px) {
