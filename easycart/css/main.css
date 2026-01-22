@@ -18,7 +18,7 @@
 @import "components/badges.css";
 
 /* Page-specific styles - unique styles for each page */
-@import "pages/home.css";
+@import "./pages/home.css";
 @import "pages/product-listing.css";
 @import "pages/product-detail.css";
 @import "pages/cart.css";

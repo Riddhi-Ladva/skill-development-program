@@ -186,28 +186,32 @@
 
 /* Add to Cart button styling - make it match the cart page primary button */
 .add-to-cart {
+  
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: var(--color-text-inverse);
   border: 1px solid var(--color-primary);
-  border-radius: var(--border-radius-md);
-  font-size: 20px;
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-4) var(--spacing-8);
-  width: 100%;
+  padding: var(--spacing-2) var(--spacing-4);
+  width: 20px;
+  height: 40px;
   margin-top: var(--spacing-2);
   transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
   text-decoration: none;
+  min-width: 120px;
 }
 
 .add-to-cart:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-secondary-dark) 100%);
   border-color: var(--color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .add-to-cart:focus {

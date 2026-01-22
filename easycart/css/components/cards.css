@@ -79,7 +79,8 @@
 }
 
 .product-card h3 {
-  font-size: var(--font-size-lg);
+
+  font-size: 100px;
   font-weight: var(--font-weight-semibold);
   margin: var(--spacing-4) var(--spacing-4) var(--spacing-2) var(--spacing-4);
   color: var(--color-text-primary);
@@ -99,6 +100,14 @@
   color: var(--color-text-secondary);
   margin: var(--spacing-2) var(--spacing-4) var(--spacing-4) var(--spacing-4);
   line-height: var(--line-height-normal);
+}
+
+.product-shipping {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: var(--spacing-2) var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  line-height: var(--line-height-normal);
+  text-align: center;
 }
 
 .product-card a {

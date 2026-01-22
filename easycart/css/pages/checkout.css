@@ -1,5 +1,37 @@
 /* Checkout Page - Checkout form and order summary */
 
+/* Distraction-free header for checkout */
+.checkout-page #site-header .search-bar,
+.checkout-page #site-header .header-actions,
+.checkout-page #site-header #main-navigation,
+.checkout-page #site-header .secure-checkout-badge,
+.checkout-page #site-header .checkout-progress {
+  display: none;
+}
+
+.checkout-page #site-header .header-top {
+  justify-content: space-between;
+  /* Space between logo and back link */
+  align-items: center;
+  border-bottom: none;
+}
+
+.header-checkout-actions .back-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-fast);
+}
+
+.header-checkout-actions .back-link:hover {
+  color: var(--color-primary);
+}
+
+.checkout-page #site-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
 .checkout-container {
   display: grid;
   grid-template-columns: 1fr;

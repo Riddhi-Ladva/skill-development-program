@@ -5,46 +5,152 @@
 }
 
 .hero-section {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--color-text-inverse);
-  padding: var(--spacing-12) 0;
+  position: relative;
+  background: radial-gradient(circle at top left, #f8fafc 0%, #f1f5f9 100%);
+  color: #0f172a;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-20) 0;
+  overflow: hidden;
   text-align: center;
-  background-image: url("https://t4.ftcdn.net/jpg/05/96/62/65/360_F_596626503_jrzjZNYStDexiWxQFqO7oCh6M8PdMlJs.jpg");
+}
+
+/* Floating Visuals on Left and Right */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  width: 400px;
+  height: 400px;
+  background-image: url("/easycart/img/hero-left.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transform: translateY(-50%) rotate(-5deg);
+  opacity: 0.9;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.1));
+  animation: float-left 6s ease-in-out infinite;
+  z-index: 1;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  width: 450px;
+  height: 450px;
+  background-image: url("/easycart/img/hero-right.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transform: translateY(-50%) rotate(5deg);
+  opacity: 0.9;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.1));
+  animation: float-right 8s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes float-left {
+
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(-5deg);
+  }
+
+  50% {
+    transform: translateY(-55%) rotate(-2deg);
+  }
+}
+
+@keyframes float-right {
+
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(5deg);
+  }
+
+  50% {
+    transform: translateY(-45%) rotate(8deg);
+  }
+}
+
+.hero-banner {
+  max-width: 900px;
+  position: relative;
+  z-index: 10;
+  /* Ensure text is above visuals */
+  padding: 0 var(--spacing-8);
 }
 
 .hero-banner h2 {
-  font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 var(--spacing-4) 0;
-  line-height: var(--line-height-tight);
-  color: aliceblue;
+  font-size: 5.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0 0 var(--spacing-6) 0;
+  color: #0f172a;
 }
 
 .hero-banner p {
-  font-size: var(--font-size-xl);
-  margin: 0 0 var(--spacing-6) 0;
-  opacity: 0.9;
+  font-size: 1.75rem;
+  font-weight: 400;
+  max-width: 600px;
+  margin: 0 auto var(--spacing-10) auto;
+  color: #475569;
+  line-height: 1.5;
+  opacity: 1;
 }
 
 .cta-button {
   display: inline-block;
-  background-color: var(--color-accent);
-  color: var(--color-text-inverse);
-  padding: var(--spacing-4) var(--spacing-8);
-  border-radius: var(--border-radius-lg);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  background-color: #ffffff;
+  color: #fcfcfc;
+  padding: 1.5rem 4rem;
+  border-radius: 9999px;
+  /* Pill shape for premium feel */
+  font-size: 1.25rem;
+  font-weight: 600;
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-lg);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
 }
 
 .cta-button:hover {
-  background-color: var(--color-accent-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  background-color: #fdffa3;
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.3), 0 10px 10px -5px rgba(37, 99, 235, 0.2);
+}
+
+@media (max-width: 1024px) {
+  .hero-banner h2 {
+    font-size: 4rem;
+  }
+
+  .hero-section::before,
+  .hero-section::after {
+    width: 300px;
+    height: 300px;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner h2 {
+    font-size: 3rem;
+  }
+
+  .hero-section::before,
+  .hero-section::after {
+    display: none;
+  }
+
+  /* Hide on small screens for clarity */
 }
 
 .featured-categories {
@@ -224,72 +330,121 @@
   color: var(--color-primary-dark);
 }
 
-/* Promotional banner container: creates calm background, spacing and centering */
+/* Promotional banner container: high-impact full-width banner with dark gradient background for bold marketing appeal */
 .promotional-banner {
-  padding: var(--spacing-10) 0;
-  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-16) 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  position: relative;
+  overflow: hidden;
 }
 
-/* Promo content: card-like treatment, soft shadow, clear max-width, improved padding */
+/* Add subtle overlay for depth without overpowering */
+.promotional-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Promo content: full-width banner design with high contrast and bold typography for maximum impact */
 .promotional-banner .promo-content,
 .promo-content {
-  /* Visual: feel like a contained promotional card */
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-8) var(--spacing-10);
-  max-width: 1200px;
-  width: calc(100% - var(--spacing-8));
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition-base), transform var(--transition-base);
+  /* Remove card-like styling for banner feel */
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: var(--spacing-12) var(--spacing-8);
+  max-width: 100%;
+  width: 100%;
+  box-shadow: none;
+  transition: none;
   text-align: center;
-  /* Layout: center content vertically for consistent rhythm */
+  /* Layout: center content with increased spacing for dramatic effect */
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--spacing-6);
   justify-content: center;
+  position: relative;
+  z-index: 2;
 }
 
-/* Promo heading and copy: stronger hierarchy and improved leading */
+/* Promo heading: bold, large typography with high contrast white text for striking headline */
 .promotional-banner .promo-content h2,
 .promo-content h2 {
-  font-size: var(--font-size-3xl);
-  line-height: var(--line-height-tight);
-  margin: 0 0 var(--spacing-2) 0;
-  color: var(--color-text-primary);
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--spacing-4) 0;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .promotional-banner .promo-content p,
 .promo-content p {
-  margin: 0 0 var(--spacing-4) 0;
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-8) 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #e2e8f0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* CTA inside promo: noticeable but calm, subtle lift on hover */
+/* CTA inside promo: bright, prominent button with strong contrast for call-to-action emphasis */
 .promotional-banner .promo-content .cta-button,
 .promo-content .cta-button {
   display: inline-block;
-  padding: var(--spacing-3) var(--spacing-6);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-accent);
-  color: var(--color-text-inverse);
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-5) var(--spacing-10);
+  border-radius: 50px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
   transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   text-decoration: none;
 }
 
 .promotional-banner .promo-content .cta-button:hover,
 .promo-content .cta-button:hover {
-  background-color: var(--color-accent-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #e55a2b 0%, #e8850f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+}
+
+/* Responsive adjustments for bold banner design */
+@media (max-width: 768px) {
+  .promotional-banner {
+    padding: var(--spacing-12) 0;
+  }
+
+  .promotional-banner .promo-content h2,
+  .promo-content h2 {
+    font-size: 2.5rem;
+  }
+
+  .promotional-banner .promo-content p,
+  .promo-content p {
+    font-size: 1rem;
+  }
+
+  .promotional-banner .promo-content .cta-button,
+  .promo-content .cta-button {
+    padding: var(--spacing-4) var(--spacing-8);
+    font-size: 1rem;
+  }
 }
 
 /* Info sections grid: consistent spacing and responsive columns */
@@ -302,6 +457,7 @@
 }
 
 @media (min-width: 768px) {
+
   .info-sections,
   .info-section {
     grid-template-columns: repeat(2, 1fr);
@@ -309,6 +465,7 @@
 }
 
 @media (min-width: 1200px) {
+
   .info-sections,
   .info-section {
     grid-template-columns: repeat(4, 1fr);
@@ -317,25 +474,26 @@
 
 /* Info card: touchable, elevated, clear typography and spacing */
 .info-card {
-  background-color: var(--color-bg-primary);
+  background: linear-gradient(135deg, var(--color-bg-primary) 0%, rgba(255, 255, 255, 0.3) 100%);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-6);
+  border-radius: 12px;
+  padding: var(--spacing-8);
   text-align: center;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: var(--spacing-4);
   justify-content: center;
-  min-height: 96px; /* ensures visual balance across cards */
+  min-height: 120px;
+  /* ensures visual balance across cards */
 }
 
 /* Headline vs body: clear contrast and line-height for scanability */
 .info-card h3 {
   margin: 0;
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-weight: 600;
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
 }
@@ -343,6 +501,7 @@
 .info-card p {
   margin: 0;
   font-size: var(--font-size-sm);
+  font-weight: 400;
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
 }
@@ -350,8 +509,8 @@
 /* Hover / focus states: subtle, no heavy animation */
 .info-card:hover,
 .info-card:focus-within {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
   border-color: var(--color-primary-light);
 }
 
