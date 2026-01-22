@@ -1,0 +1,216 @@
+/* Backup of ux-overrides.css before redesign - created by assistant */
+
+/* Original content copied for safety. */
+
+/* UX Overrides - Centralized production-grade polish
+   Applies subtle, consistent improvements across the site
+   - No HTML changes required; imports into main.css
+   - Use existing design tokens from base/variables.css
+*/
+
+/* Design tokens additions */
+:root {
+  --container-max-width: 1200px;
+  --ui-surface: var(--color-bg-primary);
+  --ui-muted-surface: var(--color-bg-secondary);
+}
+
+/* Layout helpers */
+.container-centered {
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+/* Global typography refinement */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  font-size: var(--font-size-base);
+}
+
+/* Headings: clearer scale and tighter leading for heroes */
+h1 { font-size: var(--font-size-4xl); line-height: var(--line-height-tight); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+
+/* Utility: subtle soft divider used across pages */
+.soft-divider {
+  height: 1px;
+  background: var(--color-border-light);
+  margin: var(--spacing-6) 0;
+}
+
+/* Header refinement: increased clarity and subtle elevation */
+#site-header {
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  backdrop-filter: saturate(1.05) blur(4px);
+}
+
+.header-top {
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-4);
+}
+
+.logo h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+/* Search bar: larger input, clearer focus */
+.search-bar {
+  flex: 1 1 420px;
+  max-width: 560px;
+}
+.search-bar form {
+  display: flex;
+  align-items: center;
+  background-color: var(--ui-muted-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+.search-bar input {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-base);
+}
+.search-bar form:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 20px rgba(16,24,40,0.06);
+}
+
+/* Navigation clarity: more breathing room and active indicator */
+#main-navigation ul {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  padding: 0 var(--spacing-4);
+}
+
+#main-navigation a {
+  padding: calc(var(--spacing-2)) var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+#main-navigation a:hover {
+  background-color: var(--ui-muted-surface);
+  color: var(--color-primary);
+}
+
+#main-navigation a[aria-current="page"] {
+  color: var(--color-primary);
+  background: linear-gradient(180deg, rgba(37,99,235,0.06), rgba(37,99,235,0.03));
+}
+
+/* Buttons: stronger primary CTA and calm secondary */
+.btn {
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-3) var(--spacing-6);
+  box-shadow: 0 2px 6px rgba(16,24,40,0.04);
+}
+
+.btn--primary {
+  background: linear-gradient(180deg, var(--color-primary), var(--color-primary-dark));
+  color: var(--color-text-inverse);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(37,99,235,0.12);
+}
+
+.btn--secondary {
+  background: var(--ui-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+/* Forms: touch-friendly sizes and clearer focus rings */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  box-shadow: 0 6px 24px rgba(37,99,235,0.08);
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+fieldset {
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  border: 1px solid var(--color-border);
+}
+
+/* Cards: consistent elevation and spacing */
+.card,
+.product-card,
+.info-card {
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.card:hover,
+.product-card:hover,
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(16,24,40,0.08);
+}
+
+/* Product card specifics: image scale and info spacing */
+.product-card img { transition: transform var(--transition-base); }
+.product-card:hover img { transform: scale(1.04); }
+
+.product-card h3 { padding: 0 var(--spacing-4); }
+.product-price { padding: 0 var(--spacing-4); display:block; }
+
+/* Page header improvements for consistent rhythm */
+.page-header { padding: var(--spacing-10) 0; background: var(--ui-muted-surface); border-bottom: 1px solid var(--color-border); }
+.page-header h1 { margin-bottom: var(--spacing-3); }
+.page-header p { color: var(--color-text-secondary); }
+
+/* Tables: orders readability */
+.orders-list table { width: 100%; border-collapse: collapse; border-radius: var(--border-radius-lg); overflow: hidden; }
+.orders-list th, .orders-list td { padding: var(--spacing-4) var(--spacing-6); border-bottom: 1px solid var(--color-border-light); }
+.orders-list tbody tr:nth-child(even) { background: rgba(15,23,42,0.01); }
+
+/* Checkout summary: stronger visual separation */
+.order-summary { background: var(--ui-muted-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-6); box-shadow: 0 6px 18px rgba(16,24,40,0.03); }
+
+/* Utility: compact responsive grid */
+@media (max-width: 767px) {
+  .search-bar { max-width: 100%; }
+  .header-top { padding: var(--spacing-3); }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: var(--spacing-4); }
+}
+
+/* End of UX overrides */
