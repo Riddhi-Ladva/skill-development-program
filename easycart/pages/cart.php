@@ -109,7 +109,7 @@ $order_total = $subtotal + $shipping + $tax;
                 </section>
 
                 <section class="checkout-section">
-                    <a href="checkout.php" class="checkout-button">Proceed to Checkout</a>
+                    <a href="checkout.php" style="color:white;" class="checkout-button">Proceed to Checkout</a>
                     <a href="products.php" class="continue-shopping">Continue Shopping</a>
                 </section>
 
@@ -170,23 +170,20 @@ $order_total = $subtotal + $shipping + $tax;
             <div class="product-grid">
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" alt="Headphone Stand">
-                    <h3><a href="product-detail.html?id=14">Headphone Stand</a></h3>
+                    <h3><a href="product-detail.php?id=14">Headphone Stand</a></h3>
                     <p class="product-price">$19.99</p>
-                    <button type="button" class="add-to-cart" title="Add to your cart">🛒</button>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
                         alt="Audio Cable Premium">
-                    <h3><a href="product-detail.html?id=15">Audio Cable Premium</a></h3>
+                    <h3><a href="product-detail.php?id=15">Audio Cable Premium</a></h3>
                     <p class="product-price">$12.99</p>
-                    <button type="button" class="add-to-cart" title="Add to your cart">🛒</button>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
                         alt="Watch Charging Dock">
-                    <h3><a href="product-detail.html?id=17">Watch Charging Dock</a></h3>
+                    <h3><a href="product-detail.php?id=17">Watch Charging Dock</a></h3>
                     <p class="product-price">$24.99</p>
-                    <button type="button" class="add-to-cart" title="Add to your cart">🛒</button>
                 </article>
             </div>
         </section>

@@ -149,10 +149,6 @@ require_once '../data/products.php';
                                 <p class="product-rating"><?php echo $product['rating']; ?> stars
                                     (<?php echo number_format($product['reviews']); ?> reviews)</p>
                                 <p class="product-shipping"><?php echo htmlspecialchars($product['shipping']); ?></p>
-                                <form action="add-to-cart.php" method="post" style="display: inline;">
-                                    <input type="hidden" name="product_id" value="<?php echo $id; ?>">
-                                    <button type="submit" class="add-to-cart" title="Add to your cart">🛒</button>
-                                </form>
                             </article>
                         <?php endforeach; ?>
                     </div>

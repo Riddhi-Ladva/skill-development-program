@@ -101,27 +101,52 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                     <button type="button" class="wishlist-button">Add to Wishlist</button>
                 </section>
 
-                <section class="delivery-info">
-                    <h2>Delivery Options</h2>
-                    <dl>
-                        <dt>Standard Shipping (5-7 business days)</dt>
-                        <dd>Free</dd>
-                        <dt>Express Shipping (2-3 business days)</dt>
-                        <dd>$9.99</dd>
-                        <dt>Next Day Delivery</dt>
-                        <dd>$19.99</dd>
-                    </dl>
-                    <p class="return-policy">30-day return policy. <a href="#">Learn more</a></p>
-                </section>
+               <section class="delivery-info">
+  
+
+ <section class="delivery-info">
+  <h2>Delivery Options</h2>
+
+  <form class="delivery-options">
+    <div>
+      <label>
+        <input type="radio" name="delivery" checked>
+        Standard Shipping (5–7 business days) — <strong>Free</strong>
+      </label>
+    </div>
+
+    <div>
+      <label>
+        <input type="radio" name="delivery">
+        Express Shipping (2–3 business days) — <strong>$9.99</strong>
+      </label>
+    </div>
+
+    <div>
+      <label>
+        <input type="radio" name="delivery">
+        Next Day Delivery — <strong>$19.99</strong>
+      </label>
+    </div>
+  </form>
+
+  <p class="return-policy">
+    30-day return policy. <a href="#">Learn more</a>
+  </p>
+</section>
+
+
+  
+
             </div>
         </article>
 
         <section class="product-details-tabs">
             <h2 class="visually-hidden">Product Information</h2>
             <div class="tabs-navigation">
-                <button type="button" class="tab-button active" aria-selected="true">Description</button>
-                <button type="button" class="tab-button">Specifications</button>
-                <button type="button" class="tab-button">Reviews</button>
+                <button type="button" class="tab-button active" aria-selected="true" data-tab="description">Description</button>
+                <button type="button" class="tab-button" data-tab="specifications">Specifications</button>
+                <button type="button" id="reviews" class="tab-button" data-tab="reviews">Reviews</button>
             </div>
 
             <div class="tab-content">
@@ -209,9 +234,12 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <p class="reviewer-name">John D.</p>
-                            <p class="review-rating">5 out of 5 stars</p>
-                            <time datetime="2026-01-15">January 15, 2026</time>
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="Profile picture of John D." class="reviewer-avatar">
+                            <div class="reviewer-info">
+                                <p class="reviewer-name">John D.</p>
+                                <p class="review-rating">5 out of 5 stars</p>
+                                <time datetime="2026-01-15">January 15, 2026</time>
+                            </div>
                         </header>
                         <h4 class="review-title">Amazing sound quality!</h4>
                         <p class="review-text">These headphones exceeded my expectations. The noise cancellation is
@@ -221,9 +249,12 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <p class="reviewer-name">Sarah M.</p>
-                            <p class="review-rating">4 out of 5 stars</p>
-                            <time datetime="2026-01-10">January 10, 2026</time>
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100" alt="Profile picture of Sarah M." class="reviewer-avatar">
+                            <div class="reviewer-info">
+                                <p class="reviewer-name">Sarah M.</p>
+                                <p class="review-rating">4 out of 5 stars</p>
+                                <time datetime="2026-01-10">January 10, 2026</time>
+                            </div>
                         </header>
                         <h4 class="review-title">Great value for money</h4>
                         <p class="review-text">Very comfortable for long listening sessions. The only downside is
@@ -233,14 +264,31 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <p class="reviewer-name">Mike R.</p>
-                            <p class="review-rating">5 out of 5 stars</p>
-                            <time datetime="2026-01-05">January 5, 2026</time>
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" alt="Profile picture of Mike R." class="reviewer-avatar">
+                            <div class="reviewer-info">
+                                <p class="reviewer-name">Mike R.</p>
+                                <p class="review-rating">5 out of 5 stars</p>
+                                <time datetime="2026-01-05">January 5, 2026</time>
+                            </div>
                         </header>
                         <h4 class="review-title">Perfect for work from home</h4>
                         <p class="review-text">The microphone quality is excellent for video calls. Battery life is as
                             advertised. Very happy with this purchase.</p>
                         <p class="review-helpful">12 people found this helpful</p>
+                    </article>
+
+                    <article class="review-item">
+                        <header class="review-header">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100" alt="Profile picture of Emily L." class="reviewer-avatar">
+                            <div class="reviewer-info">
+                                <p class="reviewer-name">Emily L.</p>
+                                <p class="review-rating">4 out of 5 stars</p>
+                                <time datetime="2026-01-02">January 2, 2026</time>
+                            </div>
+                        </header>
+                        <h4 class="review-title">Good quality but pricey</h4>
+                        <p class="review-text">The build quality is excellent and the sound is clear. However, I feel the price is a bit high compared to similar products. Still, worth it for the features.</p>
+                        <p class="review-helpful">8 people found this helpful</p>
                     </article>
 
                     <button type="button" class="load-more-reviews">Load More Reviews</button>
@@ -282,6 +330,35 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     </main>
 
     <?php include '../includes/footer.php'; ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class and aria-selected from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    // Remove active class from all panels
+                    document.querySelectorAll('.tab-panel').forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+                    
+                    // Add active class and aria-selected to clicked button
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    
+                    // Show corresponding panel
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
