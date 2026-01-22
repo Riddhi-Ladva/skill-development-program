@@ -1,128 +1,102 @@
+<?php
+require_once '../includes/session.php';
+require_once '../data/products.php';
+require_once '../data/brands.php';
+require_once '../data/categories.php';
+
+$product_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$product = isset($products[$product_id]) ? $products[$product_id] : null;
+
+if (!$product) {
+    header('Location: products.php');
+    exit;
+}
+
+$brand = isset($brands[$product['brand_id']]) ? $brands[$product['brand_id']] : ['name' => 'Generic'];
+$category = isset($categories[$product['category']]) ? $categories[$product['category']] : ['name' => 'Uncategorized'];
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Wireless Bluetooth Headphones - Premium sound quality and comfort">
-    <title>Wireless Bluetooth Headphones - EasyCart</title>
-    <link rel="stylesheet" href="../css/main.css">
+    <meta name="description"
+        content="<?php echo htmlspecialchars($product['name'] . ' - ' . $product['description']); ?>">
+    <title><?php echo htmlspecialchars($product['name']); ?> - EasyCart</title>
+    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+
 <body>
-    <header id="site-header">
-        <div class="header-top">
-            <div class="logo">
-                <h1><a href="../index.html">EasyCart</a></h1>
-            </div>
-            <div class="search-bar">
-                <form action="products.html" method="get" role="search">
-                    <input type="search" id="search-input" name="q" placeholder="Search products..." aria-label="Search products">
-                    <button type="submit">Search</button>
-                </form>
-            </div>
-            <div class="header-actions">
-                <a href="login.html" class="action-link" aria-label="Login">Login</a>
-                <a href="cart.html" class="action-link" aria-label="View cart">Cart (0)</a>
-            </div>
-        </div>
-        <nav id="main-navigation" aria-label="Main navigation">
-            <ul>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="products.html">Products</a></li>
-                <li><a href="products.html?category=electronics">Electronics</a></li>
-                <li><a href="products.html?category=clothing">Clothing</a></li>
-                <li><a href="products.html?category=home">Home & Garden</a></li>
-                <li><a href="products.html?category=sports">Sports</a></li>
-            </ul>
-        </nav>
-    </header>
+    <?php include '../includes/header.php'; ?>
 
     <main id="main-content">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="products.html">Products</a></li>
-                <li><a href="products.html?category=electronics">Electronics</a></li>
-                <li aria-current="page">Wireless Bluetooth Headphones</li>
+                <li><a href="../index.php">Home</a></li>
+                <li><a href="products.php">Products</a></li>
+                <li><a
+                        href="products.php?category=<?php echo urlencode($product['category']); ?>"><?php echo htmlspecialchars($category['name']); ?></a>
+                </li>
+                <li aria-current="page"><?php echo htmlspecialchars($product['name']); ?></li>
             </ol>
         </nav>
 
         <article class="product-detail">
             <div class="product-images">
                 <section class="main-image">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600" alt="Wireless Bluetooth Headphones - Main view">
+                    <img src="<?php echo htmlspecialchars($product['image']); ?>"
+                        alt="<?php echo htmlspecialchars($product['name']); ?> - Main view">
                 </section>
                 <section class="thumbnail-gallery">
                     <h2 class="visually-hidden">Product Images</h2>
                     <button type="button">
-                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" alt="Headphones front view thumbnail">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
+                            alt="Headphones front view thumbnail">
                     </button>
                     <button type="button">
-                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200" alt="Headphones side view thumbnail">
+                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200"
+                            alt="Headphones side view thumbnail">
                     </button>
                     <button type="button">
-                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200" alt="Headphones folded thumbnail">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200"
+                            alt="Headphones folded thumbnail">
                     </button>
                     <button type="button">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200" alt="Headphones with case thumbnail">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200"
+                            alt="Headphones with case thumbnail">
                     </button>
                 </section>
             </div>
 
             <div class="product-info">
                 <header class="product-header">
-                    <h1>Wireless Bluetooth Headphones</h1>
-                    <p class="product-brand">Brand: AudioTech</p>
+                    <h1><?php echo htmlspecialchars($product['name']); ?></h1>
+                    <p class="product-brand">Brand: <?php echo htmlspecialchars($brand['name']); ?></p>
                     <div class="product-rating">
-                        <p>4.5 out of 5 stars</p>
-                        <a href="#reviews">245 customer reviews</a>
+                        <p><?php echo $product['rating']; ?> out of 5 stars</p>
+                        <a href="#reviews"><?php echo number_format($product['reviews']); ?> customer reviews</a>
                     </div>
                 </header>
 
                 <section class="product-pricing">
                     <h2 class="visually-hidden">Pricing Information</h2>
-                    <p class="current-price">$79.99</p>
+                    <p class="current-price">$<?php echo number_format($product['price'], 2); ?></p>
                     <p class="original-price">$129.99</p>
                     <p class="discount-badge">Save 38%</p>
                     <p class="stock-status">In Stock</p>
                     <p class="shipping-info">Free shipping on orders over $50</p>
                 </section>
 
-                <section class="product-options">
-                    <h2>Product Options</h2>
-                    <div class="option-group">
-                        <label for="color-select">Color:</label>
-                        <select id="color-select" name="color">
-                            <option value="black">Black</option>
-                            <option value="white">White</option>
-                            <option value="blue">Blue</option>
-                            <option value="red">Red</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <fieldset>
-                            <legend>Warranty:</legend>
-                            <label>
-                                <input type="radio" name="warranty" value="none" checked>
-                                No warranty
-                            </label>
-                            <label>
-                                <input type="radio" name="warranty" value="1year">
-                                1 Year Extended Warranty (+$9.99)
-                            </label>
-                            <label>
-                                <input type="radio" name="warranty" value="2year">
-                                2 Year Extended Warranty (+$15.99)
-                            </label>
-                        </fieldset>
-                    </div>
-                    <div class="option-group">
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
-                    </div>
-                </section>
-
                 <section class="product-actions">
                     <h2 class="visually-hidden">Purchase Actions</h2>
-                    <button type="button" class="add-to-cart">🛒 Add to Cart</button>
+                    <form action="add-to-cart.php" method="post">
+                        <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+                        <div class="quantity-input" style="margin-bottom: 10px;">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+                        </div>
+                        <button type="submit" class="add-to-cart">🛒 Add to Cart</button>
+                    </form>
                     <button type="button" class="buy-now-button">Buy Now</button>
                     <button type="button" class="wishlist-button">Add to Wishlist</button>
                 </section>
@@ -153,7 +127,7 @@
             <div class="tab-content">
                 <section id="description" class="tab-panel active">
                     <h3>Product Description</h3>
-                    <p>Experience premium sound quality with these wireless Bluetooth headphones. Featuring advanced noise-cancellation technology, comfortable over-ear design, and up to 30 hours of battery life, these headphones are perfect for music lovers, commuters, and professionals alike.</p>
+                    <p><?php echo htmlspecialchars($product['description']); ?></p>
                     <h4>Key Features</h4>
                     <ul>
                         <li>Active Noise Cancellation (ANC) technology</li>
@@ -240,7 +214,8 @@
                             <time datetime="2026-01-15">January 15, 2026</time>
                         </header>
                         <h4 class="review-title">Amazing sound quality!</h4>
-                        <p class="review-text">These headphones exceeded my expectations. The noise cancellation is fantastic, and the battery lasts all day. Highly recommended!</p>
+                        <p class="review-text">These headphones exceeded my expectations. The noise cancellation is
+                            fantastic, and the battery lasts all day. Highly recommended!</p>
                         <p class="review-helpful">23 people found this helpful</p>
                     </article>
 
@@ -251,7 +226,8 @@
                             <time datetime="2026-01-10">January 10, 2026</time>
                         </header>
                         <h4 class="review-title">Great value for money</h4>
-                        <p class="review-text">Very comfortable for long listening sessions. The only downside is they're a bit bulky for travel, but the sound quality makes up for it.</p>
+                        <p class="review-text">Very comfortable for long listening sessions. The only downside is
+                            they're a bit bulky for travel, but the sound quality makes up for it.</p>
                         <p class="review-helpful">15 people found this helpful</p>
                     </article>
 
@@ -262,7 +238,8 @@
                             <time datetime="2026-01-05">January 5, 2026</time>
                         </header>
                         <h4 class="review-title">Perfect for work from home</h4>
-                        <p class="review-text">The microphone quality is excellent for video calls. Battery life is as advertised. Very happy with this purchase.</p>
+                        <p class="review-text">The microphone quality is excellent for video calls. Battery life is as
+                            advertised. Very happy with this purchase.</p>
                         <p class="review-helpful">12 people found this helpful</p>
                     </article>
 
@@ -275,26 +252,28 @@
             <h2>You May Also Like</h2>
             <div class="product-grid">
                 <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400" alt="Wireless Earbuds">
-                    <h3><a href="product-detail.html?id=13">Wireless Earbuds</a></h3>
+                    <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400"
+                        alt="Wireless Earbuds">
+                    <h3><a href="product-detail.php?id=13">Wireless Earbuds</a></h3>
                     <p class="product-price">$49.99</p>
                     <p class="product-rating">4.4 stars (567 reviews)</p>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" alt="Headphone Stand">
-                    <h3><a href="product-detail.html?id=14">Headphone Stand</a></h3>
+                    <h3><a href="product-detail.php?id=14">Headphone Stand</a></h3>
                     <p class="product-price">$19.99</p>
                     <p class="product-rating">4.7 stars (234 reviews)</p>
                 </article>
                 <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400" alt="Audio Cable Premium">
-                    <h3><a href="product-detail.html?id=15">Audio Cable Premium</a></h3>
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                        alt="Audio Cable Premium">
+                    <h3><a href="product-detail.php?id=15">Audio Cable Premium</a></h3>
                     <p class="product-price">$12.99</p>
                     <p class="product-rating">4.6 stars (189 reviews)</p>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" alt="Headphone Case">
-                    <h3><a href="product-detail.html?id=16">Headphone Case</a></h3>
+                    <h3><a href="product-detail.php?id=16">Headphone Case</a></h3>
                     <p class="product-price">$14.99</p>
                     <p class="product-rating">4.5 stars (312 reviews)</p>
                 </article>
@@ -302,42 +281,7 @@
         </section>
     </main>
 
-    <footer id="site-footer">
-        <div class="footer-content">
-            <section class="footer-section">
-                <h2>About EasyCart</h2>
-                <p>Your trusted online shopping destination for quality products at competitive prices.</p>
-            </section>
-            <section class="footer-section">
-                <h2>Customer Service</h2>
-                <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Shipping Information</a></li>
-                    <li><a href="#">Returns & Exchanges</a></li>
-                    <li><a href="#">FAQs</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>My Account</h2>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="signup.html">Create Account</a></li>
-                    <li><a href="orders.html">Order History</a></li>
-                    <li><a href="cart.html">Shopping Cart</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>Policies</h2>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Cookie Policy</a></li>
-                </ul>
-            </section>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyCart. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>

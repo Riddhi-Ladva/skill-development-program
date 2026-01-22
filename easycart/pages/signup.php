@@ -1,21 +1,26 @@
+<?php
+require_once '../includes/session.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Create your EasyCart account and start shopping">
     <title>Sign Up - EasyCart</title>
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+
 <body>
     <!-- HEADER ADDED: minimal auth page header (logo + back to home) -->
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="../index.html">EasyCart</a></h1>
+                <h1><a href="../index.php">EasyCart</a></h1>
             </div>
             <div class="header-actions">
-                <a href="../index.html" class="action-link">Back to Home</a>
-                <a href="login.html" class="action-link">Login</a>
+                <a href="../index.php" class="action-link">Back to Home</a>
+                <a href="login.php" class="action-link">Login</a>
             </div>
         </div>
     </header>
@@ -28,96 +33,61 @@
                     <p>Join thousands of happy shoppers</p>
                 </header>
 
-                <form action="login.html" method="post">
+                <form action="login.php" method="post">
                     <fieldset>
                         <legend class="visually-hidden">Personal Information</legend>
-                        
+
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="first-name">First Name <abbr title="required">*</abbr></label>
-                                <input 
-                                    type="text" 
-                                    id="first-name" 
-                                    name="first-name" 
-                                    required 
-                                    autocomplete="given-name"
+                                <input type="text" id="first-name" name="first-name" required autocomplete="given-name"
                                     placeholder="John">
                             </div>
 
                             <div class="form-group">
                                 <label for="last-name">Last Name <abbr title="required">*</abbr></label>
-                                <input 
-                                    type="text" 
-                                    id="last-name" 
-                                    name="last-name" 
-                                    required 
-                                    autocomplete="family-name"
+                                <input type="text" id="last-name" name="last-name" required autocomplete="family-name"
                                     placeholder="Doe">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email Address <abbr title="required">*</abbr></label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                required 
-                                autocomplete="email"
+                            <input type="email" id="email" name="email" required autocomplete="email"
                                 placeholder="john.doe@example.com">
                             <p class="field-hint">We'll send your order confirmations to this email</p>
                         </div>
 
                         <div class="form-group">
                             <label for="phone">Phone Number (Optional)</label>
-                            <input 
-                                type="tel" 
-                                id="phone" 
-                                name="phone" 
-                                autocomplete="tel"
+                            <input type="tel" id="phone" name="phone" autocomplete="tel"
                                 placeholder="+1 (555) 000-0000">
                             <p class="field-hint">For delivery updates and customer support</p>
                         </div>
 
                         <div class="form-group">
                             <label for="password">Password <abbr title="required">*</abbr></label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                required 
-                                autocomplete="new-password"
-                                minlength="8"
-                                placeholder="Create a strong password">
+                            <input type="password" id="password" name="password" required autocomplete="new-password"
+                                minlength="8" placeholder="Create a strong password">
                             <p class="field-hint">Must be at least 8 characters</p>
                         </div>
 
                         <div class="form-group">
                             <label for="confirm-password">Confirm Password <abbr title="required">*</abbr></label>
-                            <input 
-                                type="password" 
-                                id="confirm-password" 
-                                name="confirm-password" 
-                                required 
-                                autocomplete="new-password"
-                                minlength="8"
-                                placeholder="Re-enter your password">
+                            <input type="password" id="confirm-password" name="confirm-password" required
+                                autocomplete="new-password" minlength="8" placeholder="Re-enter your password">
                         </div>
 
                         <div class="form-group">
                             <label for="dob">Date of Birth (Optional)</label>
-                            <input 
-                                type="date" 
-                                id="dob" 
-                                name="dob" 
-                                autocomplete="bday">
+                            <input type="date" id="dob" name="dob" autocomplete="bday">
                             <p class="field-hint">To send you special birthday offers</p>
                         </div>
                     </fieldset>
 
                     <fieldset>
                         <legend>Preferences</legend>
-                        
+
                         <div class="form-group">
                             <label>
                                 <input type="checkbox" name="newsletter" value="yes">
@@ -135,7 +105,8 @@
                         <div class="form-group">
                             <label>
                                 <input type="checkbox" name="terms" value="yes" required>
-                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <abbr title="required">*</abbr>
+                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <abbr
+                                    title="required">*</abbr>
                             </label>
                         </div>
                     </fieldset>
@@ -165,8 +136,8 @@
 
                 <footer class="form-footer">
                     <p>
-                        Already have an account? 
-                        <a href="login.html">Login here</a>
+                        Already have an account?
+                        <a href="login.php">Login here</a>
                     </p>
                 </footer>
             </section>
@@ -245,42 +216,7 @@
         </section>
     </main>
 
-    <footer id="site-footer">
-        <div class="footer-content">
-            <section class="footer-section">
-                <h2>About EasyCart</h2>
-                <p>Your trusted online shopping destination for quality products at competitive prices.</p>
-            </section>
-            <section class="footer-section">
-                <h2>Customer Service</h2>
-                <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Shipping Information</a></li>
-                    <li><a href="#">Returns & Exchanges</a></li>
-                    <li><a href="#">FAQs</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>My Account</h2>
-                <ul>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="signup.html" aria-current="page">Create Account</a></li>
-                    <li><a href="orders.html">Order History</a></li>
-                    <li><a href="cart.html">Shopping Cart</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>Policies</h2>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Cookie Policy</a></li>
-                </ul>
-            </section>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyCart. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>

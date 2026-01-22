@@ -1,21 +1,26 @@
+<?php
+require_once '../includes/session.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login to your EasyCart account">
     <title>Login - EasyCart</title>
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+
 <body>
     <!-- HEADER ADDED: minimal auth page header (logo + back to home) -->
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="../index.html">EasyCart</a></h1>
+                <h1><a href="../index.php">EasyCart</a></h1>
             </div>
             <div class="header-actions">
-                <a href="../index.html" class="action-link">Back to Home</a>
-                <a href="signup.html" class="action-link">Create Account</a>
+                <a href="../index.php" class="action-link">Back to Home</a>
+                <a href="signup.php" class="action-link">Create Account</a>
             </div>
         </div>
     </header>
@@ -28,31 +33,20 @@
                     <p>Welcome back! Please enter your details</p>
                 </header>
 
-                <form action="orders.html" method="post">
+                <form action="orders.php" method="post">
                     <fieldset>
                         <legend class="visually-hidden">Login credentials</legend>
-                        
+
                         <div class="form-group">
                             <label for="email">Email Address <abbr title="required">*</abbr></label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email" 
-                                required 
-                                autocomplete="email"
+                            <input type="email" id="email" name="email" required autocomplete="email"
                                 placeholder="Enter your email">
                         </div>
 
                         <div class="form-group">
                             <label for="password">Password <abbr title="required">*</abbr></label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                required 
-                                autocomplete="current-password"
-                                placeholder="Enter your password"
-                                minlength="8">
+                            <input type="password" id="password" name="password" required
+                                autocomplete="current-password" placeholder="Enter your password" minlength="8">
                         </div>
 
                         <div class="form-options">
@@ -89,8 +83,8 @@
 
                 <footer class="form-footer">
                     <p>
-                        Don't have an account? 
-                        <a href="signup.html">Sign up for free</a>
+                        Don't have an account?
+                        <a href="signup.php">Sign up for free</a>
                     </p>
                 </footer>
             </section>
@@ -141,42 +135,7 @@
         </section>
     </main>
 
-    <footer id="site-footer">
-        <div class="footer-content">
-            <section class="footer-section">
-                <h2>About EasyCart</h2>
-                <p>Your trusted online shopping destination for quality products at competitive prices.</p>
-            </section>
-            <section class="footer-section">
-                <h2>Customer Service</h2>
-                <ul>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Shipping Information</a></li>
-                    <li><a href="#">Returns & Exchanges</a></li>
-                    <li><a href="#">FAQs</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>My Account</h2>
-                <ul>
-                    <li><a href="login.html" aria-current="page">Login</a></li>
-                    <li><a href="signup.html">Create Account</a></li>
-                    <li><a href="orders.html">Order History</a></li>
-                    <li><a href="cart.html">Shopping Cart</a></li>
-                </ul>
-            </section>
-            <section class="footer-section">
-                <h2>Policies</h2>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Cookie Policy</a></li>
-                </ul>
-            </section>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 EasyCart. All rights reserved.</p>
-        </div>
-    </footer>
+    <?php include '../includes/footer.php'; ?>
 </body>
+
 </html>
