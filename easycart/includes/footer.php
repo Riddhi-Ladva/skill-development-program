@@ -1,0 +1,37 @@
+<footer id="site-footer">
+    <div class="footer-content">
+        <section class="footer-section">
+            <h3>About EasyCart</h3>
+            <p>Your trusted online shopping destination for quality products at competitive prices.</p>
+        </section>
+        <section class="footer-section">
+            <h3>Customer Service</h3>
+            <ul>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Shipping Information</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+                <li><a href="#">FAQs</a></li>
+            </ul>
+        </section>
+        <section class="footer-section">
+            <h3>My Account</h3>
+            <ul>
+                <li><a href="/easycart/pages/login.php">Login</a></li>
+                <li><a href="/easycart/pages/signup.php">Create Account</a></li>
+                <li><a href="/easycart/pages/orders.php">Order History</a></li>
+                <li><a href="/easycart/pages/cart.php">Shopping Cart</a></li>
+            </ul>
+        </section>
+        <section class="footer-section">
+            <h3>Policies</h3>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Cookie Policy</a></li>
+            </ul>
+        </section>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 EasyCart. All rights reserved.</p>
+    </div>
+</footer>
