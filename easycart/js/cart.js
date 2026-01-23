@@ -103,4 +103,110 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    /**
+     * Wishlist Section Logic
+     */
+    const initWishlistCarousel = () => {
+        const container = document.getElementById('wishlist-items-container');
+        const prevBtn = document.getElementById('wishlist-prev');
+        const nextBtn = document.getElementById('wishlist-next');
+        if (!container) return;
+
+        // 1. Load data from localStorage
+        const loadWishlist = () => {
+            const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            renderWishlist(wishlist);
+        };
+
+        // 2. Render items
+        const renderWishlist = (wishlist) => {
+            if (wishlist.length === 0) {
+                container.innerHTML = '<div class="wishlist-empty"><p>Your wishlist is empty. Explore our products to add your favorites!</p></div>';
+                if (prevBtn) prevBtn.disabled = true;
+                if (nextBtn) nextBtn.disabled = true;
+                return;
+            }
+
+            container.innerHTML = '';
+            wishlist.forEach(id => {
+                const product = window.allProducts && window.allProducts[id];
+                if (!product) return;
+
+                const card = document.createElement('article');
+                card.className = 'wishlist-card';
+                card.dataset.id = id;
+                card.innerHTML = `
+                    <div class="item-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="item-info">
+                        <h3><a href="product-detail.php?id=${id}">${product.name}</a></h3>
+                        <p class="item-price">$${parseFloat(product.price).toFixed(2)}</p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="product-detail.php?id=${id}" class="view-link">View Details</a>
+                        <button type="button" class="remove-wishlist" aria-label="Remove from wishlist">Remove</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            updateNavButtons();
+        };
+
+        // 3. Carousel Scroll Logic
+        const scrollAmount = 300;
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                setTimeout(updateNavButtons, 300);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                setTimeout(updateNavButtons, 300);
+            });
+        }
+
+        const updateNavButtons = () => {
+            if (!prevBtn || !nextBtn) return;
+            prevBtn.disabled = container.scrollLeft <= 0;
+            nextBtn.disabled = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+        };
+
+        container.addEventListener('scroll', updateNavButtons);
+
+        // 4. Remove Item Logic
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-wishlist')) {
+                const card = e.target.closest('.wishlist-card');
+                const id = card.dataset.id;
+
+                // Update localStorage
+                let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                wishlist = wishlist.filter(item => item !== id);
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+                // Visual feedback
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    if (container.children.length === 0) {
+                        renderWishlist([]);
+                    }
+                    updateNavButtons();
+                }, 300);
+            }
+        });
+
+        // Initialize display
+        loadWishlist();
+    };
+
+    // Run Wishlist logic
+    initWishlistCarousel();
 });
