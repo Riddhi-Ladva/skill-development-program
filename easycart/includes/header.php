@@ -14,14 +14,19 @@ require_once __DIR__ . '/config.php';
                 <button type="submit">Search</button>
             </form>
         </div>
+        <!-- Global Notification Container -->
+        <div id="global-notification-container"></div>
         <div class="header-actions">
             <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
+            <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>" class="action-link wishlist-link" aria-label="View wishlist">
+                <span class="wishlist-icon" aria-hidden="true"></span>
+                <span class="wishlist-count" id="header-wishlist-count">0</span>
+            </a>
             <?php
             $current_page = basename($_SERVER['PHP_SELF']);
             if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
                 ?>
-                <a href="<?php echo url('pages/cart.php'); ?>" class="action-link cart-link" aria-label="View cart">Cart (
-                    <?php echo array_sum($_SESSION['cart']); ?>)
+                <a href="<?php echo url('pages/cart.php'); ?>" class="action-link cart-link" aria-label="View cart">🛒
                 </a>
             <?php endif; ?>
         </div>
@@ -36,4 +41,5 @@ require_once __DIR__ . '/config.php';
             <li><a href="<?php echo url('pages/products.php?category=sports'); ?>">Sports</a></li>
         </ul>
     </nav>
+    <script src="<?php echo asset('js/confirm-actions.js'); ?>"></script>
 </header>
