@@ -82,8 +82,9 @@ $order_total = $subtotal + $shipping + $tax;
                                 <p class="total-price" data-item-total>$<?php echo number_format($item_total, 2); ?></p>
                             </div>
                             <div class="item-actions">
-                                <button type="button" class="save-for-later">Save for Later</button>
-                                <button type="button" class="remove-item">Remove</button>
+                                <button type="button" class="action-btn save-for-later">Save for Later</button>
+                                <span class="action-divider" aria-hidden="true">|</span>
+                                <button type="button" class="action-btn remove-item">Remove</button>
                             </div>
                         </article>
                     <?php endforeach; ?>
@@ -140,6 +141,29 @@ $order_total = $subtotal + $shipping + $tax;
             </aside>
         </div>
 
+        <section class="cart-wishlist" id="wishlist-section">
+            <div class="section-header">
+                <h2>Your Wishlist</h2>
+                <div class="carousel-controls">
+                    <button type="button" class="carousel-btn prev" id="wishlist-prev"
+                        aria-label="Previous items">←</button>
+                    <button type="button" class="carousel-btn next" id="wishlist-next"
+                        aria-label="Next items">→</button>
+                </div>
+            </div>
+            <div class="wishlist-carousel-container">
+                <div class="wishlist-items" id="wishlist-items-container">
+                    <!-- Wishlist items will be loaded via JavaScript -->
+                    <p class="wishlist-loading">Loading your wishlist...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product data bridge for JS -->
+        <script>
+            window.allProducts = <?php echo json_encode($products); ?>;
+        </script>
+
         <section class="saved-for-later">
             <h2>Saved for Later (2 items)</h2>
             <div class="saved-items-grid">
@@ -153,8 +177,9 @@ $order_total = $subtotal + $shipping + $tax;
                         <p class="item-price">$69.99</p>
                     </div>
                     <div class="item-actions">
-                        <button type="button" class="move-to-cart">Move to Cart</button>
-                        <button type="button" class="delete-saved">Delete</button>
+                        <button type="button" class="action-btn move-to-cart">Move to Cart</button>
+                        <span class="action-divider" aria-hidden="true">|</span>
+                        <button type="button" class="action-btn delete-saved">Delete</button>
                     </div>
                 </article>
                 <article class="saved-item">
@@ -167,8 +192,9 @@ $order_total = $subtotal + $shipping + $tax;
                         <p class="item-price">$34.99</p>
                     </div>
                     <div class="item-actions">
-                        <button type="button" class="move-to-cart">Move to Cart</button>
-                        <button type="button" class="delete-saved">Delete</button>
+                        <button type="button" class="action-btn move-to-cart">Move to Cart</button>
+                        <span class="action-divider" aria-hidden="true">|</span>
+                        <button type="button" class="action-btn delete-saved">Delete</button>
                     </div>
                 </article>
             </div>

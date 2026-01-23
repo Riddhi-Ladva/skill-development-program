@@ -1,7 +1,119 @@
 <?php
 require_once '../includes/session.php';
 require_once '../includes/config.php';
-require_once '../data/products.php';
+require_once ROOT_PATH . '/data/products.php';
+require_once ROOT_PATH . '/data/brands.php';
+
+// Get filters from URL
+$query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+// Multi-value filters
+$selected_categories = isset($_GET['category']) && is_array($_GET['category']) ? $_GET['category'] : [];
+$selected_prices = isset($_GET['price']) && is_array($_GET['price']) ? $_GET['price'] : [];
+$selected_rating = isset($_GET['rating']) ? (float) $_GET['rating'] : 0;
+$selected_availability = isset($_GET['availability']) && is_array($_GET['availability']) ? $_GET['availability'] : [];
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'featured';
+
+// Backward compatibility for single category (header links)
+if (isset($_GET['category']) && is_string($_GET['category']) && $_GET['category'] !== '') {
+    if (!in_array($_GET['category'], $selected_categories)) {
+        $selected_categories[] = $_GET['category'];
+    }
+}
+
+// Ensure $brands is available for the closure
+$all_brands = $brands ?? [];
+
+// Updated Filtering Logic
+if ($query !== '' || !empty($selected_categories) || !empty($selected_prices) || $selected_rating > 0 || !empty($selected_availability)) {
+    $products = array_filter($products, function ($product) use ($query, $selected_categories, $selected_prices, $selected_rating, $selected_availability, $all_brands) {
+        // 1. Search Query Filter
+        if ($query !== '') {
+            $brand_name = isset($all_brands[$product['brand_id']]) ? $all_brands[$product['brand_id']]['name'] : '';
+            $search_text = $product['name'] . ' ' . $brand_name . ' ' . $product['category'];
+            if (stripos($search_text, $query) === false)
+                return false;
+        }
+
+        // 2. Category Filter
+        if (!empty($selected_categories)) {
+            $category_match = false;
+            foreach ($selected_categories as $cat) {
+                if (strtolower($product['category']) === strtolower($cat)) {
+                    $category_match = true;
+                    break;
+                }
+            }
+            if (!$category_match)
+                return false;
+        }
+
+        // 3. Price Filter
+        if (!empty($selected_prices)) {
+            $price_match = false;
+            foreach ($selected_prices as $range) {
+                switch ($range) {
+                    case '0-25':
+                        if ($product['price'] < 25)
+                            $price_match = true;
+                        break;
+                    case '25-50':
+                        if ($product['price'] >= 25 && $product['price'] <= 50)
+                            $price_match = true;
+                        break;
+                    case '50-100':
+                        if ($product['price'] > 50 && $product['price'] <= 100)
+                            $price_match = true;
+                        break;
+                    case '100-200':
+                        if ($product['price'] > 100 && $product['price'] <= 200)
+                            $price_match = true;
+                        break;
+                    case '200+':
+                        if ($product['price'] > 200)
+                            $price_match = true;
+                        break;
+                }
+                if ($price_match)
+                    break;
+            }
+            if (!$price_match)
+                return false;
+        }
+
+        // 4. Rating Filter
+        if ($selected_rating > 0 && $product['rating'] < $selected_rating) {
+            return false;
+        }
+
+        // 5. Availability (Assume all products in data are in-stock for now)
+        if (!empty($selected_availability)) {
+            if (!in_array('in-stock', $selected_availability)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+}
+
+// Sorting Logic
+if (!empty($products) && $sort !== 'featured') {
+    uasort($products, function ($a, $b) use ($sort) {
+        switch ($sort) {
+            case 'price-low':
+                return $a['price'] <=> $b['price'];
+            case 'price-high':
+                return $b['price'] <=> $a['price'];
+            case 'rating':
+                return $b['rating'] <=> $a['rating'];
+            case 'newest':
+                return $b['id'] <=> $a['id'];
+            default:
+                return 0;
+        }
+    });
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,140 +130,149 @@ require_once '../data/products.php';
 
     <main id="main-content">
         <section class="page-header">
-            <h1>All Products</h1>
+            <h1>
+                <?php if ($query): ?>
+                    Search Results for "<?php echo htmlspecialchars($query); ?>"
+                <?php elseif ($category): ?>
+                    <?php echo ucfirst(htmlspecialchars($category)); ?> Products
+                <?php else: ?>
+                    All Products
+                <?php endif; ?>
+            </h1>
             <p id="product-count-display">Showing <?php echo count($products); ?> products</p>
         </section>
 
         <div class="products-container">
             <aside class="filters-sidebar" aria-label="Product filters">
-                <section class="filter-group">
-                    <h2>Categories</h2>
-                    <form>
-                        <fieldset>
-                            <legend>Select categories</legend>
-                            <label>
-                                <input type="checkbox" name="category" value="electronics">
-                                Electronics
-                            </label>
-                            <label>
-                                <input type="checkbox" name="category" value="clothing">
-                                Clothing
-                            </label>
-                            <label>
-                                <input type="checkbox" name="category" value="home">
-                                Home & Garden
-                            </label>
-                            <label>
-                                <input type="checkbox" name="category" value="sports">
-                                Sports & Outdoors
-                            </label>
-                            <label>
-                                <input type="checkbox" name="category" value="books">
-                                Books
-                            </label>
-                        </fieldset>
-                    </form>
-                </section>
+                <form action="products.php" method="GET" id="filter-form">
+                    <!-- Persist search query -->
+                    <?php if ($query): ?>
+                        <input type="hidden" name="q" value="<?php echo htmlspecialchars($query); ?>">
+                    <?php endif; ?>
 
-                <section class="filter-group">
-                    <h2>Price Range</h2>
-                    <form>
+                    <section class="filter-group">
+                        <h2>Categories</h2>
                         <fieldset>
-                            <legend>Select price range</legend>
-                            <label>
-                                <input type="checkbox" name="price" value="0-25">
-                                Under $25
-                            </label>
-                            <label>
-                                <input type="checkbox" name="price" value="25-50">
-                                $25 - $50
-                            </label>
-                            <label>
-                                <input type="checkbox" name="price" value="50-100">
-                                $50 - $100
-                            </label>
-                            <label>
-                                <input type="checkbox" name="price" value="100-200">
-                                $100 - $200
-                            </label>
-                            <label>
-                                <input type="checkbox" name="price" value="200+">
-                                $200 & Above
-                            </label>
+                            <legend class="visually-hidden">Select categories</legend>
+                            <?php
+                            $categories = ['electronics', 'clothing', 'home', 'sports', 'books'];
+                            foreach ($categories as $cat):
+                                $checked = in_array($cat, $selected_categories) ? 'checked' : '';
+                                ?>
+                                <label>
+                                    <input type="checkbox" name="category[]" value="<?php echo $cat; ?>" <?php echo $checked; ?>>
+                                    <?php echo ucfirst($cat === 'home' ? 'Home & Garden' : ($cat === 'sports' ? 'Sports & Outdoors' : $cat)); ?>
+                                </label>
+                            <?php endforeach; ?>
                         </fieldset>
-                    </form>
-                </section>
+                    </section>
 
-                <section class="filter-group">
-                    <h2>Customer Rating</h2>
-                    <form>
+                    <section class="filter-group">
+                        <h2>Price Range</h2>
                         <fieldset>
-                            <legend>Minimum rating</legend>
-                            <label>
-                                <input type="radio" name="rating" value="4">
-                                4 Stars & Up
-                            </label>
-                            <label>
-                                <input type="radio" name="rating" value="3">
-                                3 Stars & Up
-                            </label>
-                            <label>
-                                <input type="radio" name="rating" value="2">
-                                2 Stars & Up
-                            </label>
+                            <legend class="visually-hidden">Select price range</legend>
+                            <?php
+                            $price_ranges = [
+                                '0-25' => 'Under $25',
+                                '25-50' => '$25 - $50',
+                                '50-100' => '$50 - $100',
+                                '100-200' => '$100 - $200',
+                                '200+' => '$200 & Above'
+                            ];
+                            foreach ($price_ranges as $value => $label):
+                                $checked = in_array($value, $selected_prices) ? 'checked' : '';
+                                ?>
+                                <label>
+                                    <input type="checkbox" name="price[]" value="<?php echo $value; ?>" <?php echo $checked; ?>>
+                                    <?php echo $label; ?>
+                                </label>
+                            <?php endforeach; ?>
                         </fieldset>
-                    </form>
-                </section>
+                    </section>
 
-                <section class="filter-group">
-                    <h2>Availability</h2>
-                    <form>
+                    <section class="filter-group">
+                        <h2>Customer Rating</h2>
                         <fieldset>
-                            <legend>Stock status</legend>
+                            <legend class="visually-hidden">Minimum rating</legend>
+                            <?php
+                            for ($i = 4; $i >= 2; $i--):
+                                $checked = ($selected_rating == $i) ? 'checked' : '';
+                                ?>
+                                <label>
+                                    <input type="radio" name="rating" value="<?php echo $i; ?>" <?php echo $checked; ?>>
+                                    <?php echo $i; ?> Stars & Up
+                                </label>
+                            <?php endfor; ?>
+                        </fieldset>
+                    </section>
+
+                    <section class="filter-group">
+                        <h2>Availability</h2>
+                        <fieldset>
+                            <legend class="visually-hidden">Stock status</legend>
                             <label>
-                                <input type="checkbox" name="availability" value="in-stock">
+                                <input type="checkbox" name="availability[]" value="in-stock" <?php echo in_array('in-stock', $selected_availability) ? 'checked' : ''; ?>>
                                 In Stock
                             </label>
                             <label>
-                                <input type="checkbox" name="availability" value="pre-order">
+                                <input type="checkbox" name="availability[]" value="pre-order" <?php echo in_array('pre-order', $selected_availability) ? 'checked' : ''; ?>>
                                 Pre-Order
                             </label>
                         </fieldset>
-                    </form>
-                </section>
+                    </section>
 
-                <button type="button" class="apply-filters-button">Apply Filters</button>
-                <button type="button" class="clear-filters-button">Clear All</button>
+                    <button type="submit" class="apply-filters-button">Apply Filters</button>
+                    <a href="products.php" class="clear-filters-button"
+                        style="text-decoration: none; display: inline-block; text-align: center; width: 100%; border: 1px solid var(--color-border); padding: var(--spacing-2); border-radius: var(--border-radius-md); margin-top: var(--spacing-2); color: var(--color-text-primary); font-weight: var(--font-weight-medium);">Clear
+                        All</a>
+                </form>
             </aside>
 
             <div class="products-main">
                 <section class="sorting-controls">
                     <label for="sort-select">Sort by:</label>
-                    <select id="sort-select" name="sort">
-                        <option value="featured">Featured</option>
-                        <option value="price-low">Price: Low to High</option>
-                        <option value="price-high">Price: High to Low</option>
-                        <option value="rating">Customer Rating</option>
-                        <option value="newest">Newest Arrivals</option>
+                    <select id="sort-select" name="sort" form="filter-form" onchange="this.form.submit()">
+                        <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured</option>
+                        <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to
+                            High</option>
+                        <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to
+                            Low</option>
+                        <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Customer Rating
+                        </option>
+                        <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest Arrivals
+                        </option>
                     </select>
                 </section>
 
                 <section class="product-listing">
                     <h2 class="visually-hidden">Product Results</h2>
                     <div class="product-grid">
-                        <?php foreach ($products as $id => $product): ?>
-                            <article class="product-card">
-                                <img src="<?php echo htmlspecialchars($product['image']); ?>"
-                                    alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                <h3><a
-                                        href="product-detail.php?id=<?php echo $id; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
-                                </h3>
-                                <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
-                                <p class="product-rating"><?php echo $product['rating']; ?> stars
-                                    (<?php echo number_format($product['reviews']); ?> reviews)</p>
-                                <p class="product-shipping"><?php echo htmlspecialchars($product['shipping']); ?></p>
-                            </article>
-                        <?php endforeach; ?>
+                        <?php if (empty($products)): ?>
+                            <div class="no-results-message"
+                                style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: var(--bg-secondary); border-radius: var(--radius-lg);">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                                <h3>No products found</h3>
+                                <p>We couldn't find any products matching "<?php echo htmlspecialchars($query); ?>".</p>
+                                <p>Try checking your spelling or using more general keywords.</p>
+                                <a href="products.php" class="btn btn-primary"
+                                    style="display: inline-block; margin-top: 1rem; text-decoration: none; padding: 0.8rem 1.5rem; background: var(--primary-color); color: white; border-radius: var(--radius-md);">View
+                                    All Products</a>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($products as $id => $product): ?>
+                                <article class="product-card">
+                                    <img src="<?php echo htmlspecialchars($product['image']); ?>"
+                                        alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                    <h3><a
+                                            href="product-detail.php?id=<?php echo $id; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                    </h3>
+                                    <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
+                                    <p class="product-rating"><?php echo $product['rating']; ?> stars
+                                        (<?php echo number_format($product['reviews']); ?> reviews)</p>
+                                    <p class="product-shipping"><?php echo htmlspecialchars($product['shipping']); ?></p>
+                                </article>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </section>
 

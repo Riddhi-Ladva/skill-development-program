@@ -1,3 +1,4 @@
+<?php
 require_once '../includes/session.php';
 require_once '../includes/config.php';
 require_once '../data/products.php';
@@ -23,6 +24,7 @@ $shipping = ($subtotal > 50) ? 0 : 9.99;
 $tax_rate = 0.08;
 $tax = $subtotal * $tax_rate;
 $order_total = $subtotal + $shipping + $tax;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
