@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 require_once '../data/products.php';
 require_once '../data/brands.php';
 
@@ -26,7 +27,7 @@ $order_total = $subtotal + $shipping + $tax;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Your EasyCart shopping cart">
     <title>Shopping Cart - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body>
     <!-- HEADER ADDED: consistent site header (logo + standard navigation) -->
@@ -35,7 +36,8 @@ $order_total = $subtotal + $shipping + $tax;
     <main id="main-content">
         <section class="page-header">
             <h1>Shopping Cart</h1>
-            <p><?php echo $total_items; ?> item<?php echo $total_items != 1 ? 's' : ''; ?> in your cart</p>
+            <p><span id="header-total-items"><?php echo $total_items; ?></span>
+                item<?php echo $total_items != 1 ? 's' : ''; ?> in your cart</p>
         </section>
 
         <div class="cart-container">
@@ -67,13 +69,17 @@ $order_total = $subtotal + $shipping + $tax;
                             </div>
                             <div class="item-quantity">
                                 <label for="quantity-<?php echo $id; ?>">Quantity:</label>
-                                <input type="number" id="quantity-<?php echo $id; ?>" name="quantity"
-                                    value="<?php echo $quantity; ?>" min="1" max="10">
-                                <button type="button" class="update-quantity">Update</button>
+                                <div class="quantity-controls">
+                                    <button type="button" class="qty-btn minus" aria-label="Decrease quantity">−</button>
+                                    <input type="number" id="quantity-<?php echo $id; ?>" name="quantity"
+                                        value="<?php echo $quantity; ?>" min="1" max="10" readonly>
+                                    <button type="button" class="qty-btn plus" aria-label="Increase quantity">+</button>
+                                </div>
                             </div>
                             <div class="item-price">
-                                <p class="unit-price">$<?php echo number_format($item['price'], 2); ?> each</p>
-                                <p class="total-price">$<?php echo number_format($item_total, 2); ?></p>
+                                <p class="unit-price" data-price="<?php echo $item['price']; ?>">
+                                    $<?php echo number_format($item['price'], 2); ?> each</p>
+                                <p class="total-price" data-item-total>$<?php echo number_format($item_total, 2); ?></p>
                             </div>
                             <div class="item-actions">
                                 <button type="button" class="save-for-later">Save for Later</button>
@@ -88,14 +94,17 @@ $order_total = $subtotal + $shipping + $tax;
                 <section class="summary-section">
                     <h2>Order Summary</h2>
                     <dl class="summary-details">
-                        <dt>Items (<?php echo $total_items; ?>):</dt>
-                        <dd>$<?php echo number_format($subtotal, 2); ?></dd>
+                        <dt>Items (<span id="summary-total-items"><?php echo $total_items; ?></span>):</dt>
+                        <dd id="summary-subtotal">$<?php echo number_format($subtotal, 2); ?></dd>
                         <dt>Shipping:</dt>
-                        <dd><?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?></dd>
+                        <dd id="summary-shipping">
+                            <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
+                        </dd>
                         <dt>Tax (8%):</dt>
-                        <dd>$<?php echo number_format($tax, 2); ?></dd>
+                        <dd id="summary-tax">$<?php echo number_format($tax, 2); ?></dd>
                         <dt>Order Total:</dt>
-                        <dd class="total-amount">$<?php echo number_format($order_total, 2); ?></dd>
+                        <dd class="total-amount" id="summary-order-total">$<?php echo number_format($order_total, 2); ?>
+                        </dd>
                     </dl>
                 </section>
 
@@ -190,6 +199,7 @@ $order_total = $subtotal + $shipping + $tax;
     </main>
 
     <?php include '../includes/footer.php'; ?>
+    <script src="<?php echo asset('js/cart.js'); ?>"></script>
 </body>
 
 </html>

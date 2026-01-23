@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,18 +10,18 @@ require_once '../includes/session.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Login to your EasyCart account">
     <title>Login - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body>
     <!-- HEADER ADDED: minimal auth page header (logo + back to home) -->
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="../index.php">EasyCart</a></h1>
+                <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
             </div>
             <div class="header-actions">
-                <a href="../index.php" class="action-link">Back to Home</a>
-                <a href="signup.php" class="action-link">Create Account</a>
+                <a href="<?php echo url('index.php'); ?>" class="action-link">Back to Home</a>
+                <a href="<?php echo url('pages/signup.php'); ?>" class="action-link">Create Account</a>
             </div>
         </div>
     </header>
@@ -33,7 +34,7 @@ require_once '../includes/session.php';
                     <p>Welcome back! Please enter your details</p>
                 </header>
 
-                <form action="orders.php" method="post">
+                <form action="orders.php" method="post" novalidate>
                     <fieldset>
                         <legend class="visually-hidden">Login credentials</legend>
 
@@ -136,6 +137,7 @@ require_once '../includes/session.php';
     </main>
 
     <?php include '../includes/footer.php'; ?>
+    <script src="../js/login.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 require_once '../data/products.php';
 ?>
 <!DOCTYPE html>
@@ -10,7 +11,7 @@ require_once '../data/products.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Browse our wide selection of products at EasyCart">
     <title>Products - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body>
     <?php include '../includes/header.php'; ?>
@@ -18,7 +19,7 @@ require_once '../data/products.php';
     <main id="main-content">
         <section class="page-header">
             <h1>All Products</h1>
-            <p>Showing <?php echo count($products); ?> of <?php echo count($products); ?> products</p>
+            <p id="product-count-display">Showing <?php echo count($products); ?> products</p>
         </section>
 
         <div class="products-container">
@@ -169,6 +170,7 @@ require_once '../data/products.php';
     </main>
 
     <?php include '../includes/footer.php'; ?>
+    <script src="<?php echo asset('js/products.js'); ?>"></script>
 </body>
 
 </html>

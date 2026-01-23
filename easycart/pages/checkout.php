@@ -1,22 +1,22 @@
-<?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 require_once '../data/products.php';
 
 $cart_items = $_SESSION['cart'];
 
 // Redirect if cart is empty
 if (empty($cart_items)) {
-    header('Location: cart.php');
-    exit;
+header('Location: cart.php');
+exit;
 }
 
 $subtotal = 0;
 $total_items = array_sum($cart_items);
 
 foreach ($cart_items as $id => $quantity) {
-    if (isset($products[$id])) {
-        $subtotal += $products[$id]['price'] * $quantity;
-    }
+if (isset($products[$id])) {
+$subtotal += $products[$id]['price'] * $quantity;
+}
 }
 
 $shipping = ($subtotal > 50) ? 0 : 9.99;
@@ -32,7 +32,7 @@ $order_total = $subtotal + $shipping + $tax;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Secure checkout for your EasyCart order">
     <title>Checkout - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body class="checkout-page">
     <header id="site-header">

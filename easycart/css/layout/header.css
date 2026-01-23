@@ -113,53 +113,9 @@
 }
 
 /* Cart icon styling - make it prominent and visible */
-.header-actions .action-link:last-child {
-  font-size: 1.5rem;
-  padding: var(--spacing-3) var(--spacing-4);
-  background-color: var(--color-primary);
-  color: var(--color-text-inverse);
-  border-radius: var(--border-radius-lg);
-  position: relative;
-  text-indent: -9999px;
-  overflow: hidden;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-fast);
-}
 
-.header-actions .action-link:last-child::before {
-  content: '🛒';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.5rem;
-  text-indent: 0;
-}
 
-.header-actions .action-link:last-child:hover {
-  background-color: var(--color-primary-dark);
-  transform: scale(1.05);
-  box-shadow: var(--shadow-lg);
-}
 
-/* Responsive cart icon */
-@media (max-width: 639px) {
-  .header-actions .action-link:last-child {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    padding: var(--spacing-2);
-  }
-  
-  .header-actions .action-link:last-child::before {
-    font-size: 1.2rem;
-  }
-}
 
 .checkout-progress {
   background-color: var(--color-bg-secondary);

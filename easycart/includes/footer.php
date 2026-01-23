@@ -16,10 +16,10 @@
         <section class="footer-section">
             <h3>My Account</h3>
             <ul>
-                <li><a href="/easycart/pages/login.php">Login</a></li>
-                <li><a href="/easycart/pages/signup.php">Create Account</a></li>
-                <li><a href="/easycart/pages/orders.php">Order History</a></li>
-                <li><a href="/easycart/pages/cart.php">Shopping Cart</a></li>
+                <li><a href="<?php echo url('pages/login.php'); ?>">Login</a></li>
+                <li><a href="<?php echo url('pages/signup.php'); ?>">Create Account</a></li>
+                <li><a href="<?php echo url('pages/orders.php'); ?>">Order History</a></li>
+                <li><a href="<?php echo url('pages/cart.php'); ?>">Shopping Cart</a></li>
             </ul>
         </section>
         <section class="footer-section">

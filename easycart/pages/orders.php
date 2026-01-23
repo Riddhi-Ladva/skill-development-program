@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 require_once '../data/orders.php';
 require_once '../data/products.php';
 ?>
@@ -11,38 +12,10 @@ require_once '../data/products.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="View your EasyCart order history">
     <title>My Orders - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body>
-    <header id="site-header">
-        <div class="header-top">
-            <div class="logo">
-                <h1><a href="../index.php">EasyCart</a></h1>
-            </div>
-            <div class="search-bar">
-                <form action="products.php" method="get" role="search">
-                    <input type="search" id="search-input" name="q" placeholder="Search products..."
-                        aria-label="Search products">
-                    <button type="submit">Search</button>
-                </form>
-            </div>
-            <div class="header-actions">
-                <a href="#" class="action-link" aria-label="Logged in as John Doe">John D.</a>
-                <a href="cart.php" class="action-link" aria-label="View cart">Cart
-                    (<?php echo array_sum($_SESSION['cart']); ?>)</a>
-            </div>
-        </div>
-        <nav id="main-navigation" aria-label="Main navigation">
-            <ul>
-                <li><a href="../index.php">Home</a></li>
-                <li><a href="products.php">Products</a></li>
-                <li><a href="products.php?category=electronics">Electronics</a></li>
-                <li><a href="products.php?category=clothing">Clothing</a></li>
-                <li><a href="products.php?category=home">Home & Garden</a></li>
-                <li><a href="products.php?category=sports">Sports</a></li>
-            </ul>
-        </nav>
-    </header>
+    <?php include '../includes/header.php'; ?>
 
     <main id="main-content">
         <div class="account-container">
@@ -50,14 +23,14 @@ require_once '../data/products.php';
                 <nav aria-label="Account navigation">
                     <h2>My Account</h2>
                     <ul>
-                        <li><a href="orders.php" aria-current="page">Orders</a></li>
+                        <li><a href="<?php echo url('pages/orders.php'); ?>" aria-current="page">Orders</a></li>
                         <li><a href="#">Account Details</a></li>
                         <li><a href="#">Address Book</a></li>
                         <li><a href="#">Payment Methods</a></li>
                         <li><a href="#">Wishlist</a></li>
                         <li><a href="#">Reviews</a></li>
                         <li><a href="#">Notifications</a></li>
-                        <li><a href="login.php">Logout</a></li>
+                        <li><a href="<?php echo url('pages/login.php'); ?>">Logout</a></li>
                     </ul>
                 </nav>
             </aside>
@@ -143,10 +116,10 @@ require_once '../data/products.php';
 
                 <nav class="pagination" aria-label="Orders pagination">
                     <ul>
-                        <li><a href="orders.php?page=1" aria-current="page">1</a></li>
-                        <li><a href="orders.php?page=2">2</a></li>
-                        <li><a href="orders.php?page=3">3</a></li>
-                        <li><a href="orders.php?page=2" aria-label="Next page">Next</a></li>
+                        <li><a href="<?php echo url('pages/orders.php?page=1'); ?>" aria-current="page">1</a></li>
+                        <li><a href="<?php echo url('pages/orders.php?page=2'); ?>">2</a></li>
+                        <li><a href="<?php echo url('pages/orders.php?page=3'); ?>">3</a></li>
+                        <li><a href="<?php echo url('pages/orders.php?page=2'); ?>" aria-label="Next page">Next</a></li>
                     </ul>
                 </nav>
             </section>

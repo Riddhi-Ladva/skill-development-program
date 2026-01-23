@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/session.php';
+require_once '../includes/config.php';
 require_once '../data/products.php';
 require_once '../data/brands.php';
 require_once '../data/categories.php';
@@ -24,7 +25,39 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     <meta name="description"
         content="<?php echo htmlspecialchars($product['name'] . ' - ' . $product['description']); ?>">
     <title><?php echo htmlspecialchars($product['name']); ?> - EasyCart</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+    <style>
+        .thumbnail-gallery button.active {
+            border-color: var(--color-primary);
+        }
+
+        /* Delivery Selection Highlighting */
+        .delivery-option {
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-3);
+            margin-bottom: var(--spacing-2);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .delivery-option:hover {
+            border-color: var(--color-primary);
+        }
+
+        .delivery-option.selected {
+            background-color: rgba(37, 99, 235, 0.05);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 1px var(--color-primary);
+        }
+
+        .delivery-option label {
+            display: block;
+            cursor: pointer;
+            margin: 0;
+            width: 100%;
+        }
+    </style>
 
 <body>
     <?php include '../includes/header.php'; ?>
@@ -49,7 +82,7 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                 </section>
                 <section class="thumbnail-gallery">
                     <h2 class="visually-hidden">Product Images</h2>
-                    <button type="button">
+                    <button type="button" class="active">
                         <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
                             alt="Headphones front view thumbnail">
                     </button>
@@ -101,42 +134,39 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                     <button type="button" class="wishlist-button">Add to Wishlist</button>
                 </section>
 
-               <section class="delivery-info">
-  
+                <section class="delivery-info">
+                    <h2>Delivery Options</h2>
 
- <section class="delivery-info">
-  <h2>Delivery Options</h2>
+                    <form class="delivery-options">
+                        <div class="delivery-option selected">
+                            <label>
+                                <input type="radio" name="delivery" checked>
+                                Standard Shipping (5–7 business days) — <strong>Free</strong>
+                            </label>
+                        </div>
 
-  <form class="delivery-options">
-    <div>
-      <label>
-        <input type="radio" name="delivery" checked>
-        Standard Shipping (5–7 business days) — <strong>Free</strong>
-      </label>
-    </div>
+                        <div class="delivery-option">
+                            <label>
+                                <input type="radio" name="delivery">
+                                Express Shipping (2–3 business days) — <strong>$9.99</strong>
+                            </label>
+                        </div>
 
-    <div>
-      <label>
-        <input type="radio" name="delivery">
-        Express Shipping (2–3 business days) — <strong>$9.99</strong>
-      </label>
-    </div>
+                        <div class="delivery-option">
+                            <label>
+                                <input type="radio" name="delivery">
+                                Next Day Delivery — <strong>$19.99</strong>
+                            </label>
+                        </div>
+                    </form>
 
-    <div>
-      <label>
-        <input type="radio" name="delivery">
-        Next Day Delivery — <strong>$19.99</strong>
-      </label>
-    </div>
-  </form>
-
-  <p class="return-policy">
-    30-day return policy. <a href="#">Learn more</a>
-  </p>
-</section>
+                    <p class="return-policy">
+                        30-day return policy. <a href="#">Learn more</a>
+                    </p>
+                </section>
 
 
-  
+
 
             </div>
         </article>
@@ -144,7 +174,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
         <section class="product-details-tabs">
             <h2 class="visually-hidden">Product Information</h2>
             <div class="tabs-navigation">
-                <button type="button" class="tab-button active" aria-selected="true" data-tab="description">Description</button>
+                <button type="button" class="tab-button active" aria-selected="true"
+                    data-tab="description">Description</button>
                 <button type="button" class="tab-button" data-tab="specifications">Specifications</button>
                 <button type="button" id="reviews" class="tab-button" data-tab="reviews">Reviews</button>
             </div>
@@ -234,7 +265,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="Profile picture of John D." class="reviewer-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
+                                alt="Profile picture of John D." class="reviewer-avatar">
                             <div class="reviewer-info">
                                 <p class="reviewer-name">John D.</p>
                                 <p class="review-rating">5 out of 5 stars</p>
@@ -249,7 +281,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100" alt="Profile picture of Sarah M." class="reviewer-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100"
+                                alt="Profile picture of Sarah M." class="reviewer-avatar">
                             <div class="reviewer-info">
                                 <p class="reviewer-name">Sarah M.</p>
                                 <p class="review-rating">4 out of 5 stars</p>
@@ -264,7 +297,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" alt="Profile picture of Mike R." class="reviewer-avatar">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+                                alt="Profile picture of Mike R." class="reviewer-avatar">
                             <div class="reviewer-info">
                                 <p class="reviewer-name">Mike R.</p>
                                 <p class="review-rating">5 out of 5 stars</p>
@@ -279,7 +313,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                     <article class="review-item">
                         <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100" alt="Profile picture of Emily L." class="reviewer-avatar">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100"
+                                alt="Profile picture of Emily L." class="reviewer-avatar">
                             <div class="reviewer-info">
                                 <p class="reviewer-name">Emily L.</p>
                                 <p class="review-rating">4 out of 5 stars</p>
@@ -287,7 +322,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                             </div>
                         </header>
                         <h4 class="review-title">Good quality but pricey</h4>
-                        <p class="review-text">The build quality is excellent and the sound is clear. However, I feel the price is a bit high compared to similar products. Still, worth it for the features.</p>
+                        <p class="review-text">The build quality is excellent and the sound is clear. However, I feel
+                            the price is a bit high compared to similar products. Still, worth it for the features.</p>
                         <p class="review-helpful">8 people found this helpful</p>
                     </article>
 
@@ -330,35 +366,7 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     </main>
 
     <?php include '../includes/footer.php'; ?>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class and aria-selected from all buttons
-                    tabButtons.forEach(btn => {
-                        btn.classList.remove('active');
-                        btn.setAttribute('aria-selected', 'false');
-                    });
-                    
-                    // Remove active class from all panels
-                    document.querySelectorAll('.tab-panel').forEach(panel => {
-                        panel.classList.remove('active');
-                    });
-                    
-                    // Add active class and aria-selected to clicked button
-                    this.classList.add('active');
-                    this.setAttribute('aria-selected', 'true');
-                    
-                    // Show corresponding panel
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-        });
-    </script>
+    <script src="<?php echo asset('js/product-detail.js'); ?>"></script>
 </body>
 
 </html>

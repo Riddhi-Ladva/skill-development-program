@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/session.php';
+require_once 'includes/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +10,7 @@ require_once 'includes/session.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="EasyCart - Your one-stop shop for quality products at great prices">
     <title>EasyCart - Home</title>
-    <link rel="stylesheet" href="/easycart/css/main.css?v=1.1">
+    <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
 
 <body>
     <?php include 'includes/header.php'; ?>
@@ -17,9 +18,9 @@ require_once 'includes/session.php';
     <main id="main-content">
         <section class="hero-section">
             <article class="hero-banner">
-                <h2>Summer Sale - Up to 50% Off</h2>
+                <h2>Winter Sale - Up to 50% Off</h2>
                 <p>Discover amazing deals on thousands of products</p>
-                <a href="/easycart/pages/products.php" class="cta-button">Shop Now</a>
+                <a href="<?php echo url('pages/products.php'); ?>" class="cta-button">Shop Now</a>
             </article>
         </section>
 
@@ -29,22 +30,22 @@ require_once 'includes/session.php';
                 <article class="category-card">
                     <h3>Electronics</h3>
                     <p>Latest gadgets and tech</p>
-                    <a href="/easycart/pages/products.php?category=electronics">Explore Electronics</a>
+                    <a href="<?php echo url('pages/products.php?category=electronics'); ?>">Explore Electronics</a>
                 </article>
                 <article class="category-card">
                     <h3>Clothing</h3>
                     <p>Fashion for everyone</p>
-                    <a href="/easycart/pages/products.php?category=clothing">Explore Clothing</a>
+                    <a href="<?php echo url('pages/products.php?category=clothing'); ?>">Explore Clothing</a>
                 </article>
                 <article class="category-card">
                     <h3>Home & Garden</h3>
                     <p>Make your space beautiful</p>
-                    <a href="/easycart/pages/products.php?category=home">Explore Home</a>
+                    <a href="<?php echo url('pages/products.php?category=home'); ?>">Explore Home</a>
                 </article>
                 <article class="category-card">
                     <h3>Sports & Outdoors</h3>
                     <p>Gear for active lifestyle</p>
-                    <a href="/easycart/pages/products.php?category=sports">Explore Sports</a>
+                    <a href="<?php echo url('pages/products.php?category=sports'); ?>">Explore Sports</a>
                 </article>
             </div>
         </section>
@@ -58,31 +59,31 @@ require_once 'includes/session.php';
                     <h3>Wireless Headphones</h3>
                     <p class="product-price">$79.99</p>
                     <p class="product-rating">4.5 stars (245 reviews)</p>
-                    <a href="/easycart/pages/product-detail.php?id=1">View Details</a>
+                    <a href="<?php echo url('pages/product-detail.php?id=1'); ?>">View Details</a>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" alt="Smart Watch">
                     <h3>Smart Watch</h3>
                     <p class="product-price">$199.99</p>
                     <p class="product-rating">4.8 stars (892 reviews)</p>
-                    <a href="/easycart/pages/product-detail.php?id=2">View Details</a>
+                    <a href="<?php echo url('pages/product-detail.php?id=2'); ?>">View Details</a>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Running Shoes">
                     <h3>Running Shoes</h3>
                     <p class="product-price">$89.99</p>
                     <p class="product-rating">4.6 stars (523 reviews)</p>
-                    <a href="/easycart/pages/product-detail.php?id=3">View Details</a>
+                    <a href="<?php echo url('pages/product-detail.php?id=3'); ?>">View Details</a>
                 </article>
                 <article class="product-card">
                     <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400" alt="Coffee Maker">
                     <h3>Coffee Maker</h3>
                     <p class="product-price">$129.99</p>
                     <p class="product-rating">4.7 stars (334 reviews)</p>
-                    <a href="/easycart/pages/product-detail.php?id=4">View Details</a>
+                    <a href="<?php echo url('pages/product-detail.php?id=4'); ?>">View Details</a>
                 </article>
             </div>
-            <a href="/easycart/pages/products.php" class="view-all-link">View All Products</a>
+            <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a>
         </section>
 
         <section class="promotional-banner">
