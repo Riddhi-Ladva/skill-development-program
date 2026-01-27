@@ -7,20 +7,20 @@ $cart_items = $_SESSION['cart'];
 
 // Redirect if cart is empty
 if (empty($cart_items)) {
-header('Location: cart.php');
-exit;
+    header('Location: cart.php');
+    exit;
 }
 
 $subtotal = 0;
 $total_items = array_sum($cart_items);
 
 foreach ($cart_items as $id => $quantity) {
-if (isset($products[$id])) {
-$subtotal += $products[$id]['price'] * $quantity;
-}
+    if (isset($products[$id])) {
+        $subtotal += $products[$id]['price'] * $quantity;
+    }
 }
 
-$shipping = ($subtotal > 50) ? 0 : 9.99;
+$shipping = (isset($_SESSION['shipping_price']) && $subtotal > 0) ? $_SESSION['shipping_price'] : 0;
 $tax_rate = 0.08;
 $tax = $subtotal * $tax_rate;
 $order_total = $subtotal + $shipping + $tax;
@@ -155,8 +155,9 @@ $order_total = $subtotal + $shipping + $tax;
                     <form>
                         <fieldset>
                             <legend class="visually-hidden">Choose shipping method</legend>
+                            <?php $current_shipping = $_SESSION['shipping_type'] ?? 'standard'; ?>
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="standard" checked>
+                                <input type="radio" name="shipping" value="standard" <?php echo $current_shipping === 'standard' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Standard Shipping</p>
                                     <p class="option-time">5-7 business days</p>
@@ -164,7 +165,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 <p class="option-price">FREE</p>
                             </label>
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="express">
+                                <input type="radio" name="shipping" value="express" <?php echo $current_shipping === 'express' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Express Shipping</p>
                                     <p class="option-time">2-3 business days</p>
@@ -172,7 +173,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 <p class="option-price">$9.99</p>
                             </label>
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="next-day">
+                                <input type="radio" name="shipping" value="next-day" <?php echo $current_shipping === 'next-day' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Next Day Delivery</p>
                                     <p class="option-time">1 business day</p>
