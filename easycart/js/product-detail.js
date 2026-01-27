@@ -78,6 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateDeliveryHighlight = (selectedOption) => {
             deliveryOptions.forEach(opt => opt.classList.remove('selected'));
             selectedOption.classList.add('selected');
+
+            // Persist to session via AJAX
+            const radio = selectedOption.querySelector('input[type="radio"]');
+            if (radio) {
+                fetch('set-shipping.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ type: radio.value })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Shipping updated:', data.type, data.price);
+                        }
+                    })
+                    .catch(error => console.error('Error updating shipping:', error));
+            }
         };
     }
 });
