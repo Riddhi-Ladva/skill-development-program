@@ -14,7 +14,7 @@ foreach ($cart_items as $id => $quantity) {
     }
 }
 
-$shipping = ($subtotal > 50 || $subtotal == 0) ? 0 : 9.99;
+$shipping = (isset($_SESSION['shipping_price']) && $subtotal > 0) ? $_SESSION['shipping_price'] : 0;
 $tax_rate = 0.08;
 $tax = $subtotal * $tax_rate;
 $order_total = $subtotal + $shipping + $tax;
