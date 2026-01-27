@@ -6,6 +6,12 @@ require_once ROOT_PATH . '/data/brands.php';
 
 // Get filters from URL
 $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+$category = $_GET['category'] ?? 'all';
+
+// If category is an array (from multiple selection), default to 'all' for the header display
+if (is_array($category)) {
+    $category = 'all';
+}
 
 // Multi-value filters
 $selected_categories = isset($_GET['category']) && is_array($_GET['category']) ? $_GET['category'] : [];
