@@ -22,6 +22,10 @@ require_once 'includes/config.php';
                 <p>Discover amazing deals on thousands of products</p>
                 <a href="<?php echo url('pages/products.php'); ?>" class="cta-button">Shop Now</a>
             </article>
+            <img class="hero-img hero-img--left" src="<?= url('img/hero-left.png') ?>" alt="Decorative left"
+                aria-hidden="true">
+            <img class="hero-img hero-img--right" src="<?= url('img/hero-right.png') ?>" alt="Decorative right"
+                aria-hidden="true">
         </section>
 
         <section class="featured-categories">
