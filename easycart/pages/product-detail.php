@@ -140,24 +140,25 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                 <section class="delivery-info">
                     <h2>Delivery Options</h2>
 
-                    <form class="delivery-options">
-                        <div class="delivery-option selected">
+                    <form class="delivery-options" id="shipping-form">
+                        <?php $current_shipping = $_SESSION['shipping_type'] ?? 'standard'; ?>
+                        <div class="delivery-option <?php echo $current_shipping === 'standard' ? 'selected' : ''; ?>">
                             <label>
-                                <input type="radio" name="delivery" checked>
+                                <input type="radio" name="delivery" value="standard" <?php echo $current_shipping === 'standard' ? 'checked' : ''; ?>>
                                 Standard Shipping (5–7 business days) — <strong>Free</strong>
                             </label>
                         </div>
 
-                        <div class="delivery-option">
+                        <div class="delivery-option <?php echo $current_shipping === 'express' ? 'selected' : ''; ?>">
                             <label>
-                                <input type="radio" name="delivery">
+                                <input type="radio" name="delivery" value="express" <?php echo $current_shipping === 'express' ? 'checked' : ''; ?>>
                                 Express Shipping (2–3 business days) — <strong>$9.99</strong>
                             </label>
                         </div>
 
-                        <div class="delivery-option">
+                        <div class="delivery-option <?php echo $current_shipping === 'next-day' ? 'selected' : ''; ?>">
                             <label>
-                                <input type="radio" name="delivery">
+                                <input type="radio" name="delivery" value="next-day" <?php echo $current_shipping === 'next-day' ? 'checked' : ''; ?>>
                                 Next Day Delivery — <strong>$19.99</strong>
                             </label>
                         </div>
