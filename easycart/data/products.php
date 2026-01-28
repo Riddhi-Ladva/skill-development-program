@@ -10,7 +10,7 @@ $products = [
         'category' => 'electronics',
         'brand_id' => 5,
         'description' => 'Premium sound quality and comfort for all-day listening.',
-        'shipping' => 'Free shipping'
+
     ],
     2 => [
         'id' => 2,
@@ -178,7 +178,7 @@ $products = [
         'category' => 'electronics',
         'brand_id' => 1,
         'description' => 'High-fidelity audio cable for superior sound transmission.',
-        'shipping' => 'Standard shipping'
+
     ],
     16 => [
         'id' => 16,
