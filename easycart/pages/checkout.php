@@ -20,7 +20,7 @@ foreach ($cart_items as $id => $quantity) {
     }
 }
 
-$shipping = (isset($_SESSION['shipping_price']) && $subtotal > 0) ? $_SESSION['shipping_price'] : 0;
+$shipping = isset($_SESSION['shipping']) ? $_SESSION['shipping']['price'] : 0;
 $tax_rate = 0.08;
 $tax = $subtotal * $tax_rate;
 $order_total = $subtotal + $shipping + $tax;
@@ -152,36 +152,22 @@ $order_total = $subtotal + $shipping + $tax;
 
                 <section class="shipping-method">
                     <h2>Shipping Method</h2>
-                    <form>
-                        <fieldset>
-                            <legend class="visually-hidden">Choose shipping method</legend>
-                            <?php $current_shipping = $_SESSION['shipping_type'] ?? 'standard'; ?>
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="standard" <?php echo $current_shipping === 'standard' ? 'checked' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">Standard Shipping</p>
-                                    <p class="option-time">5-7 business days</p>
-                                </div>
-                                <p class="option-price">FREE</p>
-                            </label>
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="express" <?php echo $current_shipping === 'express' ? 'checked' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">Express Shipping</p>
-                                    <p class="option-time">2-3 business days</p>
-                                </div>
-                                <p class="option-price">$9.99</p>
-                            </label>
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="next-day" <?php echo $current_shipping === 'next-day' ? 'checked' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">Next Day Delivery</p>
-                                    <p class="option-time">1 business day</p>
-                                </div>
-                                <p class="option-price">$19.99</p>
-                            </label>
-                        </fieldset>
-                    </form>
+                    <?php
+                    $shipping_data = $_SESSION['shipping'] ?? ['type' => 'standard', 'price' => 0];
+                    $shipping_labels = [
+                        'standard' => 'Standard Shipping (5-7 business days)',
+                        'express' => 'Express Shipping (2-3 business days)',
+                        'next-day' => 'Next Day Delivery (1 business day)'
+                    ];
+                    $label = $shipping_labels[$shipping_data['type']];
+                    $price_display = $shipping_data['price'] == 0 ? 'FREE' : '$' . number_format($shipping_data['price'], 2);
+                    ?>
+                    <div class="selected-shipping-method">
+                        <p class="method-label"><?php echo htmlspecialchars($label); ?></p>
+                        <p class="method-price"><?php echo $price_display; ?></p>
+                    </div>
+                    <p class="change-shipping-hint">To change shipping method, <a href="cart.php">return to cart</a>.
+                    </p>
                 </section>
 
                 <section class="payment-information">
@@ -360,6 +346,38 @@ $order_total = $subtotal + $shipping + $tax;
             </ul>
         </div>
     </footer>
+    <?php include '../includes/header.php'; ?>
+    <script src="<?php echo asset('js/product-detail.js'); ?>"></script>
+    <script>
+        // Inject shipping price for any future cart summary updates on this page if needed
+        window.shippingPrice = <?php echo isset($_SESSION['shipping_price']) ? $_SESSION['shipping_price'] : 0; ?>;
+
+        // Handle shipping changes on checkout page specifically if they differ from product detail
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkoutShippingOptions = document.querySelectorAll('.shipping-option input[type="radio"]');
+            checkoutShippingOptions.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.checked) {
+                        fetch('set-shipping.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ type: radio.value })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Reload to update totals (simplest approach for checkout)
+                                    window.location.reload();
+                                }
+                            })
+                            .catch(error => console.error('Error updating shipping:', error));
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
