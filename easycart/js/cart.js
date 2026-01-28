@@ -15,8 +15,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryOrderTotal = document.getElementById('summary-order-total');
 
     const TAX_RATE = 0.08;
-    const SHIPPING_THRESHOLD = 50;
-    const SHIPPING_COST = 9.99;
+
+
+    /**
+     * Updates the cart session on the server
+     * @param {string|number} productId 
+     * @param {number} quantity 
+     */
+    const updateSessionQuantity = async (productId, quantity) => {
+        try {
+            const response = await fetch('update-cart-quantity.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                console.error('Failed to update session:', data.message);
+            }
+        } catch (error) {
+            console.error('Error updating cart session:', error);
+        }
+    };
 
     /**
      * Formats a number as currency
@@ -51,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const tax = subtotal * TAX_RATE;
-        const shipping = (subtotal > SHIPPING_THRESHOLD || subtotal === 0) ? 0 : SHIPPING_COST;
+        const shipping = (subtotal === 0) ? 0 : (window.shippingPrice || 0);
         const orderTotal = subtotal + tax + shipping;
 
         // Update Summary UI
@@ -91,6 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             input.value = value;
             updateCartSummary();
+
+            // Extract ID from input id "quantity-{id}"
+            const productId = input.id.replace('quantity-', '');
+            updateSessionQuantity(productId, value);
+
             return;
         }
 
@@ -209,4 +239,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Run Wishlist logic
     initWishlistCarousel();
+
+    /**
+     * Shipping Selection Logic
+     */
+    const shippingRadios = document.querySelectorAll('input[name="shipping"]');
+    if (shippingRadios.length > 0) {
+        shippingRadios.forEach(radio => {
+            radio.addEventListener('change', async (e) => {
+                const type = e.target.value;
+
+                try {
+                    const response = await fetch('set-shipping.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ type: type })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Reload to update PHP-calculated totals
+                        window.location.reload();
+                    } else {
+                        console.error('Failed to update shipping:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error updating shipping:', error);
+                }
+            });
+        });
+    }
 });

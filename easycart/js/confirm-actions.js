@@ -8,23 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check for specific buttons or their parents
         const removeBtn = target.classList.contains('remove-item') ? target : target.closest('.remove-item');
-        const deleteBtn = target.classList.contains('delete-saved') ? target : target.closest('.delete-saved');
-        const saveLaterBtn = target.classList.contains('save-for-later') ? target : target.closest('.save-for-later');
         const placeOrderBtn = target.classList.contains('place-order-button') ? target : target.closest('.place-order-button');
 
         // Cart: Remove item
-        if (removeBtn || deleteBtn) {
+        if (removeBtn) {
             if (!confirm('Are you sure you want to remove this item?')) {
                 e.preventDefault();
                 e.stopPropagation(); // Stop event from reaching cart.js listeners
-            }
-        }
-
-        // Cart: Save for Later
-        else if (saveLaterBtn) {
-            if (!confirm('Move this item to Saved for Later?')) {
-                e.preventDefault();
-                e.stopPropagation();
             }
         }
 

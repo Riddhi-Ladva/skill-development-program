@@ -53,50 +53,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Delivery Option Selection Logic
-    const deliveryOptions = document.querySelectorAll('.delivery-option');
-    if (deliveryOptions.length > 0) {
-        deliveryOptions.forEach(option => {
-            const radio = option.querySelector('input[type="radio"]');
 
-            // Handle clicking the container (not just the radio/label)
-            option.addEventListener('click', () => {
-                if (!radio.checked) {
-                    radio.checked = true;
-                    updateDeliveryHighlight(option);
-                }
-            });
-
-            // Handle direct radio selection (e.g. keyboard)
-            radio.addEventListener('change', () => {
-                if (radio.checked) {
-                    updateDeliveryHighlight(option);
-                }
-            });
-        });
-
-        const updateDeliveryHighlight = (selectedOption) => {
-            deliveryOptions.forEach(opt => opt.classList.remove('selected'));
-            selectedOption.classList.add('selected');
-
-            // Persist to session via AJAX
-            const radio = selectedOption.querySelector('input[type="radio"]');
-            if (radio) {
-                fetch('set-shipping.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ type: radio.value })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            console.log('Shipping updated:', data.type, data.price);
-                        }
-                    })
-                    .catch(error => console.error('Error updating shipping:', error));
-            }
-        };
-    }
 });
