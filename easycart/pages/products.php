@@ -275,7 +275,7 @@ if (!empty($products) && $sort !== 'featured') {
                                     <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                     <p class="product-rating"><?php echo $product['rating']; ?> stars
                                         (<?php echo number_format($product['reviews']); ?> reviews)</p>
-                                    <p class="product-shipping"><?php echo htmlspecialchars($product['shipping']); ?></p>
+
                                 </article>
                             <?php endforeach; ?>
                         <?php endif; ?>

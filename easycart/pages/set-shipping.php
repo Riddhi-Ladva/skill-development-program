@@ -14,8 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     if (array_key_exists($type, $prices)) {
-        $_SESSION['shipping_type'] = $type;
-        $_SESSION['shipping_price'] = $prices[$type];
+        $_SESSION['shipping'] = [
+            'type' => $type,
+            'price' => $prices[$type]
+        ];
 
         echo json_encode([
             'success' => true,
