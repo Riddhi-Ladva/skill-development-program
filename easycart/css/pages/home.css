@@ -17,41 +17,28 @@
   text-align: center;
 }
 
-/* Floating Visuals on Left and Right */
-.hero-section::before {
-  content: '';
+/* Floating Visuals (Img tags) */
+.hero-img {
   position: absolute;
-  left: -50px;
   top: 50%;
-  width: 400px;
-  height: 400px;
-  background-image: url("/easycart/img/hero-left.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  transform: translateY(-50%) rotate(-5deg);
-  opacity: 0.9;
-  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.1));
-  animation: float-left 6s ease-in-out infinite;
+  width: clamp(280px, 35vw, 450px);
+  height: auto;
+  object-fit: contain;
   z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.15));
 }
 
-.hero-section::after {
-  content: '';
-  position: absolute;
-  right: -50px;
-  top: 50%;
-  width: 450px;
-  height: 450px;
-  background-image: url("/easycart/img/hero-right.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+.hero-img--left {
+  left: -2%;
+  transform: translateY(-50%) rotate(-5deg);
+  animation: float-left 6s ease-in-out infinite;
+}
+
+.hero-img--right {
+  right: -2%;
   transform: translateY(-50%) rotate(5deg);
-  opacity: 0.9;
-  filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.1));
   animation: float-right 8s ease-in-out infinite;
-  z-index: 1;
 }
 
 @keyframes float-left {
@@ -108,7 +95,7 @@
 .cta-button {
   display: inline-block;
   background-color: #ffffff;
-  color: #fcfcfc;
+  color: blue;
   padding: 1.5rem 4rem;
   border-radius: 9999px;
   /* Pill shape for premium feel */
@@ -132,11 +119,9 @@
     font-size: 4rem;
   }
 
-  .hero-section::before,
-  .hero-section::after {
+  .hero-img {
+    opacity: 0.6;
     width: 300px;
-    height: 300px;
-    opacity: 0.5;
   }
 }
 
@@ -145,8 +130,7 @@
     font-size: 3rem;
   }
 
-  .hero-section::before,
-  .hero-section::after {
+  .hero-img {
     display: none;
   }
 
