@@ -128,8 +128,49 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn.classList.contains('remove-item')) {
             const item = btn.closest('.cart-item');
             if (item) {
-                item.remove();
-                updateCartSummary();
+                const qtyInput = item.querySelector('input[name="quantity"]');
+                const productId = qtyInput.id.replace('quantity-', '');
+
+                // Call server to remove
+                fetch('remove-from-cart.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            item.remove();
+
+                            // Update UI with returned totals (avoids client-side recalc issues)
+                            const headerTotalItems = document.getElementById('header-total-items');
+                            const summaryTotalItems = document.getElementById('summary-total-items');
+                            const summarySubtotal = document.getElementById('summary-subtotal');
+                            const summaryShipping = document.getElementById('summary-shipping');
+                            const summaryTax = document.getElementById('summary-tax');
+                            const summaryOrderTotal = document.getElementById('summary-order-total');
+
+                            if (headerTotalItems) headerTotalItems.textContent = data.totals.totalItems;
+                            if (summaryTotalItems) summaryTotalItems.textContent = data.totals.totalItems;
+                            if (summarySubtotal) summarySubtotal.textContent = data.totals.subtotal;
+                            if (summaryShipping) summaryShipping.textContent = data.totals.shipping;
+                            if (summaryTax) summaryTax.textContent = data.totals.tax;
+                            if (summaryOrderTotal) summaryOrderTotal.textContent = data.totals.grandTotal;
+
+                            // Check empty state
+                            const remainingItems = document.querySelectorAll('.cart-item');
+                            if (remainingItems.length === 0) {
+                                cartContainer.innerHTML = '<h2 class="visually-hidden">Cart Items</h2><p>Your cart is empty. <a href="products.php">Start shopping!</a></p>';
+                                const cartSummary = document.querySelector('.cart-summary');
+                                if (cartSummary) cartSummary.style.display = 'none';
+                            }
+                        } else {
+                            console.error('Failed to remove item:', data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error removing item:', error));
             }
         }
     });
@@ -260,8 +301,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = await response.json();
 
                     if (data.success) {
-                        // Reload to update PHP-calculated totals
-                        window.location.reload();
+                        // Update DOM elements
+                        const summaryShipping = document.getElementById('summary-shipping');
+                        const summaryTax = document.getElementById('summary-tax');
+                        const summaryOrderTotal = document.getElementById('summary-order-total');
+                        const summarySubtotal = document.getElementById('summary-subtotal');
+
+                        if (summaryShipping) summaryShipping.textContent = data.totals.shipping;
+                        if (summaryTax) summaryTax.textContent = data.totals.tax;
+                        if (summaryOrderTotal) summaryOrderTotal.textContent = data.totals.grandTotal;
+                        if (summarySubtotal) summarySubtotal.textContent = data.totals.subtotal;
                     } else {
                         console.error('Failed to update shipping:', data.message);
                     }
