@@ -91,25 +91,38 @@ $order_total = $subtotal + $shipping + $tax;
                 <?php endif; ?>
             </section>
 
-            <aside class="cart-summary">
-                <section class="summary-section">
+            <aside class="cart-summary order-summary">
+
+                <!-- HEADER (same as checkout) -->
+                <section class="summary-header">
                     <h2>Order Summary</h2>
+                </section>
+
+                <!-- TOTALS (same data, better alignment) -->
+                <section class="summary-section">
                     <dl class="summary-details">
                         <dt>Items (<span id="summary-total-items"><?php echo $total_items; ?></span>):</dt>
                         <dd id="summary-subtotal">$<?php echo number_format($subtotal, 2); ?></dd>
+
                         <dt>Shipping:</dt>
-                        <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
+                        <dd id="summary-shipping">
+                            <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
+                        </dd>
+
                         <dt>Tax (8%):</dt>
                         <dd id="summary-tax">$<?php echo number_format($tax, 2); ?></dd>
-                        <dt>Order Total:</dt>
-                        <dd class="total-amount" id="summary-order-total">$<?php echo number_format($order_total, 2); ?>
+
+                        <dt class="total-label">Order Total:</dt>
+                        <dd class="total-amount" id="summary-order-total">
+                            $<?php echo number_format($order_total, 2); ?>
                         </dd>
-                    </dl>
                     </dl>
                 </section>
 
+                <!-- SHIPPING METHOD (UNCHANGED, JUST VISUALLY GROUPED) -->
                 <section class="shipping-method-section">
                     <h3>Shipping Method</h3>
+
                     <form id="cart-shipping-form">
                         <fieldset>
                             <legend class="visually-hidden">Choose shipping method</legend>
@@ -119,7 +132,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 <input type="radio" name="shipping" value="standard" <?php echo $current_type === 'standard' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Standard Shipping</p>
-                                    <p class="option-time">5-7 business days</p>
+                                    <p class="option-time">5–7 business days</p>
                                 </div>
                                 <p class="option-price">FREE</p>
                             </label>
@@ -128,7 +141,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 <input type="radio" name="shipping" value="express" <?php echo $current_type === 'express' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Express Shipping</p>
-                                    <p class="option-time">2-3 business days</p>
+                                    <p class="option-time">2–3 business days</p>
                                 </div>
                                 <p class="option-price">$9.99</p>
                             </label>
@@ -145,20 +158,24 @@ $order_total = $subtotal + $shipping + $tax;
                     </form>
                 </section>
 
+                <!-- PROMO (UNCHANGED) -->
                 <section class="promo-code-section">
                     <h3>Have a promo code?</h3>
-                    <form>
-                        <label for="promo-code" class="visually-hidden">Enter promo code</label>
-                        <input type="text" id="promo-code" name="promo-code" placeholder="Enter code">
-                        <button type="submit">Apply</button>
-                    </form>
+                    <section class="promo-code">
+                        <form>
+                            <label for="checkout-promo" class="visually-hidden">Promo code</label>
+                            <input type="text" id="checkout-promo" name="promo-code" placeholder="Enter promo code">
+                            <button type="submit">Apply</button>
+                        </form>
+                    </section>
                 </section>
 
+                <!-- CHECKOUT CTA -->
                 <section class="checkout-section">
-                    <a href="checkout.php" style="color:white;" class="checkout-button">Proceed to Checkout</a>
-                    <a href="products.php" class="continue-shopping">Continue Shopping</a>
+                    <a href="checkout.php" class="checkout-button">Proceed to Checkout</a>
                 </section>
 
+                <!-- PAYMENT -->
                 <section class="payment-methods">
                     <h3>We Accept</h3>
                     <ul class="payment-icons">
@@ -170,11 +187,21 @@ $order_total = $subtotal + $shipping + $tax;
                     </ul>
                 </section>
 
-                <section class="security-badges">
-                    <p>Secure Checkout</p>
-                    <p>256-bit SSL Encryption</p>
+                <!-- SECURITY -->
+                <section class="trust-badges">
+                    <h3>Secure Payment</h3>
+                    <ul>
+                        <li>256-bit SSL Encryption</li>
+                        <li>PCI DSS Compliant</li>
+                        <li>Secure Payment Processing</li>
+                    </ul>
                 </section>
+
             </aside>
+
+
+
+
         </div>
 
         <section class="cart-wishlist" id="wishlist-section">
