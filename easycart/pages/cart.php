@@ -14,7 +14,8 @@ foreach ($cart_items as $id => $quantity) {
     }
 }
 
-$shipping = (isset($_SESSION['shipping_price']) && $subtotal > 0) ? $_SESSION['shipping_price'] : 0;
+$shipping_data = $_SESSION['shipping'] ?? ['type' => 'standard', 'price' => 0];
+$shipping = $shipping_data['price'];
 $tax_rate = 0.08;
 $tax = $subtotal * $tax_rate;
 $order_total = $subtotal + $shipping + $tax;
@@ -65,7 +66,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 </h3>
                                 <p class="item-brand">Brand: <?php echo htmlspecialchars($brand_name); ?></p>
                                 <p class="item-stock">In Stock</p>
-                                <p class="item-shipping"><?php echo htmlspecialchars($item['shipping']); ?></p>
+
                             </div>
                             <div class="item-quantity">
                                 <label for="quantity-<?php echo $id; ?>">Quantity:</label>
@@ -82,8 +83,7 @@ $order_total = $subtotal + $shipping + $tax;
                                 <p class="total-price" data-item-total>$<?php echo number_format($item_total, 2); ?></p>
                             </div>
                             <div class="item-actions">
-                                <button type="button" class="action-btn save-for-later">Save for Later</button>
-                                <span class="action-divider" aria-hidden="true">|</span>
+
                                 <button type="button" class="action-btn remove-item">Remove</button>
                             </div>
                         </article>
@@ -98,15 +98,51 @@ $order_total = $subtotal + $shipping + $tax;
                         <dt>Items (<span id="summary-total-items"><?php echo $total_items; ?></span>):</dt>
                         <dd id="summary-subtotal">$<?php echo number_format($subtotal, 2); ?></dd>
                         <dt>Shipping:</dt>
-                        <dd id="summary-shipping">
-                            <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
-                        </dd>
+                        <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
                         <dt>Tax (8%):</dt>
                         <dd id="summary-tax">$<?php echo number_format($tax, 2); ?></dd>
                         <dt>Order Total:</dt>
                         <dd class="total-amount" id="summary-order-total">$<?php echo number_format($order_total, 2); ?>
                         </dd>
                     </dl>
+                    </dl>
+                </section>
+
+                <section class="shipping-method-section">
+                    <h3>Shipping Method</h3>
+                    <form id="cart-shipping-form">
+                        <fieldset>
+                            <legend class="visually-hidden">Choose shipping method</legend>
+                            <?php $current_type = $shipping_data['type']; ?>
+
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="standard" <?php echo $current_type === 'standard' ? 'checked' : ''; ?>>
+                                <div class="option-details">
+                                    <p class="option-name">Standard Shipping</p>
+                                    <p class="option-time">5-7 business days</p>
+                                </div>
+                                <p class="option-price">FREE</p>
+                            </label>
+
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="express" <?php echo $current_type === 'express' ? 'checked' : ''; ?>>
+                                <div class="option-details">
+                                    <p class="option-name">Express Shipping</p>
+                                    <p class="option-time">2-3 business days</p>
+                                </div>
+                                <p class="option-price">$9.99</p>
+                            </label>
+
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="next-day" <?php echo $current_type === 'next-day' ? 'checked' : ''; ?>>
+                                <div class="option-details">
+                                    <p class="option-name">Next Day Delivery</p>
+                                    <p class="option-time">1 business day</p>
+                                </div>
+                                <p class="option-price">$19.99</p>
+                            </label>
+                        </fieldset>
+                    </form>
                 </section>
 
                 <section class="promo-code-section">
@@ -162,43 +198,10 @@ $order_total = $subtotal + $shipping + $tax;
         <!-- Product data bridge for JS -->
         <script>
             window.allProducts = <?php echo json_encode($products); ?>;
+            window.shippingPrice = <?php echo isset($_SESSION['shipping_price']) ? $_SESSION['shipping_price'] : 0; ?>;
         </script>
 
-        <section class="saved-for-later">
-            <h2>Saved for Later (2 items)</h2>
-            <div class="saved-items-grid">
-                <article class="saved-item">
-                    <div class="item-image">
-                        <img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=200"
-                            alt="Portable Bluetooth Speaker">
-                    </div>
-                    <div class="item-info">
-                        <h3><a href="product-detail.html?id=9">Portable Bluetooth Speaker</a></h3>
-                        <p class="item-price">$69.99</p>
-                    </div>
-                    <div class="item-actions">
-                        <button type="button" class="action-btn move-to-cart">Move to Cart</button>
-                        <span class="action-divider" aria-hidden="true">|</span>
-                        <button type="button" class="action-btn delete-saved">Delete</button>
-                    </div>
-                </article>
-                <article class="saved-item">
-                    <div class="item-image">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200"
-                            alt="LED Desk Lamp">
-                    </div>
-                    <div class="item-info">
-                        <h3><a href="product-detail.php?id=10">LED Desk Lamp</a></h3>
-                        <p class="item-price">$34.99</p>
-                    </div>
-                    <div class="item-actions">
-                        <button type="button" class="action-btn move-to-cart">Move to Cart</button>
-                        <span class="action-divider" aria-hidden="true">|</span>
-                        <button type="button" class="action-btn delete-saved">Delete</button>
-                    </div>
-                </article>
-            </div>
-        </section>
+
 
         <section class="recommended-products">
             <h2>Frequently Bought Together</h2>
