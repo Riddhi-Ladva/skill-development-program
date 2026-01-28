@@ -275,7 +275,9 @@ if (!empty($products) && $sort !== 'featured') {
                                     <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                     <p class="product-rating"><?php echo $product['rating']; ?> stars
                                         (<?php echo number_format($product['reviews']); ?> reviews)</p>
-
+                                    <button class="add-to-cart-btn btn btn-primary" style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;" data-product-id="<?php echo $id; ?>">
+                                        Add to Cart
+                                    </button>
                                 </article>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -298,6 +300,7 @@ if (!empty($products) && $sort !== 'featured') {
 
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/products.js'); ?>"></script>
+    <script src="<?php echo asset('js/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

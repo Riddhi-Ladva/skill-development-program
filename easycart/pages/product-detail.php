@@ -122,13 +122,14 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
                 <section class="product-actions">
                     <h2 class="visually-hidden">Purchase Actions</h2>
-                    <form action="add-to-cart.php" method="post">
+                    <form onsubmit="return false;">
                         <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
                         <div class="quantity-input" style="margin-bottom: 10px;">
                             <label for="quantity">Quantity:</label>
                             <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
                         </div>
-                        <button type="submit" class="add-to-cart">🛒 Add to Cart</button>
+                        <button type="button" class="add-to-cart add-to-cart-trigger"
+                            data-product-id="<?php echo $product_id; ?>">🛒 Add to Cart</button>
                     </form>
                     <button type="button" class="buy-now-button">Buy Now</button>
                     <button type="button" class="wishlist-button" data-product-id="<?php echo $product_id; ?>">
@@ -342,6 +343,7 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/product-detail.js'); ?>"></script>
     <script src="<?php echo asset('js/wishlist.js'); ?>"></script>
+    <script src="<?php echo asset('js/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>
