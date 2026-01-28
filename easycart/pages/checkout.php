@@ -2,6 +2,7 @@
 require_once '../includes/session.php';
 require_once '../includes/config.php';
 require_once '../data/products.php';
+require_once '../includes/shipping.php';
 
 $cart_items = $_SESSION['cart'];
 
@@ -11,19 +12,30 @@ if (empty($cart_items)) {
     exit;
 }
 
-$subtotal = 0;
 $total_items = array_sum($cart_items);
 
+// Calculate subtotal
+$subtotal = 0;
 foreach ($cart_items as $id => $quantity) {
     if (isset($products[$id])) {
         $subtotal += $products[$id]['price'] * $quantity;
     }
 }
 
-$shipping = isset($_SESSION['shipping']) ? $_SESSION['shipping']['price'] : 0;
-$tax_rate = 0.08;
-$tax = $subtotal * $tax_rate;
-$order_total = $subtotal + $shipping + $tax;
+// Initialize default shipping method if not set (store only method, not cost)
+if (!isset($_SESSION['shipping_method'])) {
+    $_SESSION['shipping_method'] = 'standard';
+}
+
+// Always recalculate shipping based on current subtotal
+$shipping_method = $_SESSION['shipping_method'];
+$shipping = calculateShippingCost($shipping_method, $subtotal);
+
+// Use the reusable function for all calculations
+$totals = calculateCheckoutTotals($cart_items, $products, $shipping);
+$subtotal = $totals['subtotal'];
+$tax = $totals['tax'];
+$order_total = $totals['total'];
 
 ?>
 <!DOCTYPE html>
@@ -153,14 +165,15 @@ $order_total = $subtotal + $shipping + $tax;
                 <section class="shipping-method">
                     <h2>Shipping Method</h2>
                     <?php
-                    $shipping_data = $_SESSION['shipping'] ?? ['type' => 'standard', 'price' => 0];
+                    $shipping_method = $_SESSION['shipping_method'];
                     $shipping_labels = [
                         'standard' => 'Standard Shipping (5-7 business days)',
                         'express' => 'Express Shipping (2-3 business days)',
-                        'next-day' => 'Next Day Delivery (1 business day)'
+                        'white-glove' => 'White Glove Delivery (7-10 business days)',
+                        'freight' => 'Freight Shipping (10-14 business days)'
                     ];
-                    $label = $shipping_labels[$shipping_data['type']];
-                    $price_display = $shipping_data['price'] == 0 ? 'FREE' : '$' . number_format($shipping_data['price'], 2);
+                    $label = $shipping_labels[$shipping_method];
+                    $price_display = '$' . number_format($shipping, 2);
                     ?>
                     <div class="selected-shipping-method">
                         <p class="method-label"><?php echo htmlspecialchars($label); ?></p>
@@ -311,8 +324,8 @@ $order_total = $subtotal + $shipping + $tax;
                         <dt>Subtotal:</dt>
                         <dd>$<?php echo number_format($subtotal, 2); ?></dd>
                         <dt>Shipping:</dt>
-                        <dd><?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?></dd>
-                        <dt>Tax (8%):</dt>
+                        <dd>$<?php echo number_format($shipping, 2); ?></dd>
+                        <dt>Tax (18%):</dt>
                         <dd>$<?php echo number_format($tax, 2); ?></dd>
                         <dt class="total-label">Total:</dt>
                         <dd class="total-amount">$<?php echo number_format($order_total, 2); ?></dd>

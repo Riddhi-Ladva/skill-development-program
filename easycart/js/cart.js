@@ -14,11 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryTax = document.getElementById('summary-tax');
     const summaryOrderTotal = document.getElementById('summary-order-total');
 
-    const TAX_RATE = 0.08;
-
 
     /**
-     * Updates the cart session on the server
+     * Updates the cart session on the server and refreshes totals
      * @param {string|number} productId 
      * @param {number} quantity 
      */
@@ -34,8 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     quantity: quantity
                 })
             });
+
+            // Check if response is OK before parsing
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
-            if (!data.success) {
+
+            if (data.success && data.totals) {
+                updateTotalsFromResponse(data.totals, data.shippingOptions);
+            } else {
                 console.error('Failed to update session:', data.message);
             }
         } catch (error) {
@@ -56,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Recalculates the entire cart summary
+     * Recalculates item totals and total item count (client-side only for display)
      */
     const updateCartSummary = () => {
         let totalItems = 0;
@@ -75,20 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             subtotal += itemTotal;
         });
 
-        const tax = subtotal * TAX_RATE;
-        const shipping = (subtotal === 0) ? 0 : (window.shippingPrice || 0);
-        const orderTotal = subtotal + tax + shipping;
-
-        // Update Summary UI
+        // Update item count
         if (headerTotalItems) headerTotalItems.textContent = totalItems;
         if (summaryTotalItems) summaryTotalItems.textContent = totalItems;
-        if (summarySubtotal) summarySubtotal.textContent = formatCurrency(subtotal);
-        if (summaryTax) summaryTax.textContent = formatCurrency(tax);
-        if (summaryOrderTotal) summaryOrderTotal.textContent = formatCurrency(orderTotal);
-
-        if (summaryShipping) {
-            summaryShipping.textContent = shipping === 0 ? 'FREE' : formatCurrency(shipping);
-        }
 
         // Handle Empty Cart State
         if (items.length === 0) {
@@ -98,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event Delegation for Quantity and Removal
+    // Event Delegation for Quantity Buttons and Removal
     cartContainer.addEventListener('click', (event) => {
         const btn = event.target;
 
@@ -114,66 +110,124 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (value > 1) value--;
             }
 
-            input.value = value;
-            updateCartSummary();
-
-            // Extract ID from input id "quantity-{id}"
-            const productId = input.id.replace('quantity-', '');
-            updateSessionQuantity(productId, value);
-
+            if (input.value != value) {
+                input.value = value;
+                handleQuantityChange(input);
+            }
             return;
         }
 
         // Remove Item Button
         if (btn.classList.contains('remove-item')) {
-            const item = btn.closest('.cart-item');
-            if (item) {
-                const qtyInput = item.querySelector('input[name="quantity"]');
-                const productId = qtyInput.id.replace('quantity-', '');
-
-                // Call server to remove
-                fetch('remove-from-cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ product_id: productId })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            item.remove();
-
-                            // Update UI with returned totals (avoids client-side recalc issues)
-                            const headerTotalItems = document.getElementById('header-total-items');
-                            const summaryTotalItems = document.getElementById('summary-total-items');
-                            const summarySubtotal = document.getElementById('summary-subtotal');
-                            const summaryShipping = document.getElementById('summary-shipping');
-                            const summaryTax = document.getElementById('summary-tax');
-                            const summaryOrderTotal = document.getElementById('summary-order-total');
-
-                            if (headerTotalItems) headerTotalItems.textContent = data.totals.totalItems;
-                            if (summaryTotalItems) summaryTotalItems.textContent = data.totals.totalItems;
-                            if (summarySubtotal) summarySubtotal.textContent = data.totals.subtotal;
-                            if (summaryShipping) summaryShipping.textContent = data.totals.shipping;
-                            if (summaryTax) summaryTax.textContent = data.totals.tax;
-                            if (summaryOrderTotal) summaryOrderTotal.textContent = data.totals.grandTotal;
-
-                            // Check empty state
-                            const remainingItems = document.querySelectorAll('.cart-item');
-                            if (remainingItems.length === 0) {
-                                cartContainer.innerHTML = '<h2 class="visually-hidden">Cart Items</h2><p>Your cart is empty. <a href="products.php">Start shopping!</a></p>';
-                                const cartSummary = document.querySelector('.cart-summary');
-                                if (cartSummary) cartSummary.style.display = 'none';
-                            }
-                        } else {
-                            console.error('Failed to remove item:', data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error removing item:', error));
-            }
+            handleRemoveItem(btn);
         }
     });
+
+    // Handle manual input changes
+    cartContainer.addEventListener('change', (event) => {
+        if (event.target.name === 'quantity') {
+            handleQuantityChange(event.target);
+        }
+    });
+
+    // Centralized handler for quantity updates
+    const handleQuantityChange = (input) => {
+        updateCartSummary(); // Optimistic UI update for line totals
+
+        const productId = input.id.replace('quantity-', '');
+        const value = parseInt(input.value);
+
+        updateSessionQuantity(productId, value);
+    };
+
+    // Centralized handler for item removal
+    const handleRemoveItem = (btn) => {
+        const item = btn.closest('.cart-item');
+        if (item) {
+            const qtyInput = item.querySelector('input[name="quantity"]');
+            const productId = qtyInput.id.replace('quantity-', '');
+
+            // Visual feedback
+            item.style.opacity = '0.5';
+
+            fetch('remove-from-cart.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_id: productId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        item.remove();
+                        // Note: remove-from-cart.php needs to be updated to return shippingOptions too if we want dynamic update there
+                        // For now we assume remove just updates totals, but consistency would require updating options too.
+                        // Let's assume remove-from-cart returns it or we treat it as optional.
+                        updateTotalsFromResponse(data.totals, data.shippingOptions);
+                        checkEmptyState();
+                    } else {
+                        console.error('Failed to remove item:', data.message);
+                        item.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing item:', error);
+                    item.style.opacity = '1';
+                });
+        }
+    };
+
+    // Shared function to update Order Summary DOM and Shipping Options
+    const updateTotalsFromResponse = (totals, shippingOptions) => {
+        if (totals) {
+            const headerTotalItems = document.getElementById('header-total-items');
+            const summaryTotalItems = document.getElementById('summary-total-items');
+            const summarySubtotal = document.getElementById('summary-subtotal');
+            const summaryShipping = document.getElementById('summary-shipping');
+            const summaryTax = document.getElementById('summary-tax');
+            const summaryOrderTotal = document.getElementById('summary-order-total');
+
+            if (headerTotalItems && totals.totalItems !== undefined) headerTotalItems.textContent = totals.totalItems;
+            if (summaryTotalItems && totals.totalItems !== undefined) summaryTotalItems.textContent = totals.totalItems;
+            if (summarySubtotal) summarySubtotal.textContent = totals.subtotal;
+            if (summaryShipping) summaryShipping.textContent = totals.shipping;
+            if (summaryTax) summaryTax.textContent = totals.tax;
+            if (summaryOrderTotal) summaryOrderTotal.textContent = totals.grandTotal;
+        }
+
+        // Update Shipping Option Prices (Radio Buttons)
+        if (shippingOptions) {
+            const shippingContainer = document.querySelector('.shipping-method-section');
+            if (shippingContainer) {
+                // Map session keys to radio values if they differ, but here they are same (standard, express, white-glove, freight)
+
+                // Use a helper to find the radio and update its sibling price element
+                const updateOptionPrice = (method, price) => {
+                    const radio = shippingContainer.querySelector(`input[value="${method}"]`);
+                    if (radio) {
+                        const label = radio.closest('.shipping-option');
+                        const priceEl = label ? label.querySelector('.option-price') : null;
+                        if (priceEl) {
+                            priceEl.textContent = price;
+                        }
+                    }
+                };
+
+                updateOptionPrice('standard', shippingOptions.standard);
+                updateOptionPrice('express', shippingOptions.express);
+                updateOptionPrice('white-glove', shippingOptions['white-glove']);
+                updateOptionPrice('freight', shippingOptions.freight);
+            }
+        }
+    };
+
+    const checkEmptyState = () => {
+        const items = document.querySelectorAll('.cart-item');
+        if (items.length === 0) {
+            cartContainer.innerHTML = '<h2 class="visually-hidden">Cart Items</h2><p>Your cart is empty. <a href="products.php">Start shopping!</a></p>';
+            const cartSummary = document.querySelector('.cart-summary');
+            if (cartSummary) cartSummary.style.display = 'none';
+        }
+    };
 
     /**
      * Wishlist Section Logic

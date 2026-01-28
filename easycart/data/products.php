@@ -3,7 +3,7 @@ $products = [
     1 => [
         'id' => 1,
         'name' => 'Wireless Bluetooth Headphones',
-        'price' => 89.98,
+        'price' => 8000.98,
         'rating' => 4.5,
         'reviews' => 245,
         'image' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',

@@ -1,26 +1,25 @@
 <?php
+// Start output buffering to prevent whitespace from includes breaking JSON
+ob_start();
+
 require_once '../includes/session.php';
+require_once '../includes/shipping.php';
+require_once '../data/products.php';
+
+// Clear any buffered output
+ob_end_clean();
 
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $type = $data['type'] ?? 'standard';
+    $method = $data['type'] ?? 'standard';
 
-    $prices = [
-        'standard' => 0,
-        'express' => 9.99,
-        'next-day' => 19.99
-    ];
+    // Valid shipping types
+    $valid_methods = ['standard', 'express', 'white-glove', 'freight'];
 
-    if (array_key_exists($type, $prices)) {
-        $_SESSION['shipping'] = [
-            'type' => $type,
-            'price' => $prices[$type]
-        ];
-
-        // Calculate Totals to return
-        require_once '../data/products.php';
+    if (in_array($method, $valid_methods)) {
+        // Calculate subtotal from cart
         $subtotal = 0;
         if (isset($_SESSION['cart'])) {
             foreach ($_SESSION['cart'] as $id => $quantity) {
@@ -29,18 +28,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-        $shipping = $prices[$type];
-        $tax = $subtotal * 0.08;
-        $total = $subtotal + $shipping + $tax;
+
+        // Store only the method in session (NOT the cost)
+        $_SESSION['shipping_method'] = $method;
+
+        // Calculate shipping cost based on current subtotal
+        $shipping_cost = calculateShippingCost($method, $subtotal);
+
+        // Use the reusable function for all calculations
+        $totals = calculateCheckoutTotals($_SESSION['cart'], $products, $shipping_cost);
+
+        // Calculate costs for all shipping methods for UI update (even if subtotal hasn't changed, ensures consistency)
+        $shipping_options = [
+            'standard' => calculateShippingCost('standard', $subtotal),
+            'express' => calculateShippingCost('express', $subtotal),
+            'white-glove' => calculateShippingCost('white-glove', $subtotal),
+            'freight' => calculateShippingCost('freight', $subtotal)
+        ];
 
         echo json_encode([
             'success' => true,
-            'type' => $type,
+            'method' => $method,
             'totals' => [
-                'subtotal' => '$' . number_format($subtotal, 2),
-                'shipping' => $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2),
-                'tax' => '$' . number_format($tax, 2),
-                'grandTotal' => '$' . number_format($total, 2)
+                'subtotal' => '$' . number_format($totals['subtotal'], 2),
+                'shipping' => '$' . number_format($totals['shipping'], 2),
+                'tax' => '$' . number_format($totals['tax'], 2),
+                'grandTotal' => '$' . number_format($totals['total'], 2)
+            ],
+            'shippingOptions' => [
+                'standard' => '$' . number_format($shipping_options['standard'], 2),
+                'express' => '$' . number_format($shipping_options['express'], 2),
+                'white-glove' => '$' . number_format($shipping_options['white-glove'], 2),
+                'freight' => '$' . number_format($shipping_options['freight'], 2)
             ]
         ]);
     } else {

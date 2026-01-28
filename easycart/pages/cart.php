@@ -3,22 +3,33 @@ require_once '../includes/session.php';
 require_once '../includes/config.php';
 require_once '../data/products.php';
 require_once '../data/brands.php';
+require_once '../includes/shipping.php';
 
 $cart_items = $_SESSION['cart'];
-$subtotal = 0;
 $total_items = array_sum($cart_items);
 
+// Calculate subtotal
+$subtotal = 0;
 foreach ($cart_items as $id => $quantity) {
     if (isset($products[$id])) {
         $subtotal += $products[$id]['price'] * $quantity;
     }
 }
 
-$shipping_data = $_SESSION['shipping'] ?? ['type' => 'standard', 'price' => 0];
-$shipping = $shipping_data['price'];
-$tax_rate = 0.08;
-$tax = $subtotal * $tax_rate;
-$order_total = $subtotal + $shipping + $tax;
+// Initialize default shipping method if not set (store only method, not cost)
+if (!isset($_SESSION['shipping_method'])) {
+    $_SESSION['shipping_method'] = 'standard';
+}
+
+// Always recalculate shipping based on current subtotal
+$shipping_method = $_SESSION['shipping_method'];
+$shipping = calculateShippingCost($shipping_method, $subtotal);
+
+// Use the reusable function for all calculations
+$totals = calculateCheckoutTotals($cart_items, $products, $shipping);
+$subtotal = $totals['subtotal'];
+$tax = $totals['tax'];
+$order_total = $totals['total'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,10 +117,10 @@ $order_total = $subtotal + $shipping + $tax;
 
                         <dt>Shipping:</dt>
                         <dd id="summary-shipping">
-                            <?php echo $shipping == 0 ? 'FREE' : '$' . number_format($shipping, 2); ?>
+                            $<?php echo number_format($shipping, 2); ?>
                         </dd>
 
-                        <dt>Tax (8%):</dt>
+                        <dt>Tax (18%):</dt>
                         <dd id="summary-tax">$<?php echo number_format($tax, 2); ?></dd>
 
                         <dt class="total-label">Order Total:</dt>
@@ -126,33 +137,50 @@ $order_total = $subtotal + $shipping + $tax;
                     <form id="cart-shipping-form">
                         <fieldset>
                             <legend class="visually-hidden">Choose shipping method</legend>
-                            <?php $current_type = $shipping_data['type']; ?>
+                            <?php
+                            $current_method = $_SESSION['shipping_method'];
+
+                            // Calculate dynamic prices for display
+                            $standard_price = 40;
+                            $express_price = min(80, $subtotal * 0.10);
+                            $white_glove_price = min(150, $subtotal * 0.05);
+                            $freight_price = max(200, $subtotal * 0.03);
+                            ?>
 
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="standard" <?php echo $current_type === 'standard' ? 'checked' : ''; ?>>
+                                <input type="radio" name="shipping" value="standard" <?php echo $current_method === 'standard' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Standard Shipping</p>
                                     <p class="option-time">5–7 business days</p>
                                 </div>
-                                <p class="option-price">FREE</p>
+                                <p class="option-price">$<?php echo number_format($standard_price, 2); ?></p>
                             </label>
 
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="express" <?php echo $current_type === 'express' ? 'checked' : ''; ?>>
+                                <input type="radio" name="shipping" value="express" <?php echo $current_method === 'express' ? 'checked' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Express Shipping</p>
                                     <p class="option-time">2–3 business days</p>
                                 </div>
-                                <p class="option-price">$9.99</p>
+                                <p class="option-price">$<?php echo number_format($express_price, 2); ?></p>
                             </label>
 
                             <label class="shipping-option">
-                                <input type="radio" name="shipping" value="next-day" <?php echo $current_type === 'next-day' ? 'checked' : ''; ?>>
+                                <input type="radio" name="shipping" value="white-glove" <?php echo $current_method === 'white-glove' ? 'checked' : ''; ?>>
                                 <div class="option-details">
-                                    <p class="option-name">Next Day Delivery</p>
-                                    <p class="option-time">1 business day</p>
+                                    <p class="option-name">White Glove Delivery</p>
+                                    <p class="option-time">7–10 business days</p>
                                 </div>
-                                <p class="option-price">$19.99</p>
+                                <p class="option-price">$<?php echo number_format($white_glove_price, 2); ?></p>
+                            </label>
+
+                            <label class="shipping-option">
+                                <input type="radio" name="shipping" value="freight" <?php echo $current_method === 'freight' ? 'checked' : ''; ?>>
+                                <div class="option-details">
+                                    <p class="option-name">Freight Shipping</p>
+                                    <p class="option-time">10–14 business days</p>
+                                </div>
+                                <p class="option-price">$<?php echo number_format($freight_price, 2); ?></p>
                             </label>
                         </fieldset>
                     </form>
@@ -255,7 +283,7 @@ $order_total = $subtotal + $shipping + $tax;
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/cart.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>
