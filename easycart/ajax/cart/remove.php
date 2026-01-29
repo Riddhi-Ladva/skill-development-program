@@ -1,14 +1,12 @@
 <?php
 /**
- * MY STUDY NOTES: AJAX - Remove from Cart
- * 
- * What happens here? -> Clicking "Remove" in the cart sends the ID here.
- * PHP kicks it out of the session array.
- * 
- * Wait, why so much code again? -> Just like the "Update" handler, 
- * removing an item changes the Subtotal, which changes Shipping, 
- * which changes Tax. I have to update the whole Order Summary!
- */
+* AJAX Endpoint: Remove from Cart
+*
+* Purpose: Removes a specific product from the cart session.
+* Side Effects: Recalculates all cart totals (subtotal, shipping, tax) as removing an item affects all downstream
+values.
+* Output: Full updated cart summary JSON for UI refresh.
+*/
 
 // Start output buffering to prevent whitespace from includes breaking JSON
 ob_start();
@@ -33,12 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = $data['product_id'] ?? null;
 
     if ($productId) {
-        // DROP THE ITEM: Kick it out of the session array
         if (isset($_SESSION['cart'][$productId])) {
             unset($_SESSION['cart'][$productId]);
         }
 
-        // RECALCULATION PARTY: EVERYTHING changes now
+        // Recalculate all totals based on the modified cart state
         $subtotal = calculateSubtotal($_SESSION['cart'], $products);
 
         // Determine current total items for the badge
@@ -48,10 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
         $shipping_cost = ($subtotal > 0) ? calculateShippingCost($shipping_method, $subtotal) : 0;
 
-        // Aggregate all totals (Tax, Grand Total)
+        // Aggregate final checkout totals
         $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
-        // Calculate all shipping options so the UI labels can update
+        // Recalculate available shipping options based on new subtotal
+// This ensures shipping quotes remain accurate if subtotal drops below free shipping thresholds
         $shipping_options = [
             'standard' => ($subtotal > 0) ? calculateShippingCost('standard', $subtotal) : 0,
             'express' => ($subtotal > 0) ? calculateShippingCost('express', $subtotal) : 0,

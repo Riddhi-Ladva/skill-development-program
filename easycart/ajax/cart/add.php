@@ -1,14 +1,10 @@
 <?php
 /**
- * MY STUDY NOTES: AJAX - Add to Cart
- * 
- * What happens here? -> When I click "Add to Cart" on a product, JavaScript 
- * sends the product ID here. PHP then saves it in the SESSION.
- * 
- * Why AJAX? -> So the page doesn't blink or reload. It feels much smoother.
- * 
- * Data Flow:
- * JavaScript (fetch) -> This File -> Session Cart -> Returns new total count.
+ * AJAX Endpoint: Add to Cart
+ *
+ * Purpose: Receives product ID and quantity via POST, updates the session cart.
+ * Output: JSON response containing success status and updated total item count.
+ * Dependencies: session.php (for $_SESSION), products.php (for validation).
  */
 
 // ob_start just prevents accidental space/errors from breaking the JSON response
@@ -30,18 +26,19 @@ $input_json = json_decode(file_get_contents('php://input'), true);
 $product_id = isset($input_json['product_id']) ? (int) $input_json['product_id'] : null;
 $quantity = isset($input_json['quantity']) ? (int) $input_json['quantity'] : 1;
 
-// Safety check: Don't add if the product isn't real
+// Validate product existence before adding to cart
 if ($product_id && isset($products[$product_id])) {
 
-    // Reminder: $_SESSION['cart'] is just an array like { 1 => 2, 5 => 1 } (ID => Qty)
+    // Add or update quantity in session cart
+// Structure: $_SESSION['cart'][product_id] = quantity
     $_SESSION['cart'][$product_id] = $quantity;
 
-    // RULE: Don't let them add more than 10 of one item.
+    // Enforce business rule: Maximum 10 items per product
     if ($_SESSION['cart'][$product_id] > 10) {
         $_SESSION['cart'][$product_id] = 10;
     }
 
-    // New total items for the header badge (e.g., "3 items in cart")
+    // Calculate new total items count for header badge update
     $total_items = array_sum($_SESSION['cart']);
 
     // Send the success response back to JavaScript

@@ -1,18 +1,17 @@
 <?php
 /**
- * MY STUDY NOTES: Tax Calculation
- * 
- * Why 18%? -> This is the standard tax rate for this project.
- * 
- * Important Note: Tax is NOT just on the products. It's on 
- * (Products + Shipping). This means if the user picks a more 
- * expensive shipping, the tax goes up too!
+ * Tax Calculation Service
+ *
+ * Purpose: Centralized location for tax rate definition and calculation.
+ * Logic: Applies a flat tax rate to the taxable total (Subtotal + Shipping).
  */
 
 /**
- * How it works:
- * It takes digits for subtotal and shipping, adds them, 
- * and multiplies by 0.18.
+ * Calculates tax based on the total taxable amount.
+ *
+ * @param float $subtotal Items total
+ * @param float $shipping_cost Shipping cost
+ * @return float Calculated tax amount
  */
 function calculateTax($subtotal, $shipping_cost)
 {

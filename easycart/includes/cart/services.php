@@ -1,21 +1,18 @@
 <?php
 /**
- * MY STUDY NOTES: Cart Calculations
- * 
- * What is this? -> This is where the "math" for the cart lives.
- * Why modular? -> Instead of having math scattered everywhere, I put it here so 
- * if a price is wrong, I only have ONE place to check.
- * 
- * Core Logic:
- * 1. calculateSubtotal: Loop through the session cart and multiply qty by price.
- * 2. calculateCheckoutTotals: The "Big Boss" function that brings subtotal, 
- *    shipping, and tax together.
+ * Cart Calculation Service
+ *
+ * Purpose: Centralized business logic for processing cart value.
+ * Responsibility: Calculates line item totals and aggregates the final checkout subtotal.
+ * Used By: Cart page component and AJAX services.
  */
 
 /**
- * How it works:
- * It takes the cart from the SESSION (which is just IDs and Quantities)
- * and uses the $products array to look up the actual prices.
+ * Calculates current subtotal based on session quantities and product prices.
+ *
+ * @param array $cart_items Session cart array (ID => Quantity)
+ * @param array $products Master product data source
+ * @return float Total value of items before shipping/tax
  */
 function calculateSubtotal($cart_items, $products)
 {
@@ -34,15 +31,16 @@ function calculateSubtotal($cart_items, $products)
 }
 
 /**
- * Why this function exists:
- * On the checkout page or cart summary, I need the final number.
- * This function handles the "Chain Reaction":
- * Subtotal -> Shipping -> Tax -> Grand Total.
+ * Aggregates all cost components into a final checkout summary.
+ *
+ * @param float $subtotal Calculated items total
+ * @param float $shipping_cost Selected shipping method cost
+ * @return array Associative array containing 'subtotal', 'shipping', 'tax', and 'total'
  */
 function calculateCheckoutTotals($subtotal, $shipping_cost)
 {
-    // Note to self: Tax depends on (Subtotal + Shipping), 
-    // so I MUST pass both into calculateTax.
+    // Tax is calculated on taxable amount (Subtotal + Shipping)
+// dependency: tax/services.php containing calculateTax()
 
     // Safety check: make sure the tax math file is actually loaded
     if (!function_exists('calculateTax')) {

@@ -1,13 +1,9 @@
 /**
- * MY STUDY NOTES: AJAX Add to Cart
+ * Add To Cart Component
  * 
- * Goal: Add a product to the cart without the whole page reloading.
- * 
- * How it works:
- * 1. Find the "Add to Cart" button.
- * 2. When clicked, STOP the browser from following the link (e.preventDefault).
- * 3. Send a "Fetch" request to the PHP backend.
- * 4. When PHP says "Done", update the count in the header.
+ * Capability: Handles asynchronous addition of products to the shopping cart.
+ * Interaction: Intercepts click events on specific CSS classes, prevents default navigation,
+ * and submits data to the PHP backend via fetch API.
  */
 document.addEventListener('DOMContentLoaded', () => {
     // Select all add to cart buttons (links in listing, buttons in details)
@@ -44,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.innerHTML = 'Adding...';
 
             try {
-                // The actual "Messenger" that goes to the server
+                // Post to cart endpoint
                 const response = await fetch(`${EasyCart.ajaxUrl}/cart/add.php`, {
                     method: 'POST',
                     headers: {
@@ -63,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    // Success! Now update the numbers in the header
-                    // data.totalItems is sent back by the PHP file
+                    // Update global header badge using server-returned total
                     if (headerCount) {
                         headerCount.textContent = data.totalItems;
                         const cartLink = headerCount.closest('.icon-wrapper');

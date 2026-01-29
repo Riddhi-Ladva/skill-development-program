@@ -27,6 +27,10 @@ require_once 'includes/bootstrap/session.php';
     <?php include 'includes/header.php'; ?>
 
     <main id="main-content">
+        <!-- 
+        Hero Section 
+        Purpose: Visual hook for the user with current promotions.
+        -->
         <section class="hero-section">
             <article class="hero-banner">
                 <h2>Winter Sale - Up to 50% Off</h2>
@@ -39,6 +43,10 @@ require_once 'includes/bootstrap/session.php';
                 aria-hidden="true">
         </section>
 
+        <!-- 
+        Category Navigation 
+        Purpose: Quick links to filtered product listings.
+        -->
         <section class="featured-categories">
             <h2>Shop by Category</h2>
             <div class="category-grid">
@@ -70,6 +78,7 @@ require_once 'includes/bootstrap/session.php';
                 <h2>Popular Brands</h2>
                 <div class="brand-grid">
                     <?php
+                    // Load brands data to display logos
                     require_once ROOT_PATH . '/data/brands.php';
                     foreach ($brands as $id => $brand):
                         ?>
@@ -84,6 +93,10 @@ require_once 'includes/bootstrap/session.php';
             </div>
         </section>
 
+        <!-- 
+        Featured Products
+        Purpose: Hardcoded selection of top-selling items to drive immediate engagement.
+        -->
         <section class="featured-products">
             <h2>Featured Products</h2>
             <div class="product-grid">

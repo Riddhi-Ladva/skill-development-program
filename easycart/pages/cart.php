@@ -61,8 +61,9 @@ $order_total = $totals['total'];
     <main id="main-content">
         <section class="page-header">
             <h1>Shopping Cart</h1>
-            <p><span id="header-total-items"><?php echo $total_items; ?></span>
-                item<?php echo $total_items != 1 ? 's' : ''; ?> in your cart</p>
+            <p><span id="cart-page-count"><?php echo $total_items; ?></span>
+                <span id="cart-page-text">item<?php echo $total_items != 1 ? 's' : ''; ?></span> in your cart
+            </p>
         </section>
 
         <div class="cart-container">

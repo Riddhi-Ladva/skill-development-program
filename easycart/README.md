@@ -1,52 +1,82 @@
-# EasyCart - My Study Guide 📚
+# EasyCart - Maintenance & Developer Guide
 
-This project is a simple but powerful e-commerce shopping cart built with **PHP**, **Vanilla JS**, and **AJAX**. I'm using it to learn how data flows from the browser to the server session and back.
+## 1. Project Overview
+EasyCart is a functional e-commerce application built to demonstrate core full-stack concepts using vanilla PHP and JavaScript. It simulates a complete shopping flow from product browsing to cart management and checkout.
 
-## 🚀 How the App Works (The Big Picture)
+ **High-Level Flow:**
+1.  **Browse**: Users view products loaded from static PHP arrays.
+2.  **Cart Actions**: "Add to Cart" triggers AJAX requests to update the session state without page reloads.
+3.  **Calculations**: All pricing logic (subtotal, shipping, tax) is centralized in PHP services and recalculated on every cart modification.
+4.  **Checkout**: Users review the final summary (totals aggregated by PHP) before "placing" the order (simulated).
 
-1.  **Browser (UI):** Everything starts when a user clicks a button (like "Add to Cart" or "Change Quantity").
-2.  **JavaScript (The Messenger):** A `fetch()` call in my JS files sends the request to a hidden PHP file (in the `ajax/` folder).
-3.  **PHP Services (The Math Engine):** The specialist functions in `includes/` (like `calculateSubtotal` or `calculateTax`) do all the heavy lifting.
-4.  **Session (The Memory):** PHP saves the cart data in `$_SESSION['cart']` so the items don't disappear when I refresh the page.
-5.  **JSON (The Reply):** PHP sends back the new totals as a JSON object, and JS "plugs" those numbers into the HTML.
+## 2. Tech Stack
+*   **Backend**: PHP (7.4+) - Handles business logic, session state, and HTML rendering.
+*   **Frontend**: JavaScript (Vanilla) - Manages UI interactivity and AJAX communication.
+*   **Data Storage**: PHP Arrays - `data/` directory acts as a flat-file database.
+*   **Styling**: CSS (BEM naming convention) - Custom styling without frameworks.
+*   **State Management**: PHP `$_SESSION` - Stores cart contents and user choices.
 
----
+## 3. Folder Structure & Responsibilities
 
-## 📂 Where to Look (My File Map)
-
-| Folder / File | What it does (Study Note) |
+| Directory | Role & Responsibility |
 | :--- | :--- |
-| `includes/bootstrap/` | Sets up the project. `config.php` holds my base URLs and paths. |
-| `includes/cart/services.php` | The heart of all cart math (Subtotal + Aggregating Totals). |
-| `includes/shipping/services.php` | Determines shipping costs based on the business rules I set. |
-| `includes/tax/services.php` | Calculates that fixed 18% tax on everything. |
-| `ajax/` | Hidden PHP files that respond to my JS `fetch()` calls. |
-| `assets/js/` | All the browser logic. `cart.js` handles the "Optimistic UI" updates. |
-| `pages/` | The actual HTML templates (Header, Footer, Product Listing). |
+| **`pages/`** | **User-Facing Views**. Contains the actual pages visited by the browser (URL endpoints). Responsible for page layout and including necessary partials. |
+| **`includes/`** | **Business Logic & Services**. The "Brain" of the application. Contains reusable functions for calculations (tax, shipping), shared UI components (header/footer), and bootstrap config. |
+| **`ajax/`** | **API Endpoints**. Headless PHP scripts that accept JSON input and return JSON output. Used by JavaScript to modify state (add/remove items) dynamically. |
+| **`data/`** | **Data Layer**. Mock database tables defined as PHP arrays. Read-only source of truth for Products, Brands, and Categories. |
+| **`assets/`** | **Static Resources**. Frontend-only files. `js/` contains client-side logic; `css/` contains styles; `img/` contains media. |
 
----
+## 4. Key Architectural Decisions
 
-## 🛠 Troubleshooting Guide (When things break)
+### Why Session-Based Cart?
+We use `$_SESSION` to persist the cart because it mimics a server-side database transaction without the complexity of SQL. It ensures that cart data survives page reloads and is secure from simple client-side tampering.
 
-### 1. The Cart isn't updating?
-*   **Check the Session:** Make sure `session_start()` is called at the very top.
-*   **Check AJAX URL:** Open the browser console (F12). If you see a "404 Not Found" error, the path in `config.php` might be wrong.
-*   **Check the JSON:** If PHP has a typo, it might output a warning that breaks the JSON response. Always check the **Network** tab in F12 to see the raw response.
+### Why Server-Side Calculation (Source of Truth)?
+All math (prices, tools, tax) happens in PHP.
+*   **Reason**: Security and Consistency. If JS calculated the total, a user could manipulate the browser code to set the price to $0. By forcing PHP to recalculate everything on every request, we ensure the final price is always correct based on the backend rules.
 
-### 2. Shipping costs look weird?
-*   **Recalculation:** Remember that shipping is recalculated *every time* you change a quantity. It depends on the current subtotal.
-*   **Look in `shipping/services.php`:** This is where the rules (like the $80 cap for Express) live.
+### Why AJAX for Cart Operations?
+To provide a modern, "app-like" feel. Reloading the entire page just to update a quantity number is poor UX. AJAX allows us to update specific DOM elements (badge count, total price) instantly.
 
-### 3. Images aren't showing up?
-*   **Base URL:** Make sure `ASSET_URL` in `config.php` is pointing to the right place.
-*   **Path Helper:** Always use the `asset()` helper function in PHP to generate the image source.
+### Why Recalculate Shipping on Every Step?
+Shipping costs are dynamic (tiered based on subtotal). Since adding an item can push the subtotal over a threshold (e.g., Free Shipping > $50), we must re-evaluate the shipping rules after *every* cart modification.
 
----
+## 5. Where to Find What (Code Logic Map)
 
-## 📝 Key Lessons Learned
-*   **AJAX = No Refresh:** It feels much more premium when the page doesn't blink on every change.
-*   **Modular PHP:** Keeping the math in `includes/` makes it easy to fix things in one place and have it update everywhere.
-*   **Optimistic UI:** Updating the screen *before* the server replies makes the site feel lightning-fast.
+| Feature | PHP Logic Location | JS Handler Location |
+| :--- | :--- | :--- |
+| **Product Data** | `data/products.php` | N/A |
+| **Cart & Totals Math** | `includes/cart/services.php` | N/A (UI only reflects server data) |
+| **Add to Cart** | `ajax/cart/add.php` | `assets/js/cart/add-to-cart.js` |
+| **Remove Item** | `ajax/cart/remove.php` | `assets/js/cart/summary.js` (via confirm.js) |
+| **Update Quantity** | `ajax/cart/update-qty.php` | `assets/js/cart/quantity.js` |
+| **Shipping Rules** | `includes/shipping/services.php` | `assets/js/cart/shipping.js` (UI updates) |
+| **Tax Rate** | `includes/tax/services.php` | N/A |
+| **Header Badge** | `includes/header.php` | `assets/js/cart/summary.js` |
+| **Global Config** | `includes/bootstrap/config.php` | N/A |
 
----
-*Created by Antigravity for Riddhi Ladva's learning journey.*
+## 6. Common Maintenance Tasks
+
+### How to change Shipping Rules?
+1.  Open `includes/shipping/services.php`.
+2.  Modify the `calculateShippingCost()` switch statement.
+3.  AJAX endpoints will automatically use the new logic next time they run.
+
+### How to change the Tax Rate?
+1.  Open `includes/tax/services.php`.
+2.  Update the percentage multiplier in `calculateTax()`.
+
+### How to add a new Product?
+1.  Open `data/products.php`.
+2.  Add a new array entry with a unique ID.
+3.  The product will immediately appear on the Products page.
+
+### How to fix Cart Badge behavior?
+*   **Initial Load**: Logic is in `includes/header.php` (PHP checks session).
+*   **After Action**: Logic is in `assets/js/cart/summary.js` (JS updates DOM based on AJAX response).
+*   *Note: Both must align (e.g., referencing correct IDs like `#cart-page-count`).*
+
+## 7. Known Constraints
+*   **Session-Only Persistence**: Logic relies on PHP Sessions. If the browser closes or session expires, data is lost (no database persistence).
+*   **Mock Payment**: Checkout is a simulation; no actual payment processing occurs.
+*   **Single Currency**: Hardcoded to USD formatting.

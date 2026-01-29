@@ -1,4 +1,11 @@
 <?php
+/**
+ * Brands Data Source
+ * 
+ * Purpose: Acts as a database table for brand information.
+ * Why: To provide a single source of truth for brand names and logos without a real database.
+ * Structure: Associative array indexed by brand ID.
+ */
 $brands = [
     1 => ['id' => 1, 'name' => 'TechMaster', 'logo' => 'assets/img/brands/techmaster.png'],
     2 => ['id' => 2, 'name' => 'FashionForward', 'logo' => 'assets/img/brands/fashionforward.png'],

@@ -106,7 +106,8 @@
   text-decoration: none;
 }
 
-.action-link:hover {
+.action-link:hover,
+.action-link.active {
   color: var(--color-primary);
   background-color: var(--color-bg-secondary);
   box-shadow: var(--shadow-sm);

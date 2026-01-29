@@ -1,4 +1,12 @@
 <?php
+/**
+ * Products Data Source
+ * 
+ * Purpose: Repository of all available products in the store.
+ * Why: Simulates a SQL `products` table.
+ * Structure: Array of associative arrays, indexed by product ID.
+ * Key fields: id, name, price, category, brand_id.
+ */
 $products = [
     1 => [
         'id' => 1,

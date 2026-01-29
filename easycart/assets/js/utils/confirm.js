@@ -1,16 +1,16 @@
 /**
- * MY STUDY NOTES: Global Confirmations & Notifications
+ * Global Interceptor & Notification System
  * 
- * This file is like the "Hall Monitor" of the site. It watches 
- * for important actions (like removing an item) and asks 
- * "Are you sure?" before letting them happen.
+ * Responsibility:
+ * 1. Intercepts critical actions (delete/purchase) to prompt for user confirmation.
+ * 2. Manages ephemeral toast notifications (success/info messages).
+ * 3. Syncs wishlist state across tabs/interactions.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. THE INTERCEPTOR: Confirmation Popups
-    // Note: I use 'true' (Capture Phase) here so this code runs 
-    // BEFORE the regular button clicks. It lets me "cancel" the click 
-    // if the user hits 'Cancel' on the popup.
+    // 1. Critical Action Interceptor
+    // Uses capture phase (true) to intercept events before other handlers execute.
+    // Allows cancelling the action via e.stopPropagation() if user declines confirmation.
     document.addEventListener('click', (e) => {
         const target = e.target;
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, true);
 
-    // 2. SUCCESS BANNERS: Non-blocking feedback
+    // 2. Global Notification (Toast) Manager
     const urlParams = new URLSearchParams(window.location.search);
     const notificationContainer = document.getElementById('global-notification-container');
 
@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState({}, '', newUrl);
     }
 
-    // 3. PERSISTENCE CHECK: Confirm the cart didn't vanish on refresh
+    // 3. User Feedback Check
+    // Detects page reloads on cart/detail pages to reassure users about state persistence.
     const navigationType = performance.getEntriesByType("navigation")[0]?.type;
     if (navigationType === 'reload') {
         const isCartRelated = window.location.pathname.includes('cart.php') || window.location.pathname.includes('product-detail.php');
@@ -81,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * 4. WISHLIST SYNC:
-     * This keeps the little heart icon count in the header correct.
+     * 4. Wishlist Synchronization
+     * Reads from LocalStorage to update header badge visibility.
      */
     const updateHeaderWishlist = () => {
         const wishlistLink = document.querySelector('.wishlist-link');

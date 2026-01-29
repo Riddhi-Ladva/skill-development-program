@@ -1,20 +1,20 @@
 <?php
 /**
- * MY STUDY NOTES: Shipping Rules
- * 
- * Why do we have this? -> Shipping isn't just one price. It changes based on 
- * what the user picks AND how much they spent.
- * 
- * Future Self Reminder: 
- * We NEVER store the shipping money in the session permanently because it 
- * needs to be recalculated if the user adds/removes items (since some rules 
- * depend on the % of subtotal).
+ * Shipping Cost Service
+ *
+ * Purpose: Determines the shipping cost based on selected method and order value.
+ * Logic: Implements tiered pricing rules where some methods depend on a percentage
+ * of the subtotal with caps or minimums.
+ *
+ * Note: Session state is not modified here; this is a pure calculation utility.
  */
 
 /**
- * How the math works:
- * This function is like a "Decision Tree". It looks at the $type 
- * (standard, express, etc.) and the $subtotal to pick the right price.
+ * Calculates shipping cost for a given method type.
+ *
+ * @param string $type The shipping method key (standard, express, etc)
+ * @param float $subtotal The order subtotal to apply percentage rules to
+ * @return float Calculated shipping cost
  */
 function calculateShippingCost($type, $subtotal)
 {
@@ -28,17 +28,16 @@ function calculateShippingCost($type, $subtotal)
             return min(80, $subtotal * 0.10);
 
         case 'white-glove':
-            // Rule: 5% of subtotal, capped at $150. 
-            // Better for very expensive orders.
+            // Rule: 5% of subtotal, capped at $150.
+// Better for very expensive orders.
             return min(150, $subtotal * 0.05);
 
         case 'freight':
-            // Rule: 3% of subtotal, but MUST be at least $200.
-            // Used for heavy/bulk items.
+            // Rule: 3% of subtotal, minimum $200
             return max(200, $subtotal * 0.03);
 
         default:
-            // Fallback: If something breaks, just charge the $40 standard rate.
+            // Fallback: Charge standard rate for unrecognized types
             return 40;
     }
 }

@@ -1,13 +1,10 @@
 <?php
 /**
- * MY STUDY NOTES: AJAX - Update Quantity
- * 
- * What happens here? -> When I click [+] or [-] in the cart, JavaScript 
- * sends the new quantity here. 
- * 
- * Why so much code? -> Because changing just ONE quantity affects 
- * EVERYTHING: Subtotal, Shipping, Tax, and the Grand Total.
- * So, I have to recalculate the whole world and send it back to the UI.
+ * AJAX Endpoint: Update Cart Quantity
+ *
+ * Purpose: Handling quantity updates from the cart page.
+ * Logic: Updates session state, then performs a full recalculation of the cart (Shipping, Tax, Totals)
+ * to return specific data needed for live UI updates.
  */
 
 ob_start();
@@ -44,17 +41,17 @@ if ($quantity > 10)
 if (isset($_SESSION['cart'])) {
     $_SESSION['cart'][$product_id] = $quantity;
 
-    // STEP 1: Get new subtotal
+    // 1. Recalculate Subtotal
     $subtotal = calculateSubtotal($_SESSION['cart'], $products);
 
-    // STEP 2: Figure out shipping (Rule: if cart is empty, shipping is 0)
+    // 2. Recalculate Shipping Cost
     $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
     $shipping_cost = (count($_SESSION['cart']) > 0) ? calculateShippingCost($shipping_method, $subtotal) : 0;
 
-    // STEP 3: Get the math summary (tax, grand total)
+    // 3. Recalculate Tax and Grand Total
     $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
-    // STEP 4: Calculate all shipping options so the UI can update the labels
+    // 4. Return updated shipping options (costs may vary by subtotal)
     $shipping_options = [
         'standard' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('standard', $subtotal) : 0,
         'express' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('express', $subtotal) : 0,

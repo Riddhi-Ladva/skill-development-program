@@ -28,16 +28,19 @@
 }
 
 #main-navigation a:hover,
-#main-navigation a[aria-current="page"] {
+#main-navigation a[aria-current="page"],
+#main-navigation a.active {
   color: var(--color-primary);
   background-color: rgba(37, 99, 235, 0.05);
 }
 
-#main-navigation a[aria-current="page"] {
+#main-navigation a[aria-current="page"],
+#main-navigation a.active {
   position: relative;
 }
 
-#main-navigation a[aria-current="page"]::after {
+#main-navigation a[aria-current="page"]::after,
+#main-navigation a.active::after {
   content: '';
   position: absolute;
   bottom: 0;

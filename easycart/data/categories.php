@@ -1,4 +1,11 @@
 <?php
+/**
+ * Categories Data Source
+ * 
+ * Purpose: Defines the available product categories for the store.
+ * Why: Used to populate navigation menus and filter products.
+ * Structure: Associative array indexed by unique category slug.
+ */
 $categories = [
     'electronics' => [
         'id' => 'electronics',
