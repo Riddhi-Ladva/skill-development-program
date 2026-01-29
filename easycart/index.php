@@ -1,7 +1,18 @@
 <?php
-require_once 'includes/session.php';
-require_once 'includes/config.php';
+/**
+ * Home Page
+ * 
+ * Responsibility: Displays the landing page with featured categories and products.
+ * 
+ * Why it exists: This is the entry point of the website where users can start their shopping journey.
+ * 
+ * When it runs: On initial website load or when the logo/home link is clicked.
+ */
+
+// Load the bootstrap file to initialize session and config
+require_once 'includes/bootstrap/session.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,9 +33,9 @@ require_once 'includes/config.php';
                 <p>Discover amazing deals on thousands of products</p>
                 <a href="<?php echo url('pages/products.php'); ?>" class="cta-button">Shop Now</a>
             </article>
-            <img class="hero-img hero-img--left" src="<?= url('img/hero-left.png') ?>" alt="Decorative left"
+            <img class="hero-img hero-img--left" src="<?= url('assets/img/hero-left.png') ?>" alt="Decorative left"
                 aria-hidden="true">
-            <img class="hero-img hero-img--right" src="<?= url('img/hero-right.png') ?>" alt="Decorative right"
+            <img class="hero-img hero-img--right" src="<?= url('assets/img/hero-right.png') ?>" alt="Decorative right"
                 aria-hidden="true">
         </section>
 
@@ -51,6 +62,25 @@ require_once 'includes/config.php';
                     <p>Gear for active lifestyle</p>
                     <a href="<?php echo url('pages/products.php?category=sports'); ?>">Explore Sports</a>
                 </article>
+            </div>
+        </section>
+
+        <section class="popular-brands">
+            <div class="section-container">
+                <h2>Popular Brands</h2>
+                <div class="brand-grid">
+                    <?php
+                    require_once ROOT_PATH . '/data/brands.php';
+                    foreach ($brands as $id => $brand):
+                        ?>
+                        <a href="<?php echo url('pages/products.php?brand_id=' . $id); ?>" class="brand-card"
+                            aria-label="View <?php echo htmlspecialchars($brand['name']); ?> products">
+                            <img src="<?php echo url($brand['logo']); ?>"
+                                alt="<?php echo htmlspecialchars($brand['name']); ?> Logo">
+                            <span class="brand-name"><?php echo htmlspecialchars($brand['name']); ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </section>
 
@@ -118,6 +148,7 @@ require_once 'includes/config.php';
     </main>
 
     <?php include 'includes/footer.php'; ?>
+    <script src="<?php echo asset('js/cart/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

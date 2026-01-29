@@ -1,0 +1,119 @@
+/**
+ * MY STUDY NOTES: Global Confirmations & Notifications
+ * 
+ * This file is like the "Hall Monitor" of the site. It watches 
+ * for important actions (like removing an item) and asks 
+ * "Are you sure?" before letting them happen.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. THE INTERCEPTOR: Confirmation Popups
+    // Note: I use 'true' (Capture Phase) here so this code runs 
+    // BEFORE the regular button clicks. It lets me "cancel" the click 
+    // if the user hits 'Cancel' on the popup.
+    document.addEventListener('click', (e) => {
+        const target = e.target;
+
+        const removeBtn = target.classList.contains('remove-item') ? target : target.closest('.remove-item');
+        const placeOrderBtn = target.classList.contains('place-order-button') ? target : target.closest('.place-order-button');
+
+        // Rule: Always double-check before deleting or spending money!
+        if (removeBtn) {
+            if (!confirm('Are you sure you want to remove this item?')) {
+                e.preventDefault();
+                e.stopPropagation(); // Stop the event so the cart doesn't actually delete it
+            }
+        }
+
+        else if (placeOrderBtn) {
+            if (!confirm('Ready to place your order? This will complete your purchase.')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    }, true);
+
+    // 2. SUCCESS BANNERS: Non-blocking feedback
+    const urlParams = new URLSearchParams(window.location.search);
+    const notificationContainer = document.getElementById('global-notification-container');
+
+    function showNotification(message, type = 'success') {
+        if (!notificationContainer) return;
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-icon">${type === 'success' ? '✅' : 'ℹ️'}</span>
+                <span class="notification-message">${message}</span>
+            </div>
+            <button class="notification-close" aria-label="Close notification">&times;</button>
+        `;
+
+        notificationContainer.appendChild(notification);
+
+        // Auto-cleanup: The message disappears after 5 seconds
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 500);
+        }, 5000);
+
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.remove();
+        });
+    }
+
+    // Check for "added=1" in the URL to show the "Success" banner
+    if (urlParams.has('added')) {
+        showNotification('Item successfully added to your cart!');
+        // Clean up the URL so it looks professional (e.g., remove the ?added=1)
+        const newUrl = window.location.pathname + window.location.search.replace(/[?&]added=1/, '').replace(/^&/, '?');
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    // 3. PERSISTENCE CHECK: Confirm the cart didn't vanish on refresh
+    const navigationType = performance.getEntriesByType("navigation")[0]?.type;
+    if (navigationType === 'reload') {
+        const isCartRelated = window.location.pathname.includes('cart.php') || window.location.pathname.includes('product-detail.php');
+        if (isCartRelated) {
+            showNotification('Your cart is safe! All items have been preserved.', 'info');
+        }
+    }
+
+    /**
+     * 4. WISHLIST SYNC:
+     * This keeps the little heart icon count in the header correct.
+     */
+    const updateHeaderWishlist = () => {
+        const wishlistLink = document.querySelector('.wishlist-link');
+        const wishlistCount = document.getElementById('header-wishlist-count');
+        if (!wishlistLink || !wishlistCount) return;
+
+        // Wishlist is saved in localStorage (Browser memory), not PHP session
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const count = wishlist.length;
+
+        wishlistCount.textContent = count;
+
+        if (count > 0) {
+            wishlistLink.classList.add('has-items');
+        } else {
+            wishlistLink.classList.remove('has-items');
+        }
+    };
+
+    // Listen for storage changes (if user has two tabs open)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'wishlist') updateHeaderWishlist();
+    });
+
+    // Check count on every click (in case they clicked a wishlist button)
+    document.addEventListener('click', () => {
+        setTimeout(updateHeaderWishlist, 50);
+    });
+
+    window.addEventListener('wishlistUpdated', updateHeaderWishlist);
+
+    // Initial run
+    updateHeaderWishlist();
+});

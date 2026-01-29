@@ -1,6 +1,18 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
+/**
+ * Product Listing Page
+ * 
+ * Responsibility: Displays a grid of products with filtering and sorting options.
+ * 
+ * Why it exists: To allow users to browse, search, and filter products to find what they want.
+ * 
+ * When it runs: When a user clicks "Shop Now", "Products", or a category link.
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
+
+// Data files (Database simulation)
 require_once ROOT_PATH . '/data/products.php';
 require_once ROOT_PATH . '/data/brands.php';
 
@@ -15,15 +27,21 @@ if (is_array($category)) {
 
 // Multi-value filters
 $selected_categories = isset($_GET['category']) && is_array($_GET['category']) ? $_GET['category'] : [];
+$selected_brands = isset($_GET['brand_id']) && is_array($_GET['brand_id']) ? $_GET['brand_id'] : [];
 $selected_prices = isset($_GET['price']) && is_array($_GET['price']) ? $_GET['price'] : [];
 $selected_rating = isset($_GET['rating']) ? (float) $_GET['rating'] : 0;
 $selected_availability = isset($_GET['availability']) && is_array($_GET['availability']) ? $_GET['availability'] : [];
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'featured';
 
-// Backward compatibility for single category (header links)
+// Backward compatibility for single values (header or brand section links)
 if (isset($_GET['category']) && is_string($_GET['category']) && $_GET['category'] !== '') {
     if (!in_array($_GET['category'], $selected_categories)) {
         $selected_categories[] = $_GET['category'];
+    }
+}
+if (isset($_GET['brand_id']) && is_string($_GET['brand_id']) && $_GET['brand_id'] !== '') {
+    if (!in_array($_GET['brand_id'], $selected_brands)) {
+        $selected_brands[] = (int) $_GET['brand_id'];
     }
 }
 
@@ -31,8 +49,8 @@ if (isset($_GET['category']) && is_string($_GET['category']) && $_GET['category'
 $all_brands = $brands ?? [];
 
 // Updated Filtering Logic
-if ($query !== '' || !empty($selected_categories) || !empty($selected_prices) || $selected_rating > 0 || !empty($selected_availability)) {
-    $products = array_filter($products, function ($product) use ($query, $selected_categories, $selected_prices, $selected_rating, $selected_availability, $all_brands) {
+if ($query !== '' || !empty($selected_categories) || !empty($selected_brands) || !empty($selected_prices) || $selected_rating > 0 || !empty($selected_availability)) {
+    $products = array_filter($products, function ($product) use ($query, $selected_categories, $selected_brands, $selected_prices, $selected_rating, $selected_availability, $all_brands) {
         // 1. Search Query Filter
         if ($query !== '') {
             $brand_name = isset($all_brands[$product['brand_id']]) ? $all_brands[$product['brand_id']]['name'] : '';
@@ -52,6 +70,13 @@ if ($query !== '' || !empty($selected_categories) || !empty($selected_prices) ||
             }
             if (!$category_match)
                 return false;
+        }
+
+        // 2.1 Brand Filter
+        if (!empty($selected_brands)) {
+            if (!in_array($product['brand_id'], $selected_brands)) {
+                return false;
+            }
         }
 
         // 3. Price Filter
@@ -174,6 +199,22 @@ if (!empty($products) && $sort !== 'featured') {
                     </section>
 
                     <section class="filter-group">
+                        <h2>Brands</h2>
+                        <fieldset>
+                            <legend class="visually-hidden">Select brands</legend>
+                            <?php
+                            foreach ($all_brands as $brand_id => $brand_info):
+                                $checked = in_array($brand_id, $selected_brands) ? 'checked' : '';
+                                ?>
+                                <label>
+                                    <input type="checkbox" name="brand_id[]" value="<?php echo $brand_id; ?>" <?php echo $checked; ?>>
+                                    <?php echo htmlspecialchars($brand_info['name']); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </fieldset>
+                    </section>
+
+                    <section class="filter-group">
                         <h2>Price Range</h2>
                         <fieldset>
                             <legend class="visually-hidden">Select price range</legend>
@@ -235,19 +276,27 @@ if (!empty($products) && $sort !== 'featured') {
             </aside>
 
             <div class="products-main">
-                <section class="sorting-controls">
-                    <label for="sort-select">Sort by:</label>
-                    <select id="sort-select" name="sort" form="filter-form" onchange="this.form.submit()">
-                        <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured</option>
-                        <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to
-                            High</option>
-                        <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High to
-                            Low</option>
-                        <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Customer Rating
-                        </option>
-                        <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest Arrivals
-                        </option>
-                    </select>
+                <section class="results-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-6); padding-bottom: var(--spacing-4); border-bottom: 1px solid var(--color-border-light);">
+                    <p class="product-count"
+                        style="color: var(--color-text-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">
+                        Showing <strong><?php echo count($products); ?></strong> products
+                    </p>
+                    <section class="sorting-controls">
+                        <label for="sort-select">Sort by:</label>
+                        <select id="sort-select" name="sort" form="filter-form" onchange="this.form.submit()">
+                            <option value="featured" <?php echo $sort === 'featured' ? 'selected' : ''; ?>>Featured
+                            </option>
+                            <option value="price-low" <?php echo $sort === 'price-low' ? 'selected' : ''; ?>>Price: Low to
+                                High</option>
+                            <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High
+                                to Low</option>
+                            <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Customer Rating
+                            </option>
+                            <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest Arrivals
+                            </option>
+                        </select>
+                    </section>
                 </section>
 
                 <section class="product-listing">
@@ -275,7 +324,9 @@ if (!empty($products) && $sort !== 'featured') {
                                     <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                     <p class="product-rating"><?php echo $product['rating']; ?> stars
                                         (<?php echo number_format($product['reviews']); ?> reviews)</p>
-                                    <button class="add-to-cart-btn btn btn-primary" style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;" data-product-id="<?php echo $id; ?>">
+                                    <button class="add-to-cart-btn btn btn-primary"
+                                        style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;"
+                                        data-product-id="<?php echo $id; ?>">
                                         Add to Cart
                                     </button>
                                 </article>
@@ -299,8 +350,6 @@ if (!empty($products) && $sort !== 'featured') {
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/products.js'); ?>"></script>
-    <script src="<?php echo asset('js/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
-</body>
-
-</html>
+    <script src="<?php echo asset('js/products/list.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
+</body></html>

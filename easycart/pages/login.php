@@ -1,7 +1,18 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
+/**
+ * Login Page
+ * 
+ * Responsibility: Allows existing users to sign in to their accounts.
+ * 
+ * Why it exists: To provide access to personalized features like order history and saved addresses.
+ * 
+ * When it runs: When a user clicks the "Login" link.
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -137,7 +148,7 @@ require_once '../includes/config.php';
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="../js/login.js"></script>
+    <script src="<?php echo asset('js/auth/auth-validation.js'); ?>"></script>
 </body>
 
 </html>

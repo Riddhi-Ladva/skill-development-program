@@ -1,9 +1,21 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
-require_once '../data/products.php';
-require_once '../data/brands.php';
-require_once '../data/categories.php';
+/**
+ * Product Detail Page
+ * 
+ * Responsibility: Displays detailed information about a single product, including specifications, reviews, and related products.
+ * 
+ * Why it exists: To provide all necessary information for a user to make a purchase decision.
+ * 
+ * When it runs: When a user clicks on a product name or image from the listing or home page.
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
+
+// Data files (Database simulation)
+require_once ROOT_PATH . '/data/products.php';
+require_once ROOT_PATH . '/data/brands.php';
+require_once ROOT_PATH . '/data/categories.php';
 
 $product_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $product = isset($products[$product_id]) ? $products[$product_id] : null;
@@ -65,8 +77,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     <main id="main-content">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
-                <li><a href="../index.php">Home</a></li>
-                <li><a href="products.php">Products</a></li>
+                <li><a href="<?php echo url('index.php'); ?>">Home</a></li>
+                <li><a href="<?php echo url('pages/products.php'); ?>">Products</a></li>
                 <li><a
                         href="products.php?category=<?php echo urlencode($product['category']); ?>"><?php echo htmlspecialchars($category['name']); ?></a>
                 </li>
@@ -341,9 +353,9 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/product-detail.js'); ?>"></script>
-    <script src="<?php echo asset('js/wishlist.js'); ?>"></script>
-    <script src="<?php echo asset('js/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo asset('js/products/detail.js'); ?>"></script>
+    <script src="<?php echo asset('js/wishlist/wishlist.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 
 </html>

@@ -1,4 +1,16 @@
+<?php
+/**
+ * Global Footer
+ * 
+ * Responsibility: Renders the site information, links, and copyright notice.
+ * 
+ * Why it exists: To provide a consistent footer across all pages.
+ * 
+ * When it runs: Included at the bottom of every page.
+ */
+?>
 <footer id="site-footer">
+
     <div class="footer-content">
         <section class="footer-section">
             <h3>About EasyCart</h3>

@@ -1,9 +1,22 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
-require_once '../data/orders.php';
-require_once '../data/products.php';
+/**
+ * Orders History Page
+ * 
+ * Responsibility: Displays a list of previous orders for the logged-in user.
+ * 
+ * Why it exists: To allow users to track their purchases and view order details.
+ * 
+ * When it runs: When a user clicks "Order History" or "My Orders".
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
+
+// Data files (Database simulation)
+require_once ROOT_PATH . '/data/orders.php';
+require_once ROOT_PATH . '/data/products.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 

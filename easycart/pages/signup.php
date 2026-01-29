@@ -1,7 +1,18 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
+/**
+ * Signup Page
+ * 
+ * Responsibility: Allows new users to create an account.
+ * 
+ * Why it exists: To collect user information and create a personal shopping profile.
+ * 
+ * When it runs: When a user clicks "Create Account" or "Sign up".
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -218,7 +229,7 @@ require_once '../includes/config.php';
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="../js/signup.js"></script>
+    <script src="<?php echo asset('js/auth/auth-validation.js'); ?>"></script>
 </body>
 
 </html>

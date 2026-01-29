@@ -1,32 +1,45 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
-require_once '../data/products.php';
-require_once '../data/brands.php';
-require_once '../includes/shipping.php';
+/**
+ * Shopping Cart Page
+ * 
+ * Responsibility: Displays the items added to the cart, calculates totals (subtotal, shipping, tax), 
+ * and allows users to update quantities or choose a shipping method.
+ * 
+ * Why it exists: To provide a summary of what the user is about to buy and a way to manage their selection.
+ * 
+ * When it runs: When a user clicks the cart icon or adds an item and chooses to view the cart.
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
+
+// Data files (Database simulation)
+require_once ROOT_PATH . '/data/products.php';
+require_once ROOT_PATH . '/data/brands.php';
+
+// Modular Service Files
+require_once ROOT_PATH . '/includes/cart/services.php';
+require_once ROOT_PATH . '/includes/shipping/services.php';
+require_once ROOT_PATH . '/includes/tax/services.php';
 
 $cart_items = $_SESSION['cart'];
 $total_items = array_sum($cart_items);
 
-// Calculate subtotal
-$subtotal = 0;
-foreach ($cart_items as $id => $quantity) {
-    if (isset($products[$id])) {
-        $subtotal += $products[$id]['price'] * $quantity;
-    }
-}
+/**
+ * Calculation Logic
+ * We use the modular service functions to ensure consistency across the app.
+ */
 
-// Initialize default shipping method if not set (store only method, not cost)
-if (!isset($_SESSION['shipping_method'])) {
-    $_SESSION['shipping_method'] = 'standard';
-}
+// 1. Calculate subtotal using the cart service
+$subtotal = calculateSubtotal($cart_items, $products);
 
-// Always recalculate shipping based on current subtotal
+// 2. Determine shipping method and calculate cost using shipping service
 $shipping_method = $_SESSION['shipping_method'];
 $shipping = calculateShippingCost($shipping_method, $subtotal);
 
-// Use the reusable function for all calculations
-$totals = calculateCheckoutTotals($cart_items, $products, $shipping);
+// 3. Aggregate all totals (including tax) using the cart service
+$totals = calculateCheckoutTotals($subtotal, $shipping);
+
 $subtotal = $totals['subtotal'];
 $tax = $totals['tax'];
 $order_total = $totals['total'];
@@ -283,7 +296,10 @@ $order_total = $totals['total'];
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/cart.js'); ?>?v=<?php echo time(); ?>"></script>
+    <script src="<?php echo asset('js/wishlist/wishlist.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/summary.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/quantity.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/shipping.js'); ?>"></script>
 </body>
 
 </html>

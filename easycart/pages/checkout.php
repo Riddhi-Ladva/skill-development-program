@@ -1,8 +1,24 @@
 <?php
-require_once '../includes/session.php';
-require_once '../includes/config.php';
-require_once '../data/products.php';
-require_once '../includes/shipping.php';
+/**
+ * Checkout Page
+ * 
+ * Responsibility: Handles the final purchase process, collecting shipping and payment information.
+ * 
+ * Why it exists: To provide a secure and streamlined way for users to complete their orders.
+ * 
+ * When it runs: When a user clicks "Proceed to Checkout" from the cart page.
+ */
+
+// Load the bootstrap file for session and configuration
+require_once '../includes/bootstrap/session.php';
+
+// Data files (Database simulation)
+require_once ROOT_PATH . '/data/products.php';
+
+// Modular Service Files
+require_once ROOT_PATH . '/includes/cart/services.php';
+require_once ROOT_PATH . '/includes/shipping/services.php';
+require_once ROOT_PATH . '/includes/tax/services.php';
 
 $cart_items = $_SESSION['cart'];
 
@@ -14,25 +30,15 @@ if (empty($cart_items)) {
 
 $total_items = array_sum($cart_items);
 
-// Calculate subtotal
-$subtotal = 0;
-foreach ($cart_items as $id => $quantity) {
-    if (isset($products[$id])) {
-        $subtotal += $products[$id]['price'] * $quantity;
-    }
-}
-
-// Initialize default shipping method if not set (store only method, not cost)
-if (!isset($_SESSION['shipping_method'])) {
-    $_SESSION['shipping_method'] = 'standard';
-}
-
-// Always recalculate shipping based on current subtotal
+/**
+ * Recalculate Totals
+ * To ensure accuracy, we always recalculate totals on the checkout page.
+ */
+$subtotal = calculateSubtotal($cart_items, $products);
 $shipping_method = $_SESSION['shipping_method'];
 $shipping = calculateShippingCost($shipping_method, $subtotal);
+$totals = calculateCheckoutTotals($subtotal, $shipping);
 
-// Use the reusable function for all calculations
-$totals = calculateCheckoutTotals($cart_items, $products, $shipping);
 $subtotal = $totals['subtotal'];
 $tax = $totals['tax'];
 $order_total = $totals['total'];
@@ -52,7 +58,7 @@ $order_total = $totals['total'];
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="../index.php">EasyCart</a></h1>
+                <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
             </div>
             <div class="header-checkout-actions">
                 <a href="cart.php" class="back-link">← Back to Cart</a>
@@ -359,8 +365,9 @@ $order_total = $totals['total'];
             </ul>
         </div>
     </footer>
-    <?php include '../includes/header.php'; ?>
-    <script src="<?php echo asset('js/product-detail.js'); ?>"></script>
+    <!-- Footer include -->
+    <?php include '../includes/footer.php'; ?>
+    <script src="<?php echo asset('js/checkout/validation.js'); ?>"></script>
     <script>
         // Inject shipping price for any future cart summary updates on this page if needed
         window.shippingPrice = <?php echo isset($_SESSION['shipping_price']) ? $_SESSION['shipping_price'] : 0; ?>;
@@ -371,7 +378,7 @@ $order_total = $totals['total'];
             checkoutShippingOptions.forEach(radio => {
                 radio.addEventListener('change', () => {
                     if (radio.checked) {
-                        fetch('set-shipping.php', {
+                        fetch('<?php echo url('ajax/shipping/update.php'); ?>', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
