@@ -16,6 +16,7 @@ require_once '../includes/bootstrap/session.php';
 require_once ROOT_PATH . '/data/products.php';
 require_once ROOT_PATH . '/data/brands.php';
 require_once ROOT_PATH . '/data/categories.php';
+require_once ROOT_PATH . '/includes/shipping/services.php';
 
 $product_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $product = isset($products[$product_id]) ? $products[$product_id] : null;
@@ -38,6 +39,7 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
         content="<?php echo htmlspecialchars($product['name'] . ' - ' . $product['description']); ?>">
     <title><?php echo htmlspecialchars($product['name']); ?> - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/components/shipping-labels.css'); ?>">
     <style>
         .thumbnail-gallery button.active {
             border-color: var(--color-primary);
@@ -129,7 +131,14 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                     <p class="original-price">$129.99</p>
                     <p class="discount-badge">Save 38%</p>
                     <p class="stock-status">In Stock</p>
-                    <p class="shipping-info">Free standard shipping available</p>
+                    <?php
+                    $shipping = getShippingEligibility($product['price']);
+                    ?>
+                    <p class="shipping-info">
+                        <span class="shipping-label <?php echo $shipping['class']; ?>">
+                            <?php echo $shipping['icon']; ?> <?php echo $shipping['label']; ?>
+                        </span>
+                    </p>
                 </section>
 
                 <section class="product-actions">

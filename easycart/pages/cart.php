@@ -30,17 +30,29 @@ $total_items = array_sum($cart_items);
  * We use the modular service functions to ensure consistency across the app.
  */
 
-// 1. Calculate subtotal using the cart service
-$subtotal = calculateSubtotal($cart_items, $products);
+// 1. Calculate detailed cart items (including discounts)
+$cart_details = calculateCartDetails($cart_items, $products);
 
-// 2. Determine shipping method and calculate cost using shipping service
+// NEW: Calculate Shipping Constraints (Freight vs Express)
+$shipping_constraints = calculateCartShippingConstraints($cart_details);
+$requires_freight = $shipping_constraints['requires_freight'];
+
+// 2. Sum up totals from details for the subtotal
+$subtotal = 0;
+foreach ($cart_details as $item) {
+    $subtotal += $item['final_total'];
+}
+
+// 3. Determine shipping method and calculate cost using shipping service
 $shipping_method = $_SESSION['shipping_method'];
 $shipping = calculateShippingCost($shipping_method, $subtotal);
 
-// 3. Aggregate all totals (including tax) using the cart service
+// 4. Aggregate all totals (including tax) using the cart service
 $totals = calculateCheckoutTotals($subtotal, $shipping);
 
 $subtotal = $totals['subtotal'];
+$promo_discount = $totals['promo_discount'] ?? 0; // NEW
+$shipping = $totals['shipping']; // Re-assign from totals to be safe
 $tax = $totals['tax'];
 $order_total = $totals['total'];
 ?>
@@ -53,6 +65,8 @@ $order_total = $totals['total'];
     <meta name="description" content="Your EasyCart shopping cart">
     <title>Shopping Cart - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/components/shipping-labels.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/components/shipping.css'); ?>">
 
 <body>
     <!-- HEADER ADDED: consistent site header (logo + standard navigation) -->
@@ -73,24 +87,27 @@ $order_total = $totals['total'];
                 <?php if (empty($cart_items)): ?>
                     <p>Your cart is empty. <a href="products.php">Start shopping!</a></p>
                 <?php else: ?>
-                    <?php foreach ($cart_items as $id => $quantity):
-                        if (!isset($products[$id]))
-                            continue;
-                        $item = $products[$id];
-                        $item_total = $item['price'] * $quantity;
-                        $brand_name = isset($brands[$item['brand_id']]) ? $brands[$item['brand_id']]['name'] : 'Generic';
+                    <?php foreach ($cart_details as $id => $item):
+                        // $item now contains all the calculated fields from services.php
+                        $brand_name = isset($brands[$products[$id]['brand_id']]) ? $brands[$products[$id]['brand_id']]['name'] : 'Generic';
                         ?>
-                        <article class="cart-item">
+                        <article class="cart-item" data-product-id="<?php echo $id; ?>">
                             <div class="item-image">
-                                <img src="<?php echo htmlspecialchars($item['image']); ?>"
-                                    alt="<?php echo htmlspecialchars($item['name']); ?>">
+                                <img src="<?php echo htmlspecialchars($products[$id]['image']); ?>"
+                                    alt="<?php echo htmlspecialchars($products[$id]['name']); ?>">
                             </div>
                             <div class="item-details">
                                 <h3><a
-                                        href="product-detail.php?id=<?php echo $id; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
+                                        href="product-detail.php?id=<?php echo $id; ?>"><?php echo htmlspecialchars($products[$id]['name']); ?></a>
                                 </h3>
                                 <p class="item-brand">Brand: <?php echo htmlspecialchars($brand_name); ?></p>
+
                                 <p class="item-stock">In Stock</p>
+                                <p class="shipping-eligibility">
+                                    <span class="shipping-label <?php echo $item['shipping_eligibility']['class']; ?>">
+                                        <?php echo $item['shipping_eligibility']['icon']; ?> <?php echo $item['shipping_eligibility']['label']; ?>
+                                    </span>
+                                </p>
 
                             </div>
                             <div class="item-quantity">
@@ -98,14 +115,23 @@ $order_total = $totals['total'];
                                 <div class="quantity-controls">
                                     <button type="button" class="qty-btn minus" aria-label="Decrease quantity">−</button>
                                     <input type="number" id="quantity-<?php echo $id; ?>" name="quantity"
-                                        value="<?php echo $quantity; ?>" min="1" max="10" readonly>
+                                        value="<?php echo $item['quantity']; ?>" min="1" max="10" readonly>
                                     <button type="button" class="qty-btn plus" aria-label="Increase quantity">+</button>
                                 </div>
                             </div>
                             <div class="item-price">
                                 <p class="unit-price" data-price="<?php echo $item['price']; ?>">
                                     $<?php echo number_format($item['price'], 2); ?> each</p>
-                                <p class="total-price" data-item-total>$<?php echo number_format($item_total, 2); ?></p>
+
+                                <p class="total-price" data-item-total>
+                                    $<?php echo number_format($item['final_total'], 2); ?>
+                                </p>
+
+                                <p class="item-discount"
+                                    style="<?php echo $item['discount_amount'] > 0 ? '' : 'display:none;'; ?>">
+                                    Discount (<?php echo $item['discount_percent']; ?>%):
+                                    -$<?php echo number_format($item['discount_amount'], 2); ?>
+                                </p>
                             </div>
                             <div class="item-actions">
 
@@ -133,6 +159,10 @@ $order_total = $totals['total'];
                         <dd id="summary-shipping">
                             $<?php echo number_format($shipping, 2); ?>
                         </dd>
+                        
+                        <!-- PROMO DISCOUNT ROW -->
+                        <dt id="promo-row-label" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">Promo Discount:</dt>
+                        <dd id="promo-row-amount" class="discount-text" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">-$<?php echo number_format($promo_discount, 2); ?></dd>
 
                         <dt>Tax (18%):</dt>
                         <dd id="summary-tax">$<?php echo number_format($tax, 2); ?></dd>
@@ -161,8 +191,10 @@ $order_total = $totals['total'];
                             $freight_price = max(200, $subtotal * 0.03);
                             ?>
 
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="standard" <?php echo $current_method === 'standard' ? 'checked' : ''; ?>>
+                            <label class="shipping-option <?php echo $requires_freight ? 'is-disabled' : ''; ?>">
+                                <input type="radio" name="shipping" value="standard" 
+                                    <?php echo $current_method === 'standard' ? 'checked' : ''; ?>
+                                    <?php echo $requires_freight ? 'disabled' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Standard Shipping</p>
                                     <p class="option-time">5–7 business days</p>
@@ -170,8 +202,10 @@ $order_total = $totals['total'];
                                 <p class="option-price">$<?php echo number_format($standard_price, 2); ?></p>
                             </label>
 
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="express" <?php echo $current_method === 'express' ? 'checked' : ''; ?>>
+                            <label class="shipping-option <?php echo $requires_freight ? 'is-disabled' : ''; ?>">
+                                <input type="radio" name="shipping" value="express" 
+                                    <?php echo $current_method === 'express' ? 'checked' : ''; ?>
+                                    <?php echo $requires_freight ? 'disabled' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Express Shipping</p>
                                     <p class="option-time">2–3 business days</p>
@@ -179,8 +213,10 @@ $order_total = $totals['total'];
                                 <p class="option-price">$<?php echo number_format($express_price, 2); ?></p>
                             </label>
 
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="white-glove" <?php echo $current_method === 'white-glove' ? 'checked' : ''; ?>>
+                            <label class="shipping-option <?php echo !$requires_freight ? 'is-disabled' : ''; ?>">
+                                <input type="radio" name="shipping" value="white-glove" 
+                                    <?php echo $current_method === 'white-glove' ? 'checked' : ''; ?>
+                                    <?php echo !$requires_freight ? 'disabled' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">White Glove Delivery</p>
                                     <p class="option-time">7–10 business days</p>
@@ -188,8 +224,10 @@ $order_total = $totals['total'];
                                 <p class="option-price">$<?php echo number_format($white_glove_price, 2); ?></p>
                             </label>
 
-                            <label class="shipping-option">
-                                <input type="radio" name="shipping" value="freight" <?php echo $current_method === 'freight' ? 'checked' : ''; ?>>
+                            <label class="shipping-option <?php echo !$requires_freight ? 'is-disabled' : ''; ?>">
+                                <input type="radio" name="shipping" value="freight" 
+                                    <?php echo $current_method === 'freight' ? 'checked' : ''; ?>
+                                    <?php echo !$requires_freight ? 'disabled' : ''; ?>>
                                 <div class="option-details">
                                     <p class="option-name">Freight Shipping</p>
                                     <p class="option-time">10–14 business days</p>
@@ -204,10 +242,20 @@ $order_total = $totals['total'];
                 <section class="promo-code-section">
                     <h3>Have a promo code?</h3>
                     <section class="promo-code">
-                        <form>
+                        <form id="promo-form" onsubmit="return false;">
                             <label for="checkout-promo" class="visually-hidden">Promo code</label>
-                            <input type="text" id="checkout-promo" name="promo-code" placeholder="Enter promo code">
-                            <button type="submit">Apply</button>
+                            <?php 
+                                $active_code = isset($_SESSION['promo_code']) ? $_SESSION['promo_code'] : '';
+                            ?>
+                            <div class="promo-input-group">
+                                <input type="text" id="checkout-promo" name="promo-code" placeholder="Enter promo code" 
+                                       value="<?php echo htmlspecialchars($active_code); ?>" 
+                                       <?php echo $active_code ? 'disabled' : ''; ?>>
+                                
+                                <button type="button" id="apply-promo-btn" style="<?php echo $active_code ? 'display:none;' : ''; ?>">Apply</button>
+                                <button type="button" id="remove-promo-btn" class="remove-btn" style="<?php echo $active_code ? '' : 'display:none;'; ?>">Remove</button>
+                            </div>
+                            <p id="promo-message" class="message"></p>
                         </form>
                     </section>
                 </section>
@@ -301,6 +349,7 @@ $order_total = $totals['total'];
     <script src="<?php echo asset('js/cart/summary.js'); ?>"></script>
     <script src="<?php echo asset('js/cart/quantity.js'); ?>"></script>
     <script src="<?php echo asset('js/cart/shipping.js'); ?>"></script>
+    <script src="<?php echo asset('js/cart/promo.js'); ?>"></script>
 </body>
 
 </html>

@@ -15,6 +15,7 @@ require_once '../includes/bootstrap/session.php';
 // Data files (Database simulation)
 require_once ROOT_PATH . '/data/products.php';
 require_once ROOT_PATH . '/data/brands.php';
+require_once ROOT_PATH . '/includes/shipping/services.php';
 
 // Get filters from URL
 $query = isset($_GET['q']) ? trim($_GET['q']) : '';
@@ -155,6 +156,7 @@ if (!empty($products) && $sort !== 'featured') {
     <meta name="description" content="Browse our wide selection of products at EasyCart">
     <title>Products - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/components/shipping-labels.css'); ?>">
 
 <body>
     <?php include '../includes/header.php'; ?>
@@ -268,6 +270,24 @@ if (!empty($products) && $sort !== 'featured') {
                         </fieldset>
                     </section>
 
+                    <section class="filter-group">
+                        <h2>Shipping</h2>
+                        <fieldset id="shipping-filters">
+                            <legend class="visually-hidden">Filter by shipping eligibility</legend>
+                            <?php $selected_shipping = isset($_GET['shipping']) && is_array($_GET['shipping']) ? $_GET['shipping'] : []; ?>
+                            <label>
+                                <input type="checkbox" id="filter-express" name="shipping[]" value="express" 
+                                    <?php echo in_array('express', $selected_shipping) ? 'checked' : ''; ?>>
+                                Express Eligible
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-freight" name="shipping[]" value="freight" 
+                                    <?php echo in_array('freight', $selected_shipping) ? 'checked' : ''; ?>>
+                                Freight Required
+                            </label>
+                        </fieldset>
+                    </section>
+
                     <button type="submit" class="apply-filters-button">Apply Filters</button>
                     <a href="products.php" class="clear-filters-button"
                         style="text-decoration: none; display: inline-block; text-align: center; width: 100%; border: 1px solid var(--color-border); padding: var(--spacing-2); border-radius: var(--border-radius-md); margin-top: var(--spacing-2); color: var(--color-text-primary); font-weight: var(--font-weight-medium);">Clear
@@ -324,6 +344,14 @@ if (!empty($products) && $sort !== 'featured') {
                                     <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                     <p class="product-rating"><?php echo $product['rating']; ?> stars
                                         (<?php echo number_format($product['reviews']); ?> reviews)</p>
+                                    <?php
+                                    $shipping = getShippingEligibility($product['price']);
+                                    ?>
+                                    <p class="shipping-info" style="margin: 5px 0;">
+                                        <span class="shipping-label <?php echo $shipping['class']; ?>">
+                                            <?php echo $shipping['icon']; ?>         <?php echo $shipping['label']; ?>
+                                        </span>
+                                    </p>
                                     <button class="add-to-cart-btn btn btn-primary"
                                         style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;"
                                         data-product-id="<?php echo $id; ?>">
@@ -352,4 +380,6 @@ if (!empty($products) && $sort !== 'featured') {
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/products/list.js'); ?>"></script>
     <script src="<?php echo asset('js/cart/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
-</body></html>
+</body>
+
+</html>
