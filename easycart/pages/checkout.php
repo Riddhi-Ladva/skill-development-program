@@ -38,7 +38,7 @@ $subtotal = calculateSubtotal($cart_items, $products);
 $shipping_method = $_SESSION['shipping_method'];
 $shipping = calculateShippingCost($shipping_method, $subtotal);
 $totals = calculateCheckoutTotals($subtotal, $shipping);
-
+$promo_discount = $totals['promo_discount'] ?? 0; // NEW
 $subtotal = $totals['subtotal'];
 $tax = $totals['tax'];
 $order_total = $totals['total'];
@@ -317,18 +317,13 @@ $order_total = $totals['total'];
                     <?php endforeach; ?>
                 </section>
 
-                <section class="promo-code">
-                    <form>
-                        <label for="checkout-promo" class="visually-hidden">Promo code</label>
-                        <input type="text" id="checkout-promo" name="promo-code" placeholder="Enter promo code">
-                        <button type="submit">Apply</button>
-                    </form>
-                </section>
 
                 <section class="summary-totals">
                     <dl>
                         <dt>Subtotal:</dt>
                         <dd>$<?php echo number_format($subtotal, 2); ?></dd>
+                        <dt id="promo-row-label" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">Promo Discount:</dt>
+                        <dd id="promo-row-amount" class="discount-text" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">-$<?php echo number_format($promo_discount, 2); ?></dd>
                         <dt>Shipping:</dt>
                         <dd>$<?php echo number_format($shipping, 2); ?></dd>
                         <dt>Tax (18%):</dt>
