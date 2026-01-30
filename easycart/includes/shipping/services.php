@@ -41,3 +41,30 @@ function calculateShippingCost($type, $subtotal)
             return 40;
     }
 }
+
+/**
+ * Determines shipping eligibility based on product price.
+ * 
+ * @param float $price Product price
+ * @return array ['label' => string, 'requires_freight' => bool]
+ */
+function getShippingEligibility($price)
+{
+    // < 300: Express Available
+    // >= 300: Freight Required
+    $is_freight = $price >= 300;
+
+    return $is_freight
+        ? [
+            'label' => 'Freight Required',
+            'requires_freight' => true,
+            'class' => 'shipping-freight',
+            'icon' => '🚚'
+        ]
+        : [
+            'label' => 'Express Available',
+            'requires_freight' => false,
+            'class' => 'shipping-express',
+            'icon' => '⚡'
+        ];
+}
