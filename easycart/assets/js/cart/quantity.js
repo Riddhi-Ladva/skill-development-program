@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             if (data.success && data.totals) {
-                window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions);
+                window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions, data.cartItems, data.shippingConstraints);
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.success) {
                     item.remove();
-                    window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions);
+                    window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions, data.cartItems, data.shippingConstraints);
                     window.EasyCart.UI.refreshSummaryOptimistically();
                 }
             });
