@@ -1,4 +1,5 @@
 <?php
+
 $marks = 78;
 
 if ($marks >= 80) {
