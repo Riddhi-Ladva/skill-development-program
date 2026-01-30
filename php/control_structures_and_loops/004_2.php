@@ -1,4 +1,5 @@
 <?php
+
 $student = [
     "name" => "Riddhi",
     "age" => 21,
