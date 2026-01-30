@@ -1,0 +1,8 @@
+<?php
+$greeting = "Hello";
+$year = 2024;
+$isActive = true;
+
+echo $greeting . ", the year is " . $year . "<br>";
+echo "isActive: " . $isActive;
+?>
