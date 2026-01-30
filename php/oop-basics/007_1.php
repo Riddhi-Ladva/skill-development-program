@@ -1,4 +1,5 @@
 <?php
+
 class Employee{
     public $name;
     private $salary;
