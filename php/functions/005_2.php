@@ -1,4 +1,5 @@
 <?php
+
 $total = 1000;
 
 function showTotal() {
