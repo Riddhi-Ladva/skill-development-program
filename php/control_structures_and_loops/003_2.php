@@ -1,5 +1,4 @@
 <?php
-
 $day = "Sat";
 
 switch ($day) {
