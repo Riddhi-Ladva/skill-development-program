@@ -59,21 +59,30 @@ if (isset($_SESSION['cart'])) {
         'freight' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('freight', $subtotal) : 0
     ];
 
+    // 5. Get detailed item breakdown for UI updates
+    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+
+    // NEW: Calculate Shipping Constraints
+    $constraints = calculateCartShippingConstraints($cart_details);
+
     // Send everything back so JS can just "plug it in" to the HTML
     echo json_encode([
         'success' => true,
         'totals' => [
             'subtotal' => '$' . number_format($totals['subtotal'], 2),
             'shipping' => '$' . number_format($totals['shipping'], 2),
+            'promo_discount' => isset($totals['promo_discount']) ? '-$' . number_format($totals['promo_discount'], 2) : '$0.00',
             'tax' => '$' . number_format($totals['tax'], 2),
             'grandTotal' => '$' . number_format($totals['total'], 2)
         ],
+        'cartItems' => $cart_details,
         'shippingOptions' => [
             'standard' => '$' . number_format($shipping_options['standard'], 2),
             'express' => '$' . number_format($shipping_options['express'], 2),
             'white-glove' => '$' . number_format($shipping_options['white-glove'], 2),
             'freight' => '$' . number_format($shipping_options['freight'], 2)
-        ]
+        ],
+        'shippingConstraints' => $constraints // NEW
     ]);
 } else {
     http_response_code(500);

@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
         // Recalculate available shipping options based on new subtotal
-// This ensures shipping quotes remain accurate if subtotal drops below free shipping thresholds
+        // This ensures shipping quotes remain accurate if subtotal drops below free shipping thresholds
         $shipping_options = [
             'standard' => ($subtotal > 0) ? calculateShippingCost('standard', $subtotal) : 0,
             'express' => ($subtotal > 0) ? calculateShippingCost('express', $subtotal) : 0,
@@ -57,22 +57,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'freight' => ($subtotal > 0) ? calculateShippingCost('freight', $subtotal) : 0
         ];
 
+        // Get detailed item breakdown for UI updates
+        $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+
+        // NEW: Calculate Shipping Constraints
+        $constraints = calculateCartShippingConstraints($cart_details);
+
         // Send all the fresh math back to the UI
         echo json_encode([
             'success' => true,
             'totals' => [
                 'subtotal' => '$' . number_format($totals['subtotal'], 2),
                 'shipping' => '$' . number_format($totals['shipping'], 2),
+                'promo_discount' => isset($totals['promo_discount']) ? '-$' . number_format($totals['promo_discount'], 2) : '$0.00',
                 'tax' => '$' . number_format($totals['tax'], 2),
                 'grandTotal' => '$' . number_format($totals['total'], 2),
                 'totalItems' => $totalItems
             ],
+            'cartItems' => $cart_details,
             'shippingOptions' => [
                 'standard' => '$' . number_format($shipping_options['standard'], 2),
                 'express' => '$' . number_format($shipping_options['express'], 2),
                 'white-glove' => '$' . number_format($shipping_options['white-glove'], 2),
                 'freight' => '$' . number_format($shipping_options['freight'], 2)
-            ]
+            ],
+            'shippingConstraints' => $constraints // NEW
         ]);
     } else {
         http_response_code(400);
