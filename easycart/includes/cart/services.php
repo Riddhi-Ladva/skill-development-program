@@ -91,7 +91,7 @@ function calculateCartDetails($cart_items, $products)
 }
 
 /**
- * Calculates cart-wide shipping constraints based on items.
+ * Calculates cart-wide shipping constraints based on items and subtotal (considering promos).
  *
  * @param array $cart_details Result from calculateCartDetails
  * @return array Constraints flags
@@ -99,17 +99,63 @@ function calculateCartDetails($cart_items, $products)
 function calculateCartShippingConstraints($cart_details)
 {
     $requires_freight = false;
+    $raw_subtotal = 0;
 
     foreach ($cart_details as $item) {
+        $raw_subtotal += $item['final_total'];
         if ($item['shipping_eligibility']['requires_freight']) {
             $requires_freight = true;
-            break;
         }
     }
 
+    // Calculate Promo Discount to get Effective Subtotal
+    $promo_discount = 0;
+    if (isset($_SESSION['promo_code']) && isset($_SESSION['promo_value'])) {
+        $promo_value = $_SESSION['promo_value'];
+        $promo_discount = $raw_subtotal * ($promo_value / 100);
+    }
+
+    $effective_subtotal = $raw_subtotal - $promo_discount;
+
+    // Constraint: If EFFECTIVE subtotal > 300, Freight is legally required
+    if ($effective_subtotal > 300) {
+        $requires_freight = true;
+    }
+
     return [
-        'requires_freight' => $requires_freight
+        'requires_freight' => $requires_freight,
+        'effective_subtotal' => $effective_subtotal // Useful for debugging or other logic
     ];
+}
+
+/**
+ * Validates and possibly auto-corrects the selected shipping method.
+ *
+ * @param string $current_method The currently selected method ID
+ * @param array $constraints The constraints array from calculateCartShippingConstraints
+ * @return string The validated (or corrected) shipping method ID
+ */
+function validateShippingMethod($current_method, $constraints)
+{
+    if ($constraints['requires_freight']) {
+        // If freight is required, we CANNOT use standard or express
+        if ($current_method === 'standard' || $current_method === 'express') {
+            return 'freight'; // Auto-upgrade to freight
+        }
+        // White-glove is allowed as a premium freight option
+        return $current_method;
+    } else {
+        // If freight is NOT required (subtotal <= 300 AND no heavy items)
+        // We generally shouldn't force freight, but if they selected it, maybe they want it?
+        // REQUIREMENT: "If Freight is NOT required... Disable: Freight Shipping, White Glove Delivery"
+        // So we must downgrade if they have a heavy method selected.
+
+        if ($current_method === 'freight' || $current_method === 'white-glove') {
+            return 'standard'; // Auto-downgrade to standard
+        }
+
+        return $current_method;
+    }
 }
 
 /**

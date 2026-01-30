@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 updatePromoUI(true, data.appliedCode);
-                window.EasyCart.UI.updateTotalsFromResponse(data.totals, null, data.cartItems);
+                window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions, data.cartItems, data.shippingConstraints);
             } else {
                 messageEl.textContent = data.message;
                 messageEl.className = 'message error';
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 updatePromoUI(false);
-                window.EasyCart.UI.updateTotalsFromResponse(data.totals, null, data.cartItems);
+                window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions, data.cartItems, data.shippingConstraints);
             }
         } catch (error) {
             console.error('Error removing promo:', error);

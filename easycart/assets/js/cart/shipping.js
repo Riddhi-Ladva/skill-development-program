@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (data.success) {
                 if (window.EasyCart && window.EasyCart.UI) {
-                    window.EasyCart.UI.updateTotalsFromResponse(data.totals);
+                    window.EasyCart.UI.updateTotalsFromResponse(data.totals, data.shippingOptions, data.cartItems, data.shippingConstraints);
                 }
             }
         } catch (error) {

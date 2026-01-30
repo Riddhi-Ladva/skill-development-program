@@ -35,19 +35,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (in_array($method, $valid_methods)) {
 
-        // Step 1: Get subtotal from the session cart
-        $subtotal = calculateSubtotal($_SESSION['cart'] ?? [], $products);
+        // VALIDATION PIPELINE
+        // 1. Get detailed breakdown first
+        $cart_details = calculateCartDetails($_SESSION['cart'] ?? [], $products);
 
-        // Step 2: Remember this method in the session!
-        $_SESSION['shipping_method'] = $method;
+        // 2. Calculate Raw Subtotal from details
+        $subtotal = 0;
+        foreach ($cart_details as $item) {
+            $subtotal += $item['final_total'];
+        }
 
-        // Step 3: Math out the new cost based on the method
-        $shipping_cost = (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost($method, $subtotal) : 0;
+        // 3. Calculate Shipping Constraints (Uses Effective Subtotal internally)
+        $constraints = calculateCartShippingConstraints($cart_details);
 
-        // Step 4: Get final totals including the NEW TAX (Tax depends on shipping cost!)
+        // 4. Validate Requested Method
+        // logic: We try to set the requested method, but validateShippingMethod might override it if it's invalid.
+        $validated_method = validateShippingMethod($method, $constraints);
+
+        // If the user tried to select 'standard' but 'freight' is required, $validated_method will be 'freight'.
+        $_SESSION['shipping_method'] = $validated_method;
+
+        // 5. Calculate Shipping Cost (using the VALIDATED method)
+        $shipping_cost = (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
+
+        // 6. Calculate Finals
         $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
-        // Step 5: Recalculate all shipping choices for the radio button labels
+        // 7. Shipping Options
         $shipping_options = [
             'standard' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('standard', $subtotal) : 0,
             'express' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('express', $subtotal) : 0,
@@ -58,10 +72,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Return updated values to the frontend
         echo json_encode([
             'success' => true,
-            'method' => $method,
+            'method' => $validated_method, // Return what we actually set
             'totals' => [
                 'subtotal' => '$' . number_format($totals['subtotal'], 2),
                 'shipping' => '$' . number_format($totals['shipping'], 2),
+                'promo_discount' => isset($totals['promo_discount']) ? '-$' . number_format($totals['promo_discount'], 2) : '$0.00',
                 'tax' => '$' . number_format($totals['tax'], 2),
                 'grandTotal' => '$' . number_format($totals['total'], 2)
             ],
@@ -70,7 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'express' => '$' . number_format($shipping_options['express'], 2),
                 'white-glove' => '$' . number_format($shipping_options['white-glove'], 2),
                 'freight' => '$' . number_format($shipping_options['freight'], 2)
-            ]
+            ],
+            'shippingConstraints' => $constraints // NEW: Required by JS
         ]);
     } else {
         http_response_code(400);

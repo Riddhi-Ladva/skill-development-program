@@ -38,8 +38,24 @@ if ($product_id && isset($products[$product_id])) {
         $_SESSION['cart'][$product_id] = 10;
     }
 
+    // Need cart services for validation
+    require_once ROOT_PATH . '/includes/cart/services.php';
+    require_once ROOT_PATH . '/includes/shipping/services.php';
+
     // Calculate new total items count for header badge update
     $total_items = array_sum($_SESSION['cart']);
+
+    // VALIDATION PIPELINE: Ensure shipping method is valid after adding item
+    // 1. Get detailed breakdown
+    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+
+    // 2. Calculate Shipping Constraints
+    $constraints = calculateCartShippingConstraints($cart_details);
+
+    // 3. Validate and Auto-Correct Shipping Method
+    $current_method = $_SESSION['shipping_method'] ?? 'standard';
+    $validated_method = validateShippingMethod($current_method, $constraints);
+    $_SESSION['shipping_method'] = $validated_method; // Persist correction
 
     // Send the success response back to JavaScript
     echo json_encode([

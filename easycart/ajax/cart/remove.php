@@ -35,33 +35,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_SESSION['cart'][$productId]);
         }
 
-        // Recalculate all totals based on the modified cart state
-        $subtotal = calculateSubtotal($_SESSION['cart'], $products);
+        // 1. Get detailed breakdown first (needed for constraints & subtotal)
+        $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+
+        // 2. Calculate Subtotal from details
+        $subtotal = 0;
+        foreach ($cart_details as $item) {
+            $subtotal += $item['final_total'];
+        }
 
         // Determine current total items for the badge
         $totalItems = array_sum($_SESSION['cart']);
 
-        // Figure out shipping (Rule: if cart is empty, shipping is 0)
-        $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
-        $shipping_cost = ($subtotal > 0) ? calculateShippingCost($shipping_method, $subtotal) : 0;
+        // 3. Calculate Shipping Constraints
+        $constraints = calculateCartShippingConstraints($cart_details);
 
-        // Aggregate final checkout totals
+        // 4. Validate and Auto-Correct Shipping Method
+        $current_method = $_SESSION['shipping_method'] ?? 'standard';
+        $validated_method = validateShippingMethod($current_method, $constraints);
+        $_SESSION['shipping_method'] = $validated_method; // Persist correction
+
+        // 5. Calculate Shipping Cost (using new valid method)
+        $shipping_cost = ($subtotal > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
+
+        // 6. Aggregate final checkout totals
         $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
-        // Recalculate available shipping options based on new subtotal
-        // This ensures shipping quotes remain accurate if subtotal drops below free shipping thresholds
+        // 7. Recalculate available shipping options based on new subtotal
         $shipping_options = [
             'standard' => ($subtotal > 0) ? calculateShippingCost('standard', $subtotal) : 0,
             'express' => ($subtotal > 0) ? calculateShippingCost('express', $subtotal) : 0,
             'white-glove' => ($subtotal > 0) ? calculateShippingCost('white-glove', $subtotal) : 0,
             'freight' => ($subtotal > 0) ? calculateShippingCost('freight', $subtotal) : 0
         ];
-
-        // Get detailed item breakdown for UI updates
-        $cart_details = calculateCartDetails($_SESSION['cart'], $products);
-
-        // NEW: Calculate Shipping Constraints
-        $constraints = calculateCartShippingConstraints($cart_details);
 
         // Send all the fresh math back to the UI
         echo json_encode([

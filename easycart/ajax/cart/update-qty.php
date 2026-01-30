@@ -41,29 +41,36 @@ if ($quantity > 10)
 if (isset($_SESSION['cart'])) {
     $_SESSION['cart'][$product_id] = $quantity;
 
-    // 1. Recalculate Subtotal
-    $subtotal = calculateSubtotal($_SESSION['cart'], $products);
+    // 1. Get detailed breakdown first (needed for constraints & subtotal)
+    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
 
-    // 2. Recalculate Shipping Cost
-    $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
-    $shipping_cost = (count($_SESSION['cart']) > 0) ? calculateShippingCost($shipping_method, $subtotal) : 0;
+    // 2. Calculate Subtotal from details
+    $subtotal = 0;
+    foreach ($cart_details as $item) {
+        $subtotal += $item['final_total'];
+    }
 
-    // 3. Recalculate Tax and Grand Total
+    // 3. Calculate Shipping Constraints
+    $constraints = calculateCartShippingConstraints($cart_details);
+
+    // 4. Validate and Auto-Correct Shipping Method
+    $current_method = $_SESSION['shipping_method'] ?? 'standard';
+    $validated_method = validateShippingMethod($current_method, $constraints);
+    $_SESSION['shipping_method'] = $validated_method; // Persist correction
+
+    // 5. Calculate Shipping Cost
+    $shipping_cost = (count($_SESSION['cart']) > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
+
+    // 6. Recalculate Tax and Grand Total
     $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
-    // 4. Return updated shipping options (costs may vary by subtotal)
+    // 7. Return updated shipping options (costs may vary by subtotal)
     $shipping_options = [
         'standard' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('standard', $subtotal) : 0,
         'express' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('express', $subtotal) : 0,
         'white-glove' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('white-glove', $subtotal) : 0,
         'freight' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('freight', $subtotal) : 0
     ];
-
-    // 5. Get detailed item breakdown for UI updates
-    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
-
-    // NEW: Calculate Shipping Constraints
-    $constraints = calculateCartShippingConstraints($cart_details);
 
     // Send everything back so JS can just "plug it in" to the HTML
     echo json_encode([

@@ -345,11 +345,11 @@ $order_total = $totals['total'];
     </main>
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/wishlist/wishlist.js'); ?>"></script>
-    <script src="<?php echo asset('js/cart/summary.js'); ?>"></script>
-    <script src="<?php echo asset('js/cart/quantity.js'); ?>"></script>
-    <script src="<?php echo asset('js/cart/shipping.js'); ?>"></script>
-    <script src="<?php echo asset('js/cart/promo.js'); ?>"></script>
+    <script src="<?php echo asset('js/wishlist/wishlist.js?v=2'); ?>"></script>
+    <script src="<?php echo asset('js/cart/summary.js?v=2'); ?>"></script>
+    <script src="<?php echo asset('js/cart/quantity.js?v=2'); ?>"></script>
+    <script src="<?php echo asset('js/cart/shipping.js?v=2'); ?>"></script>
+    <script src="<?php echo asset('js/cart/promo.js?v=2'); ?>"></script>
 </body>
 
 </html>
