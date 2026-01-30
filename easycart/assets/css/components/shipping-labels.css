@@ -1,0 +1,38 @@
+/* Shipping Labels Component - Polished & Aligned */
+.shipping-label {
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 4px 4px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    margin-left: 17px;
+    margin-bottom: 5px;
+}
+
+/* Express: Clear Green with subtle background */
+.shipping-express {
+    color: #047857;
+    /* Deep Green */
+    background-color: #ecfdf5;
+    /* Very Light Green */
+    border: 1px solid rgba(4, 120, 87, 0.1);
+    /* Subtle border for definition */
+}
+
+/* Freight: Clear Red/Orange with subtle background */
+.shipping-freight {
+    color: #c2410c;
+    /* Deep Orange/Red */
+    background-color: #fff7ed;
+    /* Very Light Orange */
+    border: 1px solid rgba(194, 65, 12, 0.1);
+}
+
+/* Icon refinement */
+.shipping-label svg,
+.shipping-label i {
+    width: 14px;
+    height: 14px;
+}

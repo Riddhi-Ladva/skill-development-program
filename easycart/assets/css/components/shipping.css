@@ -1,0 +1,49 @@
+/* Shipping Options Component Styles */
+
+/* Visual Disabled State - Strict Requirement: Grey Text + Opacity Only */
+.shipping-option.is-disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    /* Do NOT change background or border as per strict request */
+}
+
+/* Force ALL text content to be grey */
+.shipping-option.is-disabled * {
+    color: #9ca3af !important;
+    /* Soft grey text (gray-400) */
+}
+
+/* Specific overrides if * selector isn't catching standard text colors */
+.shipping-option.is-disabled .option-price,
+.shipping-option.is-disabled .option-name,
+.shipping-option.is-disabled .option-time,
+.shipping-option.is-disabled label {
+    color: #9ca3af !important;
+}
+
+/* Ensure radio button looks disabled */
+.shipping-option.is-disabled input[type="radio"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    accent-color: #9ca3af;
+}
+
+/* Remove hover effects */
+/* Remove hover effects */
+.shipping-option.is-disabled:hover {
+    border-color: inherit !important;
+    /* Keep original border color */
+    background-color: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* CRITICAL: Overwrite selected state if disabled */
+.shipping-option.is-disabled:has(input:checked) {
+    border-color: #e5e7eb !important;
+    /* Standard border */
+    background-color: #f3f4f6 !important;
+    /* Disabled background */
+    box-shadow: none !important;
+}
