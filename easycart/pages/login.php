@@ -1,18 +1,4 @@
-<?php
-/**
- * Login Page
- * 
- * Responsibility: Allows existing users to sign in to their accounts.
- * 
- * Why it exists: To provide access to personalized features like order history and saved addresses.
- * 
- * When it runs: When a user clicks the "Login" link.
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-?>
-
+<?php require_once '../includes/login/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,6 +8,7 @@ require_once '../includes/bootstrap/session.php';
     <meta name="description" content="Login to your EasyCart account">
     <title>Login - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+</head>
 
 <body>
     <!-- HEADER ADDED: minimal auth page header (logo + back to home) -->
@@ -32,7 +19,7 @@ require_once '../includes/bootstrap/session.php';
             </div>
             <div class="header-actions">
                 <a href="<?php echo url('index.php'); ?>" class="action-link">Back to Home</a>
-                <a href="<?php echo url('pages/signup.php'); ?>" class="action-link">Create Account</a>
+                <a href="<?php echo url('pages/signup.php'); ?>" class="action-link">Sign Up</a>
             </div>
         </div>
     </header>

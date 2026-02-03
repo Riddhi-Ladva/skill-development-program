@@ -1,18 +1,4 @@
-<?php
-/**
- * Home Page
- * 
- * Responsibility: Displays the landing page with featured categories and products.
- * 
- * Why it exists: This is the entry point of the website where users can start their shopping journey.
- * 
- * When it runs: On initial website load or when the logo/home link is clicked.
- */
-
-// Load the bootstrap file to initialize session and config
-require_once 'includes/bootstrap/session.php';
-?>
-
+<?php require_once 'includes/index/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,8 +6,9 @@ require_once 'includes/bootstrap/session.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="EasyCart - Your one-stop shop for quality products at great prices">
-    <title>EasyCart - Home</title>
+    <title><?php echo $title; ?></title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+</head>
 
 <body>
     <?php include 'includes/header.php'; ?>
@@ -77,11 +64,7 @@ require_once 'includes/bootstrap/session.php';
             <div class="section-container">
                 <h2>Popular Brands</h2>
                 <div class="brand-grid">
-                    <?php
-                    // Load brands data to display logos
-                    require_once ROOT_PATH . '/data/brands.php';
-                    foreach ($brands as $id => $brand):
-                        ?>
+                    <?php foreach ($brands as $id => $brand): ?>
                         <a href="<?php echo url('pages/products.php?brand_id=' . $id); ?>" class="brand-card"
                             aria-label="View <?php echo htmlspecialchars($brand['name']); ?> products">
                             <img src="<?php echo url($brand['logo']); ?>"

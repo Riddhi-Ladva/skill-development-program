@@ -1,34 +1,4 @@
-<?php
-/**
- * Product Detail Page
- * 
- * Responsibility: Displays detailed information about a single product, including specifications, reviews, and related products.
- * 
- * Why it exists: To provide all necessary information for a user to make a purchase decision.
- * 
- * When it runs: When a user clicks on a product name or image from the listing or home page.
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-
-// Data files (Database simulation)
-require_once ROOT_PATH . '/data/products.php';
-require_once ROOT_PATH . '/data/brands.php';
-require_once ROOT_PATH . '/data/categories.php';
-require_once ROOT_PATH . '/includes/shipping/services.php';
-
-$product_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-$product = isset($products[$product_id]) ? $products[$product_id] : null;
-
-if (!$product) {
-    header('Location: products.php');
-    exit;
-}
-
-$brand = isset($brands[$product['brand_id']]) ? $brands[$product['brand_id']] : ['name' => 'Generic'];
-$category = isset($categories[$product['category']]) ? $categories[$product['category']] : ['name' => 'Uncategorized'];
-?>
+<?php require_once '../includes/product-detail/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,7 +7,9 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="<?php echo htmlspecialchars($product['name'] . ' - ' . $product['description']); ?>">
-    <title><?php echo htmlspecialchars($product['name']); ?> - EasyCart</title>
+    <title>
+        <?php echo htmlspecialchars($product['name']); ?> - EasyCart
+    </title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
     <link rel="stylesheet" href="<?php echo asset('css/components/shipping-labels.css'); ?>">
     <style>
@@ -72,6 +44,7 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
             width: 100%;
         }
     </style>
+</head>
 
 <body>
     <?php include '../includes/header.php'; ?>
@@ -81,10 +54,13 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
             <ol>
                 <li><a href="<?php echo url('index.php'); ?>">Home</a></li>
                 <li><a href="<?php echo url('pages/products.php'); ?>">Products</a></li>
-                <li><a
-                        href="products.php?category=<?php echo urlencode($product['category']); ?>"><?php echo htmlspecialchars($category['name']); ?></a>
+                <li><a href="products.php?category=<?php echo urlencode($product['category']); ?>">
+                        <?php echo htmlspecialchars($category['name']); ?>
+                    </a>
                 </li>
-                <li aria-current="page"><?php echo htmlspecialchars($product['name']); ?></li>
+                <li aria-current="page">
+                    <?php echo htmlspecialchars($product['name']); ?>
+                </li>
             </ol>
         </nav>
 
@@ -117,17 +93,27 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
 
             <div class="product-info">
                 <header class="product-header">
-                    <h1><?php echo htmlspecialchars($product['name']); ?></h1>
-                    <p class="product-brand">Brand: <?php echo htmlspecialchars($brand['name']); ?></p>
+                    <h1>
+                        <?php echo htmlspecialchars($product['name']); ?>
+                    </h1>
+                    <p class="product-brand">Brand:
+                        <?php echo htmlspecialchars($brand['name']); ?>
+                    </p>
                     <div class="product-rating">
-                        <p><?php echo $product['rating']; ?> out of 5 stars</p>
-                        <a href="#reviews"><?php echo number_format($product['reviews']); ?> customer reviews</a>
+                        <p>
+                            <?php echo $product['rating']; ?> out of 5 stars
+                        </p>
+                        <a href="#reviews">
+                            <?php echo number_format($product['reviews']); ?> customer reviews
+                        </a>
                     </div>
                 </header>
 
                 <section class="product-pricing">
                     <h2 class="visually-hidden">Pricing Information</h2>
-                    <p class="current-price">$<?php echo number_format($product['price'], 2); ?></p>
+                    <p class="current-price">$
+                        <?php echo number_format($product['price'], 2); ?>
+                    </p>
                     <p class="original-price">$129.99</p>
                     <p class="discount-badge">Save 38%</p>
                     <p class="stock-status">In Stock</p>
@@ -136,7 +122,8 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                     ?>
                     <p class="shipping-info">
                         <span class="shipping-label <?php echo $shipping['class']; ?>">
-                            <?php echo $shipping['icon']; ?> <?php echo $shipping['label']; ?>
+                            <?php echo $shipping['icon']; ?>
+                            <?php echo $shipping['label']; ?>
                         </span>
                     </p>
                 </section>
@@ -158,12 +145,6 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
                         <span class="button-text">Add to Wishlist</span>
                     </button>
                 </section>
-
-
-
-
-
-
             </div>
         </article>
 
@@ -179,7 +160,9 @@ $category = isset($categories[$product['category']]) ? $categories[$product['cat
             <div class="tab-content">
                 <section id="description" class="tab-panel active">
                     <h3>Product Description</h3>
-                    <p><?php echo htmlspecialchars($product['description']); ?></p>
+                    <p>
+                        <?php echo htmlspecialchars($product['description']); ?>
+                    </p>
                     <h4>Key Features</h4>
                     <ul>
                         <li>Active Noise Cancellation (ANC) technology</li>

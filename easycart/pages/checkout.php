@@ -1,49 +1,4 @@
-<?php
-/**
- * Checkout Page
- * 
- * Responsibility: Handles the final purchase process, collecting shipping and payment information.
- * 
- * Why it exists: To provide a secure and streamlined way for users to complete their orders.
- * 
- * When it runs: When a user clicks "Proceed to Checkout" from the cart page.
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-
-// Data files (Database simulation)
-require_once ROOT_PATH . '/data/products.php';
-
-// Modular Service Files
-require_once ROOT_PATH . '/includes/cart/services.php';
-require_once ROOT_PATH . '/includes/shipping/services.php';
-require_once ROOT_PATH . '/includes/tax/services.php';
-
-$cart_items = $_SESSION['cart'];
-
-// Redirect if cart is empty
-if (empty($cart_items)) {
-    header('Location: cart.php');
-    exit;
-}
-
-$total_items = array_sum($cart_items);
-
-/**
- * Recalculate Totals
- * To ensure accuracy, we always recalculate totals on the checkout page.
- */
-$subtotal = calculateSubtotal($cart_items, $products);
-$shipping_method = $_SESSION['shipping_method'];
-$shipping = calculateShippingCost($shipping_method, $subtotal);
-$totals = calculateCheckoutTotals($subtotal, $shipping);
-$promo_discount = $totals['promo_discount'] ?? 0; // NEW
-$subtotal = $totals['subtotal'];
-$tax = $totals['tax'];
-$order_total = $totals['total'];
-
-?>
+<?php require_once '../includes/checkout/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,6 +8,7 @@ $order_total = $totals['total'];
     <meta name="description" content="Secure checkout for your EasyCart order">
     <title>Checkout - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+</head>
 
 <body class="checkout-page">
     <header id="site-header">
@@ -182,8 +138,12 @@ $order_total = $totals['total'];
                     $price_display = '$' . number_format($shipping, 2);
                     ?>
                     <div class="selected-shipping-method">
-                        <p class="method-label"><?php echo htmlspecialchars($label); ?></p>
-                        <p class="method-price"><?php echo $price_display; ?></p>
+                        <p class="method-label">
+                            <?php echo htmlspecialchars($label); ?>
+                        </p>
+                        <p class="method-price">
+                            <?php echo $price_display; ?>
+                        </p>
                     </div>
                     <p class="change-shipping-hint">To change shipping method, <a href="cart.php">return to cart</a>.
                     </p>
@@ -296,7 +256,9 @@ $order_total = $totals['total'];
                 </section>
 
                 <section class="summary-items">
-                    <h3>Items (<?php echo $total_items; ?>)</h3>
+                    <h3>Items (
+                        <?php echo $total_items; ?>)
+                    </h3>
                     <?php foreach ($cart_items as $id => $quantity):
                         if (!isset($products[$id]))
                             continue;
@@ -309,10 +271,16 @@ $order_total = $totals['total'];
                                     alt="<?php echo htmlspecialchars($item['name']); ?>">
                             </div>
                             <div class="item-info">
-                                <p class="item-name"><?php echo htmlspecialchars($item['name']); ?></p>
-                                <p class="item-quantity">Qty: <?php echo $quantity; ?></p>
+                                <p class="item-name">
+                                    <?php echo htmlspecialchars($item['name']); ?>
+                                </p>
+                                <p class="item-quantity">Qty:
+                                    <?php echo $quantity; ?>
+                                </p>
                             </div>
-                            <p class="item-price">$<?php echo number_format($item_total, 2); ?></p>
+                            <p class="item-price">$
+                                <?php echo number_format($item_total, 2); ?>
+                            </p>
                         </article>
                     <?php endforeach; ?>
                 </section>
@@ -321,15 +289,27 @@ $order_total = $totals['total'];
                 <section class="summary-totals">
                     <dl>
                         <dt>Subtotal:</dt>
-                        <dd>$<?php echo number_format($subtotal, 2); ?></dd>
-                        <dt id="promo-row-label" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">Promo Discount:</dt>
-                        <dd id="promo-row-amount" class="discount-text" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">-$<?php echo number_format($promo_discount, 2); ?></dd>
+                        <dd>$
+                            <?php echo number_format($subtotal, 2); ?>
+                        </dd>
+                        <dt id="promo-row-label" style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">Promo
+                            Discount:</dt>
+                        <dd id="promo-row-amount" class="discount-text"
+                            style="<?php echo $promo_discount > 0 ? '' : 'display:none;'; ?>">-$
+                            <?php echo number_format($promo_discount, 2); ?>
+                        </dd>
                         <dt>Shipping:</dt>
-                        <dd>$<?php echo number_format($shipping, 2); ?></dd>
+                        <dd>$
+                            <?php echo number_format($shipping, 2); ?>
+                        </dd>
                         <dt>Tax (18%):</dt>
-                        <dd>$<?php echo number_format($tax, 2); ?></dd>
+                        <dd>$
+                            <?php echo number_format($tax, 2); ?>
+                        </dd>
                         <dt class="total-label">Total:</dt>
-                        <dd class="total-amount">$<?php echo number_format($order_total, 2); ?></dd>
+                        <dd class="total-amount">$
+                            <?php echo number_format($order_total, 2); ?>
+                        </dd>
                     </dl>
                 </section>
 
@@ -360,7 +340,6 @@ $order_total = $totals['total'];
             </ul>
         </div>
     </footer>
-    <!-- Footer include -->
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/checkout/validation.js'); ?>"></script>
     <script>

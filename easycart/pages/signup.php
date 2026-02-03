@@ -1,18 +1,4 @@
-<?php
-/**
- * Signup Page
- * 
- * Responsibility: Allows new users to create an account.
- * 
- * Why it exists: To collect user information and create a personal shopping profile.
- * 
- * When it runs: When a user clicks "Create Account" or "Sign up".
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-?>
-
+<?php require_once '../includes/signup/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,6 +8,7 @@ require_once '../includes/bootstrap/session.php';
     <meta name="description" content="Create your EasyCart account and start shopping">
     <title>Sign Up - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+</head>
 
 <body>
     <!-- HEADER ADDED: minimal auth page header (logo + back to home) -->
@@ -214,7 +201,7 @@ require_once '../includes/bootstrap/session.php';
                 </article>
                 <article class="trust-item">
                     <h3>Privacy Protected</h3>
-                    <p>We never sell your personal information to third parties</p>
+                    <p>We never share your personal information to third parties</p>
                 </article>
                 <article class="trust-item">
                     <h3>No Spam</h3>

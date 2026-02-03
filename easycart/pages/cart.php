@@ -1,61 +1,4 @@
-<?php
-/**
- * Shopping Cart Page
- * 
- * Responsibility: Displays the items added to the cart, calculates totals (subtotal, shipping, tax), 
- * and allows users to update quantities or choose a shipping method.
- * 
- * Why it exists: To provide a summary of what the user is about to buy and a way to manage their selection.
- * 
- * When it runs: When a user clicks the cart icon or adds an item and chooses to view the cart.
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-
-// Data files (Database simulation)
-require_once ROOT_PATH . '/data/products.php';
-require_once ROOT_PATH . '/data/brands.php';
-
-// Modular Service Files
-require_once ROOT_PATH . '/includes/cart/services.php';
-require_once ROOT_PATH . '/includes/shipping/services.php';
-require_once ROOT_PATH . '/includes/tax/services.php';
-
-$cart_items = $_SESSION['cart'];
-$total_items = array_sum($cart_items);
-
-/**
- * Calculation Logic
- * We use the modular service functions to ensure consistency across the app.
- */
-
-// 1. Calculate detailed cart items (including discounts)
-$cart_details = calculateCartDetails($cart_items, $products);
-
-// NEW: Calculate Shipping Constraints (Freight vs Express)
-$shipping_constraints = calculateCartShippingConstraints($cart_details);
-$requires_freight = $shipping_constraints['requires_freight'];
-
-// 2. Sum up totals from details for the subtotal
-$subtotal = 0;
-foreach ($cart_details as $item) {
-    $subtotal += $item['final_total'];
-}
-
-// 3. Determine shipping method and calculate cost using shipping service
-$shipping_method = $_SESSION['shipping_method'];
-$shipping = calculateShippingCost($shipping_method, $subtotal);
-
-// 4. Aggregate all totals (including tax) using the cart service
-$totals = calculateCheckoutTotals($subtotal, $shipping);
-
-$subtotal = $totals['subtotal'];
-$promo_discount = $totals['promo_discount'] ?? 0; // NEW
-$shipping = $totals['shipping']; // Re-assign from totals to be safe
-$tax = $totals['tax'];
-$order_total = $totals['total'];
-?>
+<?php require_once '../includes/cart/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -67,6 +10,7 @@ $order_total = $totals['total'];
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
     <link rel="stylesheet" href="<?php echo asset('css/components/shipping-labels.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset('css/components/shipping.css'); ?>">
+</head>
 
 <body>
     <!-- HEADER ADDED: consistent site header (logo + standard navigation) -->
@@ -312,14 +256,6 @@ $order_total = $totals['total'];
             </div>
         </section>
 
-        <!-- Product data bridge for JS -->
-        <script>
-            window.allProducts = <?php echo json_encode($products); ?>;
-            window.shippingPrice = <?php echo isset($_SESSION['shipping_price']) ? $_SESSION['shipping_price'] : 0; ?>;
-        </script>
-
-
-
         <section class="recommended-products">
             <h2>Frequently Bought Together</h2>
             <div class="product-grid">
@@ -343,6 +279,12 @@ $order_total = $totals['total'];
             </div>
         </section>
     </main>
+
+    <script>
+        window.allProducts = <?php echo json_encode($products); ?>;
+        window.shippingPrice = <?php echo isset($_SESSION['shipping_price']) ? $_SESSION['shipping_price'] : 0; ?>;
+    </script>
+
 
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/wishlist/wishlist.js?v=2'); ?>"></script>

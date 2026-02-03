@@ -1,22 +1,4 @@
-<?php
-/**
- * Orders History Page
- * 
- * Responsibility: Displays a list of previous orders for the logged-in user.
- * 
- * Why it exists: To allow users to track their purchases and view order details.
- * 
- * When it runs: When a user clicks "Order History" or "My Orders".
- */
-
-// Load the bootstrap file for session and configuration
-require_once '../includes/bootstrap/session.php';
-
-// Data files (Database simulation)
-require_once ROOT_PATH . '/data/orders.php';
-require_once ROOT_PATH . '/data/products.php';
-?>
-
+<?php require_once '../includes/orders/logic.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,6 +8,7 @@ require_once ROOT_PATH . '/data/products.php';
     <meta name="description" content="View your EasyCart order history">
     <title>My Orders - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+</head>
 
 <body>
     <?php include '../includes/header.php'; ?>
@@ -104,22 +87,30 @@ require_once ROOT_PATH . '/data/products.php';
                         <tbody>
                             <?php foreach ($orders as $order): ?>
                                 <tr>
-                                    <td>Order #<?php echo htmlspecialchars($order['id']); ?></td>
-                                    <td>Placed on <?php echo htmlspecialchars($order['date']); ?></td>
+                                    <td>Order #
+                                        <?php echo htmlspecialchars($order['id']); ?>
+                                    </td>
+                                    <td>Placed on
+                                        <?php echo htmlspecialchars($order['date']); ?>
+                                    </td>
                                     <td>
                                         <ul>
                                             <?php foreach ($order['items'] as $item_data):
                                                 $product_name = isset($products[$item_data['product_id']]) ? $products[$item_data['product_id']]['name'] : 'Unknown Product';
                                                 ?>
-                                                <li><?php echo htmlspecialchars($product_name); ?> (Qty:
+                                                <li>
+                                                    <?php echo htmlspecialchars($product_name); ?> (Qty:
                                                     <?php echo $item_data['quantity']; ?>)
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
                                     </td>
-                                    <td>$<?php echo number_format($order['total'], 2); ?></td>
-                                    <td><span
-                                            class="status-badge <?php echo htmlspecialchars($order['status']); ?>"><?php echo ucfirst(htmlspecialchars($order['status'])); ?></span>
+                                    <td>$
+                                        <?php echo number_format($order['total'], 2); ?>
+                                    </td>
+                                    <td><span class="status-badge <?php echo htmlspecialchars($order['status']); ?>">
+                                            <?php echo ucfirst(htmlspecialchars($order['status'])); ?>
+                                        </span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
