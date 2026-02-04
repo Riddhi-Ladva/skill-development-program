@@ -12,6 +12,13 @@ auth_guard();
     <meta name="description" content="Secure checkout for your EasyCart order">
     <title>Checkout - EasyCart</title>
     <link rel="stylesheet" href="<?php echo asset('css/main.css?v=1.1'); ?>">
+    <!-- Global EasyCart configuration for JavaScript -->
+    <script>
+        window.EasyCart = {
+            baseUrl: '<?php echo BASE_PATH; ?>',
+            ajaxUrl: '<?php echo url('ajax'); ?>'
+        };
+    </script>
 </head>
 
 <body class="checkout-page">
