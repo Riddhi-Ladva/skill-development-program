@@ -134,11 +134,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Processing...';
 
+                // GATHER FORM DATA
+                const orderData = {
+                    contact: {
+                        email: emailInput.value.trim()
+                    },
+                    shipping: {
+                        first_name: firstNameInput.value.trim(),
+                        last_name: lastNameInput.value.trim(),
+                        address: addressInput.value.trim(),
+                        city: cityInput.value.trim(),
+                        zip: zipInput.value.trim(),
+                        phone: phoneInput.value.trim(),
+                        state: document.getElementById('state').value,
+                        country: document.getElementById('country').value,
+                        company: document.getElementById('company').value.trim()
+                    },
+                    payment: {
+                        method: 'card', // For now hardcoded as per UI
+                        card_number: cardNumberInput.value.replace(/\s/g, ''),
+                        card_name: cardNameInput.value.trim(),
+                        expiry: expiryInput.value,
+                        cvv: cvvInput.value
+                    }
+                };
+
                 fetch(window.EasyCart.baseUrl + '/ajax/checkout/place-order.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify(orderData)
                 })
                     .then(response => response.json())
                     .then(data => {

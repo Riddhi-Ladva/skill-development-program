@@ -1,0 +1,231 @@
+/* Order Detail Page - Premium E-commerce UI */
+
+.order-detail-page .account-container.detail-view {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-8) var(--spacing-4);
+}
+
+/* Header Section */
+.detail-header {
+    margin-bottom: var(--spacing-8);
+}
+
+.detail-header .back-link {
+    display: inline-block;
+    margin-bottom: var(--spacing-4);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
+}
+
+.detail-header .back-link:hover {
+    color: var(--color-primary);
+}
+
+.detail-header .header-main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+}
+
+.detail-header h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.detail-header .order-meta {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    margin: 0;
+}
+
+/* Two-Column Layout */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .detail-grid {
+        grid-template-columns: 1fr 380px;
+    }
+}
+
+/* Common Card Styling */
+.detail-section {
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-6);
+}
+
+.detail-section h2, 
+.detail-section h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-6) 0;
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+/* Items Table Styling */
+.items-card {
+    padding: 0; /* Remove padding to let table span full width */
+}
+
+.items-card h2 {
+    margin: var(--spacing-6);
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.items-table th {
+    background-color: var(--color-bg-secondary);
+    padding: var(--spacing-4) var(--spacing-6);
+    text-align: left;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.items-table td {
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--color-border-light);
+    vertical-align: middle;
+}
+
+.items-table tr:last-child td {
+    border-bottom: none;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+}
+
+.items-table code {
+    background-color: var(--color-bg-secondary);
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Sidebar Sections */
+.detail-sidebar .detail-section {
+    padding: var(--spacing-6);
+}
+
+.detail-sidebar h3 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-4);
+}
+
+/* Address Styling */
+address {
+    font-style: normal;
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+address p {
+    margin: 0;
+}
+
+address strong {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+}
+
+.phone-link {
+    margin-top: var(--spacing-4);
+    display: block;
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Payment Info Styling */
+.payment-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+}
+
+.payment-label {
+    color: var(--color-text-secondary);
+}
+
+.payment-value {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Price Breakdown Styling */
+.summary-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.summary-row.discount {
+    color: var(--color-success);
+}
+
+.summary-row.grand-total {
+    margin-top: var(--spacing-4);
+    padding-top: var(--spacing-4);
+    border-top: 2px solid var(--color-border-light);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-primary);
+}
+
+.summary-row.grand-total strong {
+    color: var(--color-primary);
+}
+
+/* Status Badges Overrides (if needed) */
+.status-badge {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+}

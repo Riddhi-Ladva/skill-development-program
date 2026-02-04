@@ -26,4 +26,5 @@
 @import "pages/login.css";
 @import "pages/signup.css";
 @import "pages/orders.css";
+@import "pages/order-detail.css";
 @import "ux-overrides.css";
