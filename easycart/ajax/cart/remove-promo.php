@@ -9,6 +9,10 @@
 ob_start();
 
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
+require_once __DIR__ . '/../../includes/auth/guard.php';
+
+// Protect endpoint
+ajax_auth_guard();
 require_once ROOT_PATH . '/data/products.php';
 // require_once ROOT_PATH . '/data/promocodes.php'; // Not needed for removal
 require_once ROOT_PATH . '/includes/cart/services.php';

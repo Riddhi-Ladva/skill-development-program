@@ -247,3 +247,133 @@ function get_product_by_id($id)
     $stmt->execute([':id' => $id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+/**
+ * Fetch or create an active cart for the user
+ * @param int $user_id
+ * @return int Cart ID
+ */
+function get_user_cart_id($user_id)
+{
+    $pdo = getDbConnection();
+
+    // Check for active cart
+    $stmt = $pdo->prepare("SELECT id FROM sales_cart WHERE user_id = :user_id AND is_active = TRUE LIMIT 1");
+    $stmt->execute([':user_id' => $user_id]);
+    $cart_id = $stmt->fetchColumn();
+
+    if (!$cart_id) {
+        // Create new cart
+        $stmt = $pdo->prepare("INSERT INTO sales_cart (user_id, session_id, is_active, created_at, updated_at) VALUES (:user_id, :session_id, TRUE, NOW(), NOW()) RETURNING id");
+        $stmt->execute([
+            ':user_id' => $user_id,
+            ':session_id' => session_id()
+        ]);
+        $cart_id = $stmt->fetchColumn();
+    }
+
+    return $cart_id;
+}
+
+/**
+ * Add or update item in DB cart
+ */
+function add_to_cart_db($user_id, $product_id, $qty = 1)
+{
+    $pdo = getDbConnection();
+    $cart_id = get_user_cart_id($user_id);
+
+    // Check if item exists
+    $stmt = $pdo->prepare("SELECT id, qty FROM sales_cart_items WHERE cart_id = :cart_id AND product_id = :product_id");
+    $stmt->execute([
+        ':cart_id' => $cart_id,
+        ':product_id' => $product_id
+    ]);
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($existing) {
+        // Update
+        $new_qty = $existing['qty'] + $qty;
+        $stmt = $pdo->prepare("UPDATE sales_cart_items SET qty = :qty, updated_at = NOW() WHERE id = :id");
+        $stmt->execute([':qty' => $new_qty, ':id' => $existing['id']]);
+    } else {
+        // Insert
+        $stmt = $pdo->prepare("INSERT INTO sales_cart_items (cart_id, product_id, qty, added_at, updated_at) VALUES (:cart_id, :product_id, :qty, NOW(), NOW())");
+        $stmt->execute([
+            ':cart_id' => $cart_id,
+            ':product_id' => $product_id,
+            ':qty' => $qty
+        ]);
+    }
+}
+
+/**
+ * Update cart quantity in DB
+ */
+function update_cart_qty_db($user_id, $product_id, $qty)
+{
+    $pdo = getDbConnection();
+    $cart_id = get_user_cart_id($user_id);
+
+    $stmt = $pdo->prepare("UPDATE sales_cart_items SET qty = :qty, updated_at = NOW() WHERE cart_id = :cart_id AND product_id = :product_id");
+    $stmt->execute([
+        ':qty' => $qty,
+        ':cart_id' => $cart_id,
+        ':product_id' => $product_id
+    ]);
+}
+
+/**
+ * Remove item from DB cart
+ */
+function remove_from_cart_db($user_id, $product_id)
+{
+    $pdo = getDbConnection();
+    $cart_id = get_user_cart_id($user_id);
+
+    $stmt = $pdo->prepare("DELETE FROM sales_cart_items WHERE cart_id = :cart_id AND product_id = :product_id");
+    $stmt->execute([
+        ':cart_id' => $cart_id,
+        ':product_id' => $product_id
+    ]);
+}
+
+/**
+ * Fetch cart items from DB
+ */
+function get_cart_items_db($user_id)
+{
+    $pdo = getDbConnection();
+
+    $sql = "SELECT sci.product_id, sci.qty 
+            FROM sales_cart_items sci
+            JOIN sales_cart sc ON sci.cart_id = sc.id
+            WHERE sc.user_id = :user_id AND sc.is_active = TRUE";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':user_id' => $user_id]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $cart = [];
+    foreach ($rows as $row) {
+        $cart[$row['product_id']] = $row['qty'];
+    }
+    return $cart;
+}
+
+/**
+ * Completely clear user cart (delete items)
+ */
+function clear_user_cart_db($user_id)
+{
+    $pdo = getDbConnection();
+
+    // Deleting items is cleaner for "starting fresh" per requirements
+    $stmt = $pdo->prepare("
+        DELETE FROM sales_cart_items 
+        WHERE cart_id IN (SELECT id FROM sales_cart WHERE user_id = :user_id)
+    ");
+    $stmt->execute([':user_id' => $user_id]);
+
+    // Also mark cart as inactive if needed, but the requirement says start fresh.
+    // We'll just delete items for now to ensure no persistence.
+}

@@ -1,4 +1,8 @@
-<?php require_once '../includes/checkout/logic.php'; ?>
+<?php
+require_once '../includes/checkout/logic.php';
+require_once ROOT_PATH . '/includes/auth/guard.php';
+auth_guard();
+?>
 <!DOCTYPE html>
 <html lang="en">
 

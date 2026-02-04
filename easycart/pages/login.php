@@ -32,7 +32,23 @@
                     <p>Welcome back! Please enter your details</p>
                 </header>
 
-                <form action="orders.php" method="post" novalidate>
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-error"
+                        style="background: #fee2e2; border: 1px solid #ef4444; padding: 10px; margin-bottom: 20px; border-radius: 4px; color: #b91c1c;">
+                        <?php foreach ($errors as $error): ?>
+                            <p style="margin: 0;"><?php echo htmlspecialchars($error); ?></p>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($loginSuccessMessage): ?>
+                    <div class="alert alert-success"
+                        style="background: #d1fae5; border: 1px solid #10b981; padding: 10px; margin-bottom: 20px; border-radius: 4px; color: #047857;">
+                        <p style="margin: 0;"><?php echo htmlspecialchars($loginSuccessMessage); ?></p>
+                    </div>
+                <?php endif; ?>
+
+                <form action="login.php" method="post" novalidate>
                     <fieldset>
                         <legend class="visually-hidden">Login credentials</legend>
 

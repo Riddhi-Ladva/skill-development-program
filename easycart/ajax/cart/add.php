@@ -12,9 +12,11 @@ ob_start();
 
 // Need session.php to access $_SESSION['cart']
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
+require_once ROOT_PATH . '/includes/db_functions.php';
+require_once __DIR__ . '/../../includes/auth/guard.php';
 
-// Need the products file to double-check if the ID sent actually exists
-require_once ROOT_PATH . '/data/products.php';
+// Restore auth guard: Cart is for logged-in users only
+ajax_auth_guard();
 
 ob_end_clean();
 
@@ -27,27 +29,33 @@ $product_id = isset($input_json['product_id']) ? (int) $input_json['product_id']
 $quantity = isset($input_json['quantity']) ? (int) $input_json['quantity'] : 1;
 
 // Validate product existence before adding to cart
-if ($product_id && isset($products[$product_id])) {
+$product = get_product_by_id($product_id);
+if ($product_id && $product) {
 
-    // Add or update quantity in session cart
-// Structure: $_SESSION['cart'][product_id] = quantity
-    $_SESSION['cart'][$product_id] = $quantity;
+    // SYNC WITH DB (No more session cart)
+    add_to_cart_db($_SESSION['user_id'], $product_id, $quantity);
 
-    // Enforce business rule: Maximum 10 items per product
-    if ($_SESSION['cart'][$product_id] > 10) {
-        $_SESSION['cart'][$product_id] = 10;
-    }
-
-    // Need cart services for validation
+    // Load necessary services for the response
     require_once ROOT_PATH . '/includes/cart/services.php';
     require_once ROOT_PATH . '/includes/shipping/services.php';
 
+    // Fetch all products for calculation (since services still expect the array)
+    // TEMPORARY: For performance, we should refactor services to only need cart items.
+    $all_products = get_products([]);
+    $products_indexed = [];
+    foreach ($all_products as $p) {
+        $products_indexed[$p['id']] = $p;
+    }
+
+    // Fetch current cart from DB for response calculation
+    $cart = get_cart_items_db($_SESSION['user_id']);
+
     // Calculate new total items count for header badge update
-    $total_items = array_sum($_SESSION['cart']);
+    $total_items = array_sum($cart);
 
     // VALIDATION PIPELINE: Ensure shipping method is valid after adding item
     // 1. Get detailed breakdown
-    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+    $cart_details = calculateCartDetails($cart, $products_indexed);
 
     // 2. Calculate Shipping Constraints
     $constraints = calculateCartShippingConstraints($cart_details);

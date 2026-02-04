@@ -51,7 +51,11 @@ if (!isset($categories)) {
         <!-- Global Notification Container -->
         <div id="global-notification-container"></div>
         <div class="header-actions">
-            <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="<?php echo url('pages/logout.php'); ?>" class="action-link" aria-label="Logout">Logout</a>
+            <?php else: ?>
+                <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
+            <?php endif; ?>
             <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>"
                 class="action-link icon-wrapper wishlist-link <?php echo (isset($_SESSION['wishlist']) && count($_SESSION['wishlist']) > 0) ? 'has-items' : ''; ?>"
                 aria-label="View wishlist">
@@ -60,7 +64,12 @@ if (!isset($categories)) {
             </a>
             <?php
             if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
-                $header_cart_count = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
+                $header_cart_count = 0;
+                if (isset($_SESSION['user_id'])) {
+                    require_once __DIR__ . '/db_functions.php';
+                    $header_cart_items = get_cart_items_db($_SESSION['user_id']);
+                    $header_cart_count = array_sum($header_cart_items);
+                }
                 ?>
                 <a href="<?php echo url('pages/cart.php'); ?>"
                     class="action-link icon-wrapper cart-link <?php echo $header_cart_count > 0 ? 'has-items' : ''; ?> <?php echo ($current_page == 'cart.php') ? 'active' : ''; ?>"

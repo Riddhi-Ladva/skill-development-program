@@ -1,4 +1,8 @@
-<?php require_once '../includes/orders/logic.php'; ?>
+<?php
+require_once '../includes/orders/logic.php';
+require_once ROOT_PATH . '/includes/auth/guard.php';
+auth_guard();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -87,8 +91,8 @@
                         <tbody>
                             <?php foreach ($orders as $order): ?>
                                 <tr>
-                                    <td>Order #
-                                        <?php echo htmlspecialchars($order['id']); ?>
+                                    <td>
+                                        <?php echo htmlspecialchars($order['order_number']); ?>
                                     </td>
                                     <td>Placed on
                                         <?php echo htmlspecialchars($order['date']); ?>

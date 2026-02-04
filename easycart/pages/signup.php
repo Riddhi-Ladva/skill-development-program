@@ -32,7 +32,18 @@
                     <p>Join thousands of happy shoppers</p>
                 </header>
 
-                <form action="login.php" method="post" novalidate>
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-error"
+                        style="background: #fee2e2; border: 1px solid #ef4444; padding: 10px; margin-bottom: 20px; border-radius: 4px; color: #b91c1c;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <?php foreach ($errors as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
+                <form action="signup.php" method="post" novalidate>
                     <fieldset>
                         <legend class="visually-hidden">Personal Information</legend>
 

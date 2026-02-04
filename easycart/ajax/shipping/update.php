@@ -14,9 +14,9 @@ ob_start();
 
 // Load bootstrap (session and config)
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
-
-// Load data and modular services
-require_once ROOT_PATH . '/data/products.php';
+require_once ROOT_PATH . '/includes/db_functions.php';
+// Removed ajax_auth_guard()
+require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
 require_once ROOT_PATH . '/includes/tax/services.php';
@@ -36,8 +36,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (in_array($method, $valid_methods)) {
 
         // VALIDATION PIPELINE
+        // Fetch all products for calculation
+        $all_products = get_products([]);
+        $products_indexed = [];
+        foreach ($all_products as $p) {
+            $products_indexed[$p['id']] = $p;
+        }
+
         // 1. Get detailed breakdown first
-        $cart_details = calculateCartDetails($_SESSION['cart'] ?? [], $products);
+        $cart_details = calculateCartDetails($_SESSION['cart'] ?? [], $products_indexed);
 
         // 2. Calculate Raw Subtotal from details
         $subtotal = 0;

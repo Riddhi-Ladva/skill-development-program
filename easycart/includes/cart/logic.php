@@ -1,12 +1,24 @@
 <?php
-require_once '../includes/bootstrap/session.php';
-require_once ROOT_PATH . '/data/products.php';
-require_once ROOT_PATH . '/data/brands.php';
+require_once dirname(__DIR__) . '/bootstrap/session.php';
+require_once ROOT_PATH . '/includes/db_functions.php';
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
 require_once ROOT_PATH . '/includes/tax/services.php';
 
-$cart_items = isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? $_SESSION['cart'] : [];
+// Fetch products and brands from DB
+$all_products = get_products([]);
+$products = [];
+foreach ($all_products as $p) {
+    $products[$p['id']] = $p;
+}
+$brands = get_all_brands();
+
+// ENFORCE AUTH: Cart is for logged-in users only
+require_once dirname(__DIR__) . '/auth/guard.php';
+auth_guard();
+
+$user_id = $_SESSION['user_id'];
+$cart_items = get_cart_items_db($user_id);
 $total_items = array_sum($cart_items);
 
 $cart_details = calculateCartDetails($cart_items, $products);

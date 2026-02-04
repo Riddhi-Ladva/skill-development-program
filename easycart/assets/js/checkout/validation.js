@@ -129,10 +129,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             } else {
-                // Simulate success
-                e.preventDefault();
-                alert('Order placed successfully! (Simulation)');
-                window.location.href = 'orders.php';
+                // Real AJAX order placement
+                const submitBtn = e.target;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+
+                fetch(window.EasyCart.baseUrl + '/ajax/checkout/place-order.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert('Error placing order: ' + data.error);
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Place Order';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An unexpected error occurred. Please try again.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Place Order';
+                    });
             }
         });
     }

@@ -13,9 +13,11 @@ ob_start();
 
 // Load bootstrap (session and config)
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
+require_once ROOT_PATH . '/includes/db_functions.php';
+require_once ROOT_PATH . '/includes/auth/guard.php';
 
-// Load data and modular services
-require_once ROOT_PATH . '/data/products.php';
+// Protect endpoint: Logged-in users only
+ajax_auth_guard();
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
 require_once ROOT_PATH . '/includes/tax/services.php';
@@ -31,12 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = $data['product_id'] ?? null;
 
     if ($productId) {
-        if (isset($_SESSION['cart'][$productId])) {
-            unset($_SESSION['cart'][$productId]);
+        // SYNC WITH DB
+        remove_from_cart_db($_SESSION['user_id'], $productId);
+
+        // Fetch current cart from DB for calculations
+        $cart = get_cart_items_db($_SESSION['user_id']);
+
+        // Fetch all products for calculation
+        $all_products = get_products([]);
+        $products_indexed = [];
+        foreach ($all_products as $p) {
+            $products_indexed[$p['id']] = $p;
         }
 
         // 1. Get detailed breakdown first (needed for constraints & subtotal)
-        $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+        $cart_details = calculateCartDetails($cart, $products_indexed);
 
         // 2. Calculate Subtotal from details
         $subtotal = 0;
@@ -45,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Determine current total items for the badge
-        $totalItems = array_sum($_SESSION['cart']);
+        $totalItems = array_sum($cart);
 
         // 3. Calculate Shipping Constraints
         $constraints = calculateCartShippingConstraints($cart_details);
@@ -55,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $validated_method = validateShippingMethod($current_method, $constraints);
         $_SESSION['shipping_method'] = $validated_method; // Persist correction
 
-        // 5. Calculate Shipping Cost (using new valid method)
         $shipping_cost = ($subtotal > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
 
         // 6. Aggregate final checkout totals
