@@ -264,9 +264,10 @@ function get_user_cart_id($user_id)
     if (!$cart_id) {
         // Create new cart
         $stmt = $pdo->prepare("INSERT INTO sales_cart (user_id, session_id, is_active, created_at, updated_at) VALUES (:user_id, :session_id, TRUE, NOW(), NOW()) RETURNING id");
+        $session_id = (session_status() === PHP_SESSION_ACTIVE) ? session_id() : 'cli-session';
         $stmt->execute([
             ':user_id' => $user_id,
-            ':session_id' => session_id()
+            ':session_id' => $session_id
         ]);
         $cart_id = $stmt->fetchColumn();
     }

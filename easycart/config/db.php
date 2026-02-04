@@ -19,7 +19,8 @@
  * 
  * @return PDO The PDO database connection instance.
  */
-function getDbConnection() {
+function getDbConnection()
+{
     // Static variable acts as a cache for the connection (Singleton pattern)
     static $pdo = null;
 
@@ -53,7 +54,7 @@ function getDbConnection() {
         // Log the error details to the server's error log (not visible to user)
         error_log("Database connection failed: " . $e->getMessage());
 
-        // Stop execution and show a generic error message
-        die("Service unavailable. Could not connect to the database.");
+        // Throw a generic exception to be caught by the caller
+        throw new Exception("Database connection failed. Please contact administrator.");
     }
 }

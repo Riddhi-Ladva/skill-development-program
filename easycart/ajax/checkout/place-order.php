@@ -15,13 +15,34 @@ header('Content-Type: application/json');
 try {
     $pdo = getDbConnection();
 
-    // 1. Get Cart Data from DB
+    // 1. Get JSON Input Data
+    error_log("Order placement started.");
+    $input_raw = file_get_contents('php://input');
+    $input = json_decode($input_raw, true);
+
+    // For local testing/simulations
+    if (!$input && isset($mock_checkout_data)) {
+        $input = $mock_checkout_data;
+    }
+
+    if (!$input) {
+        throw new Exception('Invalid order request. Raw input empty or invalid.');
+    }
+
+    $contact = $input['contact'] ?? [];
+    $shipping_data = $input['shipping'] ?? [];
+    $payment_data = $input['payment'] ?? [];
+
     $cart_items = get_cart_items_db($_SESSION['user_id']);
     if (empty($cart_items)) {
         throw new Exception('Cart is empty.');
     }
+    error_log("Cart fetched for user " . $_SESSION['user_id']);
 
     // 2. Fetch products and Calculate Totals
+    if (!function_exists('get_products')) {
+        throw new Exception('Required function get_products() is missing.');
+    }
     $all_products = get_products([]);
     $products_indexed = [];
     foreach ($all_products as $p) {
@@ -40,12 +61,13 @@ try {
 
     // 3. Start Transaction
     $pdo->beginTransaction();
+    error_log("Transaction started.");
 
     // 4. Create Order
     $order_number = 'ORD-' . strtoupper(uniqid());
     $stmt = $pdo->prepare("
-        INSERT INTO sales_order (user_id, order_number, status, grand_total, subtotal, shipping_total, discount_total, tax_total, created_at, updated_at)
-        VALUES (:user_id, :order_number, :status, :grand_total, :subtotal, :shipping_total, :discount_total, :tax_total, NOW(), NOW())
+        INSERT INTO sales_order (user_id, order_number, status, grand_total, subtotal, shipping_total, discount_total, tax_total, shipping_method, created_at, updated_at)
+        VALUES (:user_id, :order_number, :status, :grand_total, :subtotal, :shipping_total, :discount_total, :tax_total, :shipping_method, NOW(), NOW())
         RETURNING id
     ");
     $stmt->execute([
@@ -56,11 +78,41 @@ try {
         'subtotal' => $subtotal_val,
         'shipping_total' => $shipping,
         'discount_total' => $discount_val,
-        'tax_total' => $tax_val
+        'tax_total' => $tax_val,
+        'shipping_method' => $shipping_method
     ]);
     $order_id = $stmt->fetchColumn();
+    error_log("Order created: " . $order_id);
 
-    // 5. Create Order Items
+    // 5. Create Order Address
+    $stmt_addr = $pdo->prepare("
+        INSERT INTO sales_order_address (order_id, address_type, street, city, state, zip, country, phone, email)
+        VALUES (:order_id, 'shipping', :street, :city, :state, :zip, :country, :phone, :email)
+    ");
+    $stmt_addr->execute([
+        'order_id' => $order_id,
+        'street' => $shipping_data['address'] ?? '',
+        'city' => $shipping_data['city'] ?? '',
+        'state' => $shipping_data['state'] ?? '',
+        'zip' => $shipping_data['zip'] ?? '',
+        'country' => $shipping_data['country'] ?? '',
+        'phone' => $shipping_data['phone'] ?? '',
+        'email' => $contact['email'] ?? ''
+    ]);
+
+    // 6. Create Order Payment
+    $stmt_pay = $pdo->prepare("
+        INSERT INTO sales_order_payment (order_id, method, amount_paid, status, last_4)
+        VALUES (:order_id, :method, :amount_paid, 'captured', :last_4)
+    ");
+    $stmt_pay->execute([
+        'order_id' => $order_id,
+        'method' => $payment_data['method'] ?? 'card',
+        'amount_paid' => $grand_total,
+        'last_4' => substr($payment_data['card_number'] ?? '0000', -4)
+    ]);
+
+    // 7. Create Order Items
     $stmt_item = $pdo->prepare("
         INSERT INTO sales_order_items (order_id, product_id, sku, name, price, qty_ordered, row_total, created_at)
         VALUES (:order_id, :product_id, :sku, :name, :price, :qty_ordered, :row_total, NOW())
@@ -82,10 +134,11 @@ try {
         ]);
     }
 
-    // 6. Commit
+    // 8. Commit
     $pdo->commit();
+    error_log("Transaction committed.");
 
-    // 7. Clear Cart from DB and session
+    // 9. Clear Cart from DB and session
     clear_user_cart_db($_SESSION['user_id']);
     unset($_SESSION['promo_code']);
 
@@ -96,10 +149,14 @@ try {
         'redirect' => url('pages/orders.php')
     ]);
 
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
+    error_log("Checkout Flow Error: " . $e->getMessage());
+    if (ob_get_length())
+        ob_clean();
+    http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ?>
