@@ -67,6 +67,7 @@
         Featured Products
         Purpose: Hardcoded selection of top-selling items to drive immediate engagement.
         -->
+        
         <section class="featured-products">
             <h2>Featured Products</h2>
             <div class="product-grid">
@@ -74,7 +75,7 @@
                     <article class="product-card">
                         <img src="<?php echo htmlspecialchars($product['image']); ?>"
                             alt="<?php echo htmlspecialchars($product['name']); ?>">
-                        <h3><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <center><h3><?php echo htmlspecialchars($product['name']); ?></h3>
                         <?php if (!empty($product['brand_name'])): ?>
                             <p class="product-brand" style="font-size: 0.9em; color: gray; margin-bottom: 5px;">
                                 <?php echo htmlspecialchars($product['brand_name']); ?></p>
@@ -86,7 +87,7 @@
                     </article>
                 <?php endforeach; ?>
             </div>
-            <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a>
+            <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a></center>
         </section>
 
         <section class="promotional-banner">

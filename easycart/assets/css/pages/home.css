@@ -95,7 +95,7 @@
 .cta-button {
   display: inline-block;
   background-color: #ffffff;
-  color: blue;
+  color: #0f0ff2;
   padding: 1.5rem 4rem;
   border-radius: 9999px;
   /* Pill shape for premium feel */
@@ -109,7 +109,7 @@
 }
 
 .cta-button:hover {
-  background-color: #fdffa3;
+  background-color: #ddf989;
   transform: translateY(-4px) scale(1.02);
   box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.3), 0 10px 10px -5px rgba(37, 99, 235, 0.2);
 }

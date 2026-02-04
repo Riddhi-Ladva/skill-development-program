@@ -107,7 +107,7 @@
 }
 
 .cta-button:hover:not(:disabled) {
-  background-color: var(--color-accent-dark);
+  background-color:khaki;
   border-color: var(--color-accent-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
