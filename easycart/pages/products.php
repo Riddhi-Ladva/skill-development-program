@@ -41,13 +41,12 @@
                         <fieldset>
                             <legend class="visually-hidden">Select categories</legend>
                             <?php
-                            $categories = ['electronics', 'clothing', 'home', 'sports', 'books'];
-                            foreach ($categories as $cat):
-                                $checked = in_array($cat, $selected_categories) ? 'checked' : '';
+                            foreach ($all_categories as $slug => $cat_info):
+                                $checked = in_array($slug, $selected_categories) ? 'checked' : '';
                                 ?>
                                 <label>
-                                    <input type="checkbox" name="category[]" value="<?php echo $cat; ?>" <?php echo $checked; ?>>
-                                    <?php echo ucfirst($cat === 'home' ? 'Home & Garden' : ($cat === 'sports' ? 'Sports & Outdoors' : $cat)); ?>
+                                    <input type="checkbox" name="category[]" value="<?php echo $slug; ?>" <?php echo $checked; ?>>
+                                    <?php echo htmlspecialchars($cat_info['name']); ?>
                                 </label>
                             <?php endforeach; ?>
                         </fieldset>
@@ -192,7 +191,7 @@
                                     <img src="<?php echo htmlspecialchars($product['image']); ?>"
                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
                                     <h3><a
-                                            href="product-detail.php?id=<?php echo $id; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                            href="product-detail.php?id=<?php echo $product['id']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
                                     </h3>
                                     <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                     <p class="product-rating"><?php echo $product['rating']; ?> stars
@@ -207,7 +206,7 @@
                                     </p>
                                     <button class="add-to-cart-btn btn btn-primary"
                                         style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;"
-                                        data-product-id="<?php echo $id; ?>">
+                                        data-product-id="<?php echo $product['id']; ?>">
                                         Add to Cart
                                     </button>
                                 </article>

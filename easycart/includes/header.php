@@ -15,6 +15,17 @@ require_once __DIR__ . '/bootstrap/config.php';
 // Determine current page and category for navigation highlighting
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_category = isset($_GET['category']) ? $_GET['category'] : '';
+
+// Check if categories are already loaded (from page logic), otherwise fetch them
+if (!isset($categories)) {
+    if (isset($all_categories)) {
+        $categories = $all_categories;
+    } else {
+        // Fallback: fetch directly if page logic didn't provide
+        require_once __DIR__ . '/db_functions.php';
+        $categories = get_all_categories();
+    }
+}
 ?>
 
 <!-- Global EasyCart configuration for JavaScript -->
@@ -67,18 +78,13 @@ $current_category = isset($_GET['category']) ? $_GET['category'] : '';
             <li><a href="<?php echo url('pages/products.php'); ?>"
                     class="<?php echo ($current_page == 'products.php' && empty($current_category)) ? 'active' : ''; ?>">Products</a>
             </li>
-            <li><a href="<?php echo url('pages/products.php?category=electronics'); ?>"
-                    class="<?php echo ($current_page == 'products.php' && $current_category == 'electronics') ? 'active' : ''; ?>">Electronics</a>
-            </li>
-            <li><a href="<?php echo url('pages/products.php?category=clothing'); ?>"
-                    class="<?php echo ($current_page == 'products.php' && $current_category == 'clothing') ? 'active' : ''; ?>">Clothing</a>
-            </li>
-            <li><a href="<?php echo url('pages/products.php?category=home'); ?>"
-                    class="<?php echo ($current_page == 'products.php' && $current_category == 'home') ? 'active' : ''; ?>">Home
-                    & Garden</a></li>
-            <li><a href="<?php echo url('pages/products.php?category=sports'); ?>"
-                    class="<?php echo ($current_page == 'products.php' && $current_category == 'sports') ? 'active' : ''; ?>">Sports</a>
-            </li>
+            <?php foreach ($categories as $slug => $cat_info): ?>
+                <li><a href="<?php echo url('pages/products.php?category=' . $slug); ?>"
+                        class="<?php echo ($current_page == 'products.php' && $current_category == $slug) ? 'active' : ''; ?>">
+                        <?php echo htmlspecialchars($cat_info['name']); ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
         </ul>
     </nav>
     <script src="<?php echo asset('js/utils/confirm.js'); ?>"></script>

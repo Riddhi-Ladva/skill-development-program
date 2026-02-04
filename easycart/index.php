@@ -37,26 +37,13 @@
         <section class="featured-categories">
             <h2>Shop by Category</h2>
             <div class="category-grid">
+                <?php foreach ($categories as $slug => $category_info): ?>
                 <article class="category-card">
-                    <h3>Electronics</h3>
-                    <p>Latest gadgets and tech</p>
-                    <a href="<?php echo url('pages/products.php?category=electronics'); ?>">Explore Electronics</a>
+                    <h3><?php echo htmlspecialchars($category_info['name']); ?></h3>
+                    <p><?php echo htmlspecialchars($category_info['description'] ?? 'Explore our collection'); ?></p>
+                    <a href="<?php echo url('pages/products.php?category=' . $slug); ?>">Explore <?php echo htmlspecialchars($category_info['name']); ?></a>
                 </article>
-                <article class="category-card">
-                    <h3>Clothing</h3>
-                    <p>Fashion for everyone</p>
-                    <a href="<?php echo url('pages/products.php?category=clothing'); ?>">Explore Clothing</a>
-                </article>
-                <article class="category-card">
-                    <h3>Home & Garden</h3>
-                    <p>Make your space beautiful</p>
-                    <a href="<?php echo url('pages/products.php?category=home'); ?>">Explore Home</a>
-                </article>
-                <article class="category-card">
-                    <h3>Sports & Outdoors</h3>
-                    <p>Gear for active lifestyle</p>
-                    <a href="<?php echo url('pages/products.php?category=sports'); ?>">Explore Sports</a>
-                </article>
+                <?php endforeach; ?>
             </div>
         </section>
 
@@ -83,35 +70,21 @@
         <section class="featured-products">
             <h2>Featured Products</h2>
             <div class="product-grid">
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-                        alt="Wireless Headphones">
-                    <h3>Wireless Headphones</h3>
-                    <p class="product-price">$79.99</p>
-                    <p class="product-rating">4.5 stars (245 reviews)</p>
-                    <a href="<?php echo url('pages/product-detail.php?id=1'); ?>">View Details</a>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" alt="Smart Watch">
-                    <h3>Smart Watch</h3>
-                    <p class="product-price">$199.99</p>
-                    <p class="product-rating">4.8 stars (892 reviews)</p>
-                    <a href="<?php echo url('pages/product-detail.php?id=2'); ?>">View Details</a>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="Running Shoes">
-                    <h3>Running Shoes</h3>
-                    <p class="product-price">$89.99</p>
-                    <p class="product-rating">4.6 stars (523 reviews)</p>
-                    <a href="<?php echo url('pages/product-detail.php?id=3'); ?>">View Details</a>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400" alt="Coffee Maker">
-                    <h3>Coffee Maker</h3>
-                    <p class="product-price">$129.99</p>
-                    <p class="product-rating">4.7 stars (334 reviews)</p>
-                    <a href="<?php echo url('pages/product-detail.php?id=4'); ?>">View Details</a>
-                </article>
+                <?php foreach ($featured_products as $product): ?>
+                    <article class="product-card">
+                        <img src="<?php echo htmlspecialchars($product['image']); ?>"
+                            alt="<?php echo htmlspecialchars($product['name']); ?>">
+                        <h3><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <?php if (!empty($product['brand_name'])): ?>
+                            <p class="product-brand" style="font-size: 0.9em; color: gray; margin-bottom: 5px;">
+                                <?php echo htmlspecialchars($product['brand_name']); ?></p>
+                        <?php endif; ?>
+                        <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
+                        <p class="product-rating"><?php echo $product['rating']; ?> stars
+                            (<?php echo number_format($product['reviews']); ?> reviews)</p>
+                        <a href="<?php echo url('pages/product-detail.php?id=' . $product['id']); ?>">View Details</a>
+                    </article>
+                <?php endforeach; ?>
             </div>
             <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a>
         </section>

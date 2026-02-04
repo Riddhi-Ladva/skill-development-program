@@ -314,32 +314,20 @@
         <section class="related-products">
             <h2>You May Also Like</h2>
             <div class="product-grid">
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400"
-                        alt="Wireless Earbuds">
-                    <h3><a href="product-detail.php?id=13">Wireless Earbuds</a></h3>
-                    <p class="product-price">$49.99</p>
-                    <p class="product-rating">4.4 stars (567 reviews)</p>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" alt="Headphone Stand">
-                    <h3><a href="product-detail.php?id=14">Headphone Stand</a></h3>
-                    <p class="product-price">$19.99</p>
-                    <p class="product-rating">4.7 stars (234 reviews)</p>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
-                        alt="Audio Cable Premium">
-                    <h3><a href="product-detail.php?id=15">Audio Cable Premium</a></h3>
-                    <p class="product-price">$12.99</p>
-                    <p class="product-rating">4.6 stars (189 reviews)</p>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" alt="Headphone Case">
-                    <h3><a href="product-detail.php?id=16">Headphone Case</a></h3>
-                    <p class="product-price">$14.99</p>
-                    <p class="product-rating">4.5 stars (312 reviews)</p>
-                </article>
+                <?php foreach ($related_products as $rel_product): ?>
+                    <?php if ($rel_product['id'] == $product_id)
+                        continue; ?>
+                    <article class="product-card">
+                        <img src="<?php echo htmlspecialchars($rel_product['image']); ?>"
+                            alt="<?php echo htmlspecialchars($rel_product['name']); ?>">
+                        <h3><a
+                                href="product-detail.php?id=<?php echo $rel_product['id']; ?>"><?php echo htmlspecialchars($rel_product['name']); ?></a>
+                        </h3>
+                        <p class="product-price">$<?php echo number_format($rel_product['price'], 2); ?></p>
+                        <p class="product-rating"><?php echo $rel_product['rating']; ?> stars
+                            (<?php echo number_format($rel_product['reviews']); ?> reviews)</p>
+                    </article>
+                <?php endforeach; ?>
             </div>
         </section>
     </main>
