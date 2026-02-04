@@ -52,6 +52,7 @@ if (!isset($categories)) {
         <div id="global-notification-container"></div>
         <div class="header-actions">
             <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="<?php echo url('pages/dashboard.php'); ?>" class="action-link" aria-label="Dashboard">Dashboard</a>
                 <a href="<?php echo url('pages/logout.php'); ?>" class="action-link" aria-label="Logout">Logout</a>
             <?php else: ?>
                 <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
