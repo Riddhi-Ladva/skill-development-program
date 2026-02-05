@@ -47,3 +47,5 @@
         <p>&copy; 2026 EasyCart. All rights reserved.</p>
     </div>
 </footer>
+
+<script src="<?php echo asset('js/wishlist/wishlist.js?v=2'); ?>"></script>

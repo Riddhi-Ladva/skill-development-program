@@ -408,3 +408,122 @@ function log_order_status_change($order_id, $status, $comment = '', $notify_cust
         ':notify' => $notify_customer ? 1 : 0
     ]);
 }
+
+/**
+ * Merge guest session cart into user DB cart
+ * Used during login to sync carts.
+ * 
+ * @param int $user_id
+ * @param array $guest_cart [product_id => qty]
+ */
+function merge_guest_cart_to_db($user_id, $guest_cart)
+{
+    if (empty($guest_cart)) {
+        return;
+    }
+
+    $pdo = getDbConnection();
+
+    try {
+        $pdo->beginTransaction();
+
+        foreach ($guest_cart as $product_id => $qty) {
+            $cart_id = get_user_cart_id($user_id);
+
+            // Check existing item
+            $stmt = $pdo->prepare("SELECT id, qty FROM sales_cart_items WHERE cart_id = :cart_id AND product_id = :product_id");
+            $stmt->execute([':cart_id' => $cart_id, ':product_id' => $product_id]);
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($existing) {
+                // Add quantities
+                $new_qty = $existing['qty'] + $qty;
+                if ($new_qty > 10)
+                    $new_qty = 10;
+
+                $update = $pdo->prepare("UPDATE sales_cart_items SET qty = :qty, updated_at = NOW() WHERE id = :id");
+                $update->execute([':qty' => $new_qty, ':id' => $existing['id']]);
+            } else {
+                // Insert
+                $insert = $pdo->prepare("INSERT INTO sales_cart_items (cart_id, product_id, qty, added_at, updated_at) VALUES (:cart_id, :product_id, :qty, NOW(), NOW())");
+                $insert->execute([':cart_id' => $cart_id, ':product_id' => $product_id, ':qty' => $qty]);
+            }
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        error_log("Cart merge failed: " . $e->getMessage());
+    }
+}
+
+/**
+ * Fetch all product IDs in user's wishlist
+ */
+function get_user_wishlist($user_id)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("SELECT product_id FROM wishlist WHERE user_id = :user_id");
+    $stmt->execute([':user_id' => $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+/**
+ * Add product to wishlist
+ */
+function add_to_wishlist_db($user_id, $product_id)
+{
+    $pdo = getDbConnection();
+    // Use ON CONFLICT or check before insert
+    $stmt = $pdo->prepare("
+        INSERT INTO wishlist (user_id, product_id, created_at)
+        VALUES (:user_id, :product_id, NOW())
+        ON CONFLICT (user_id, product_id) DO NOTHING
+    ");
+    return $stmt->execute([
+        ':user_id' => $user_id,
+        ':product_id' => $product_id
+    ]);
+}
+
+/**
+ * Remove product from wishlist
+ */
+function remove_from_wishlist_db($user_id, $product_id)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("DELETE FROM wishlist WHERE user_id = :user_id AND product_id = :product_id");
+    return $stmt->execute([
+        ':user_id' => $user_id,
+        ':product_id' => $product_id
+    ]);
+}
+
+/**
+ * Merge guest wishlist into user DB wishlist
+ */
+function merge_guest_wishlist_to_db($user_id, $guest_wishlist)
+{
+    if (empty($guest_wishlist))
+        return;
+
+    $pdo = getDbConnection();
+    try {
+        $pdo->beginTransaction();
+        $stmt = $pdo->prepare("
+            INSERT INTO wishlist (user_id, product_id, created_at)
+            VALUES (:user_id, :product_id, NOW())
+            ON CONFLICT (user_id, product_id) DO NOTHING
+        ");
+        foreach ($guest_wishlist as $product_id) {
+            $stmt->execute([
+                ':user_id' => $user_id,
+                ':product_id' => (int) $product_id
+            ]);
+        }
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        error_log("Wishlist merge failed: " . $e->getMessage());
+    }
+}

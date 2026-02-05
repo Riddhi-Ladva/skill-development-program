@@ -72,6 +72,7 @@
                             <a href="#" class="forgot-password">Forgot password?</a>
                         </div>
 
+                        <input type="hidden" name="guest_wishlist_data" id="guest-wishlist-data">
                         <button type="submit" class="login-button">Login</button>
                     </fieldset>
                 </form>
@@ -152,6 +153,14 @@
 
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/auth/auth-validation.js'); ?>"></script>
+    <script>
+        document.querySelector('form[action="login.php"]').addEventListener('submit', function () {
+            const wishlist = localStorage.getItem('wishlist');
+            if (wishlist) {
+                document.getElementById('guest-wishlist-data').value = wishlist;
+            }
+        });
+    </script>
 </body>
 
 </html>

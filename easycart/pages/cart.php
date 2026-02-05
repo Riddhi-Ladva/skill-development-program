@@ -292,7 +292,6 @@ require_once '../includes/cart/logic.php';
 
 
     <?php include '../includes/footer.php'; ?>
-    <script src="<?php echo asset('js/wishlist/wishlist.js?v=2'); ?>"></script>
     <script src="<?php echo asset('js/cart/summary.js?v=2'); ?>"></script>
     <script src="<?php echo asset('js/cart/quantity.js?v=2'); ?>"></script>
     <script src="<?php echo asset('js/cart/shipping.js?v=2'); ?>"></script>

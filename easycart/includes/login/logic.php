@@ -29,6 +29,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
 
                 $_SESSION['user_id'] = $user['id'];
+
+                // ---------------------------------------------------------
+                // CART & WISHLIST MERGE LOGIC (Guest -> DB)
+                // ---------------------------------------------------------
+                if (!function_exists('merge_guest_cart_to_db')) {
+                    require_once ROOT_PATH . '/includes/db_functions.php';
+                }
+
+                // Cart Merge
+                if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                    merge_guest_cart_to_db($user['id'], $_SESSION['cart']);
+                    unset($_SESSION['cart']);
+                }
+
+                // Wishlist Merge
+                $guest_wishlist_raw = $_POST['guest_wishlist_data'] ?? '';
+                if (!empty($guest_wishlist_raw)) {
+                    $guest_wishlist = json_decode($guest_wishlist_raw, true);
+                    if (is_array($guest_wishlist)) {
+                        merge_guest_wishlist_to_db($user['id'], $guest_wishlist);
+                        $_SESSION['clear_guest_wishlist'] = true;
+                    }
+                }
+                // ---------------------------------------------------------
+
                 header('Location: ../index.php');
                 exit;
             } else {

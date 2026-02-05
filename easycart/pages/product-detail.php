@@ -238,7 +238,6 @@
 
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/products/detail.js'); ?>"></script>
-    <script src="<?php echo asset('js/wishlist/wishlist.js'); ?>"></script>
     <script src="<?php echo asset('js/cart/add-to-cart.js'); ?>?v=<?php echo time(); ?>"></script>
 </body>
 

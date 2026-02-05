@@ -32,9 +32,26 @@ if (!isset($categories)) {
 <script>
     window.EasyCart = {
         baseUrl: '<?php echo BASE_PATH; ?>',
-        ajaxUrl: '<?php echo url('ajax'); ?>'
+        ajaxUrl: '<?php echo url('ajax'); ?>',
+        userId: <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>,
+        wishlist: <?php
+        if (isset($_SESSION['user_id'])) {
+            if (!function_exists('get_user_wishlist')) {
+                require_once __DIR__ . '/db_functions.php';
+            }
+            echo json_encode(get_user_wishlist($_SESSION['user_id']));
+        } else {
+            echo '[]';
+        }
+        ?>
     };
 </script>
+
+<?php if (isset($_SESSION['clear_guest_wishlist'])): ?>
+    <script>
+        localStorage.removeItem('wishlist');
+    </script>
+    <?php unset($_SESSION['clear_guest_wishlist']); endif; ?>
 
 <header id="site-header">
     <div class="header-top">
@@ -57,11 +74,20 @@ if (!isset($categories)) {
             <?php else: ?>
                 <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
             <?php endif; ?>
+            <?php
+            $initial_wishlist_count = 0;
+            if (isset($_SESSION['user_id'])) {
+                if (!function_exists('get_user_wishlist')) {
+                    require_once __DIR__ . '/db_functions.php';
+                }
+                $initial_wishlist_count = count(get_user_wishlist($_SESSION['user_id']));
+            }
+            ?>
             <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>"
-                class="action-link icon-wrapper wishlist-link <?php echo (isset($_SESSION['wishlist']) && count($_SESSION['wishlist']) > 0) ? 'has-items' : ''; ?>"
+                class="action-link icon-wrapper wishlist-link <?php echo $initial_wishlist_count > 0 ? 'has-items' : ''; ?>"
                 aria-label="View wishlist">
                 <i class="wishlist-icon" aria-hidden="true"></i>
-                <span class="icon-badge" id="header-wishlist-count">0</span>
+                <span class="icon-badge" id="header-wishlist-count"><?php echo $initial_wishlist_count; ?></span>
             </a>
             <?php
             if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
