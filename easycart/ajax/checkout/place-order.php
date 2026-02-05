@@ -138,6 +138,9 @@ try {
     $pdo->commit();
     error_log("Transaction committed.");
 
+    // 9. Log Initial Status
+    log_order_status_change($order_id, 'processing', 'Order placed successfully by customer.', true);
+
     // 9. Clear Cart from DB and session
     clear_user_cart_db($_SESSION['user_id']);
     unset($_SESSION['promo_code']);

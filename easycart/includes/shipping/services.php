@@ -10,6 +10,26 @@
  */
 
 /**
+ * Caches shipping methods to avoid repeated DB calls in same request
+ */
+function get_shipping_method_config($code)
+{
+    static $cache = [];
+    if (isset($cache[$code]))
+        return $cache[$code];
+
+    $pdo = getDbConnection();
+    // In a full implementation, we would store cost rules in DB. 
+    // For now, we verify the method exists and is active.
+    $stmt = $pdo->prepare("SELECT * FROM shipping_methods WHERE code = :code AND is_active = TRUE");
+    $stmt->execute(['code' => $code]);
+    $method = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $cache[$code] = $method;
+    return $method;
+}
+
+/**
  * Calculates shipping cost for a given method type.
  *
  * @param string $type The shipping method key (standard, express, etc)
@@ -18,6 +38,14 @@
  */
 function calculateShippingCost($type, $subtotal)
 {
+    // Verify method exists in DB
+    $method = get_shipping_method_config($type);
+
+    // Fallback if deleted or inactive
+    if (!$method) {
+        $type = 'standard';
+    }
+
     switch ($type) {
         case 'standard':
             // Simple: Always $40, no matter what.
@@ -29,7 +57,7 @@ function calculateShippingCost($type, $subtotal)
 
         case 'white-glove':
             // Rule: 5% of subtotal, capped at $150.
-// Better for very expensive orders.
+            // Better for very expensive orders.
             return min(150, $subtotal * 0.05);
 
         case 'freight':

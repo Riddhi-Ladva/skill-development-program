@@ -166,18 +166,17 @@ auth_guard();
                         <fieldset>
                             <legend class="visually-hidden">Select payment method</legend>
                             <div class="payment-method-selector">
-                                <label class="payment-tab">
-                                    <input type="radio" name="payment-method" value="card" checked>
-                                    Credit/Debit Card
-                                </label>
-                                <label class="payment-tab">
-                                    <input type="radio" name="payment-method" value="paypal">
-                                    PayPal
-                                </label>
-                                <label class="payment-tab">
-                                    <input type="radio" name="payment-method" value="apple-pay">
-                                    Apple Pay
-                                </label>
+                                <?php
+                                $payment_methods = get_active_payment_methods();
+                                foreach ($payment_methods as $index => $method):
+                                    $checked = ($index === 0) ? 'checked' : '';
+                                    ?>
+                                    <label class="payment-tab">
+                                        <input type="radio" name="payment-method"
+                                            value="<?php echo htmlspecialchars($method['code']); ?>" <?php echo $checked; ?>>
+                                        <?php echo htmlspecialchars($method['title']); ?>
+                                    </label>
+                                <?php endforeach; ?>
                             </div>
 
                             <div class="payment-form">

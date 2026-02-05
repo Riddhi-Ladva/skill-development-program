@@ -378,3 +378,33 @@ function clear_user_cart_db($user_id)
     // Also mark cart as inactive if needed, but the requirement says start fresh.
     // We'll just delete items for now to ensure no persistence.
 }
+
+/**
+ * Fetch active payment methods from DB
+ */
+function get_active_payment_methods()
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("SELECT code, title FROM payment_methods WHERE is_active = TRUE ORDER BY id ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Log order status change
+ */
+function log_order_status_change($order_id, $status, $comment = '', $notify_customer = false)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("
+        INSERT INTO sales_order_status_history 
+        (order_id, status, comment, is_customer_notified, created_at)
+        VALUES (:order_id, :status, :comment, :notify, NOW())
+    ");
+    $stmt->execute([
+        ':order_id' => $order_id,
+        ':status' => $status,
+        ':comment' => $comment,
+        ':notify' => $notify_customer ? 1 : 0
+    ]);
+}
