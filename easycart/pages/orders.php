@@ -24,7 +24,7 @@ auth_guard();
                     <h2>My Account</h2>
                     <ul>
                         <li><a href="<?php echo url('pages/orders.php'); ?>" class="active">Orders</a></li>
-                        <li><a href="#">Account Details</a></li>
+                        <li><a href="<?php echo url('pages/edit-profile.php'); ?>">Account Details</a></li>
                         <li><a href="#">Address Book</a></li>
                         <li><a href="#">Payment Methods</a></li>
                         <li><a href="#">Wishlist</a></li>
@@ -73,7 +73,8 @@ auth_guard();
                                         <td class="order-id"><?php echo htmlspecialchars($o['order_number']); ?></td>
                                         <td class="order-date"><?php echo date('M d, Y', strtotime($o['created_at'])); ?></td>
                                         <td class="order-method">
-                                            <?php echo ucfirst(htmlspecialchars($o['shipping_method'] ?? 'Standard')); ?></td>
+                                            <?php echo ucfirst(htmlspecialchars($o['shipping_method'] ?? 'Standard')); ?>
+                                        </td>
                                         <td>
                                             <span class="status-badge <?php echo htmlspecialchars($o['status']); ?>">
                                                 <?php echo ucfirst(htmlspecialchars($o['status'])); ?>

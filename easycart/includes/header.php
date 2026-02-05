@@ -68,12 +68,7 @@ if (!isset($categories)) {
         <!-- Global Notification Container -->
         <div id="global-notification-container"></div>
         <div class="header-actions">
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="<?php echo url('pages/dashboard.php'); ?>" class="action-link" aria-label="Dashboard">Dashboard</a>
-                <a href="<?php echo url('pages/logout.php'); ?>" class="action-link" aria-label="Logout">Logout</a>
-            <?php else: ?>
-                <a href="<?php echo url('pages/login.php'); ?>" class="action-link" aria-label="Login">Login</a>
-            <?php endif; ?>
+            <!-- 1. Wishlist Section -->
             <?php
             $initial_wishlist_count = 0;
             if (isset($_SESSION['user_id'])) {
@@ -89,6 +84,8 @@ if (!isset($categories)) {
                 <i class="wishlist-icon" aria-hidden="true"></i>
                 <span class="icon-badge" id="header-wishlist-count"><?php echo $initial_wishlist_count; ?></span>
             </a>
+
+            <!-- 2. Cart Section -->
             <?php
             if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
                 if (!function_exists('getCartCount')) {
@@ -101,6 +98,48 @@ if (!isset($categories)) {
                     aria-label="View cart">
                     <i class="cart-icon">🛒</i>
                     <span class="icon-badge" id="header-total-items"><?php echo $header_cart_count; ?></span>
+                </a>
+            <?php endif; ?>
+
+            <!-- 3. Profile / Account Section (Now Last) -->
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <?php
+                // Fetch user name for a personal touch
+                if (!isset($user_display_name)) {
+                    $stmt = getDbConnection()->prepare("SELECT first_name, last_name, email FROM users WHERE id = :id");
+                    $stmt->execute(['id' => $_SESSION['user_id']]);
+                    $u = $stmt->fetch();
+                    if ($u) {
+                        if (!empty($u['first_name'])) {
+                            $user_display_name = trim($u['first_name'] ?? '');
+                        } else {
+                            $user_display_name = 'My Profile';
+                        }
+                    } else {
+                        $user_display_name = 'User';
+                    }
+                }
+                ?>
+                <div class="profile-dropdown-container">
+                    <button class="action-link icon-wrapper profile-toggle" aria-label="Account menu" aria-haspopup="true"
+                        id="profile-menu-toggle">
+                        
+                        <i class="profile-icon">👤</i>
+                        <span class="profile-label"><?php echo htmlspecialchars($user_display_name); ?></span>
+                    </button>
+                    <div class="profile-dropdown" id="profile-dropdown-menu">
+                        <ul>
+                            <li><a href="<?php echo url('pages/dashboard.php'); ?>">Dashboard</a></li>
+                            <li><a href="<?php echo url('pages/orders.php'); ?>">Orders</a></li>
+                            <li><a href="<?php echo url('pages/edit-profile.php'); ?>">Edit Profile</a></li>
+                            <li class="divider"></li>
+                            <li><a href="<?php echo url('pages/logout.php'); ?>" class="logout-link">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            <?php else: ?>
+                <a href="<?php echo url('pages/login.php'); ?>" class="action-link profile-link" aria-label="Login">
+                    <i class="profile-icon">👤</i>
                 </a>
             <?php endif; ?>
         </div>
@@ -122,4 +161,5 @@ if (!isset($categories)) {
         </ul>
     </nav>
     <script src="<?php echo asset('js/utils/confirm.js'); ?>"></script>
+    <script src="<?php echo asset('js/layout/profile-dropdown.js'); ?>"></script>
 </header>
