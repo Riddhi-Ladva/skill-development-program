@@ -91,21 +91,6 @@
                         </fieldset>
                     </section>
 
-                    <section class="filter-group">
-                        <h2>Customer Rating</h2>
-                        <fieldset>
-                            <legend class="visually-hidden">Minimum rating</legend>
-                            <?php
-                            for ($i = 4; $i >= 2; $i--):
-                                $checked = ($selected_rating == $i) ? 'checked' : '';
-                                ?>
-                                <label>
-                                    <input type="radio" name="rating" value="<?php echo $i; ?>" <?php echo $checked; ?>>
-                                    <?php echo $i; ?> Stars & Up
-                                </label>
-                            <?php endfor; ?>
-                        </fieldset>
-                    </section>
 
                     <section class="filter-group">
                         <h2>Availability</h2>
@@ -163,8 +148,6 @@
                                 High</option>
                             <option value="price-high" <?php echo $sort === 'price-high' ? 'selected' : ''; ?>>Price: High
                                 to Low</option>
-                            <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>Customer Rating
-                            </option>
                             <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>Newest Arrivals
                             </option>
                         </select>
@@ -190,25 +173,26 @@
                                 <article class="product-card">
                                     <img src="<?php echo htmlspecialchars($product['image']); ?>"
                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                    <h3><a
-                                            href="product-detail.php?id=<?php echo $product['id']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
-                                    </h3>
-                                    <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
-                                    <p class="product-rating"><?php echo $product['rating']; ?> stars
-                                        (<?php echo number_format($product['reviews']); ?> reviews)</p>
-                                    <?php
-                                    $shipping = getShippingEligibility($product['price']);
-                                    ?>
-                                    <p class="shipping-info" style="margin: 5px 0;">
-                                        <span class="shipping-label <?php echo $shipping['class']; ?>">
-                                            <?php echo $shipping['icon']; ?>         <?php echo $shipping['label']; ?>
-                                        </span>
-                                    </p>
-                                    <button class="add-to-cart-btn btn btn-primary"
-                                        style="width: 100%; margin-top: 10px; padding: 8px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;"
-                                        data-product-id="<?php echo $product['id']; ?>">
-                                        Add to Cart
-                                    </button>
+                                    <div style="display: flex; flex-direction: column; flex-grow: 1; padding: var(--spacing-4) var(--spacing-4) var(--spacing-12) var(--spacing-4);">
+                                        <h3 style="text-align: center;"><a
+                                                href="product-detail.php?id=<?php echo $product['id']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                        </h3>
+                                        <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
+                                        <?php
+                                        $shipping = getShippingEligibility($product['price']);
+                                        ?>
+                                        <p class="shipping-info" style="margin: 0 0 var(--spacing-2) 0; text-align: center;">
+                                            <span class="shipping-label <?php echo $shipping['class']; ?>">
+                                                <?php echo $shipping['icon']; ?>         <?php echo $shipping['label']; ?>
+                                            </span>
+                                        </p>
+                                        <div class="button-group">
+                                            <button class="add-to-cart-btn"
+                                                data-product-id="<?php echo $product['id']; ?>">
+                                                🛒 Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
                                 </article>
                             <?php endforeach; ?>
                         <?php endif; ?>

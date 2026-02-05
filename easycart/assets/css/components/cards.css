@@ -53,16 +53,20 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-base);
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   box-shadow: var(--shadow-sm);
+  position: relative;
+  /* For absolute positioning of button */
 }
 
 .product-card:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  transform: translateY(-8px);
   border-color: var(--color-primary-light);
 }
 
@@ -71,7 +75,7 @@
   height: 200px;
   object-fit: cover;
   background-color: var(--color-bg-secondary);
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-base);
 }
 
 .product-card:hover img {
@@ -79,35 +83,89 @@
 }
 
 .product-card h3 {
-
-  font-size: 100px;
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
-  margin: var(--spacing-4) var(--spacing-4) var(--spacing-2) var(--spacing-4);
+  margin: 0 0 var(--spacing-2) 0;
   color: var(--color-text-primary);
   line-height: var(--line-height-tight);
+  text-align: center;
 }
 
 .product-price {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: var(--spacing-2) var(--spacing-4);
+  color: var(--color-primary);
+  margin: 0 0 var(--spacing-2) 0;
   line-height: var(--line-height-tight);
+  text-align: center;
+}
+
+.product-brand {
+  text-align: center;
 }
 
 .product-rating {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin: var(--spacing-2) var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  margin: 0 0 var(--spacing-2) 0;
   line-height: var(--line-height-normal);
+  text-align: center;
 }
 
 .product-shipping {
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
-  margin: var(--spacing-2) var(--spacing-4) var(--spacing-4) var(--spacing-4);
+  margin: 0 0 var(--spacing-2) 0;
   line-height: var(--line-height-normal);
   text-align: center;
+}
+
+/* Button Container & Hover Logic */
+.product-card .button-group {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-3);
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+/* Default state: hidden on desktop */
+@media (min-width: 1024px) {
+  .product-card .button-group {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .product-card:hover .button-group {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Secondary Button Style */
+.add-to-cart-btn {
+  background-color: var(--color-secondary) !important;
+  color: white !important;
+  font-size: var(--font-size-sm) !important;
+  padding: var(--spacing-2) var(--spacing-4) !important;
+  border-radius: var(--border-radius-full) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--spacing-2) !important;
+  border: none !important;
+  transition: background-color var(--transition-fast) !important;
+  width: 100%;
+}
+
+.add-to-cart-btn:hover {
+  background-color: var(--color-secondary-dark) !important;
+}
+
+.add-to-cart-btn.btn-success {
+  background-color: var(--color-success) !important;
 }
 
 .product-card a {

@@ -99,14 +99,6 @@
                     <p class="product-brand">Brand:
                         <?php echo htmlspecialchars($brand['name']); ?>
                     </p>
-                    <div class="product-rating">
-                        <p>
-                            <?php echo $product['rating']; ?> out of 5 stars
-                        </p>
-                        <a href="#reviews">
-                            <?php echo number_format($product['reviews']); ?> customer reviews
-                        </a>
-                    </div>
                 </header>
 
                 <section class="product-pricing">
@@ -154,7 +146,6 @@
                 <button type="button" class="tab-button active" aria-selected="true"
                     data-tab="description">Description</button>
                 <button type="button" class="tab-button" data-tab="specifications">Specifications</button>
-                <button type="button" id="reviews" class="tab-button" data-tab="reviews">Reviews</button>
             </div>
 
             <div class="tab-content">
@@ -223,91 +214,6 @@
                     </table>
                 </section>
 
-                <section id="reviews" class="tab-panel">
-                    <h3>Customer Reviews</h3>
-                    <div class="reviews-summary">
-                        <p class="average-rating">4.5 out of 5 stars</p>
-                        <p>Based on 245 reviews</p>
-                        <dl class="rating-breakdown">
-                            <dt>5 stars</dt>
-                            <dd>165 reviews (67%)</dd>
-                            <dt>4 stars</dt>
-                            <dd>50 reviews (20%)</dd>
-                            <dt>3 stars</dt>
-                            <dd>20 reviews (8%)</dd>
-                            <dt>2 stars</dt>
-                            <dd>7 reviews (3%)</dd>
-                            <dt>1 star</dt>
-                            <dd>3 reviews (1%)</dd>
-                        </dl>
-                    </div>
-
-                    <article class="review-item">
-                        <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
-                                alt="Profile picture of John D." class="reviewer-avatar">
-                            <div class="reviewer-info">
-                                <p class="reviewer-name">John D.</p>
-                                <p class="review-rating">5 out of 5 stars</p>
-                                <time datetime="2026-01-15">January 15, 2026</time>
-                            </div>
-                        </header>
-                        <h4 class="review-title">Amazing sound quality!</h4>
-                        <p class="review-text">These headphones exceeded my expectations. The noise cancellation is
-                            fantastic, and the battery lasts all day. Highly recommended!</p>
-                        <p class="review-helpful">23 people found this helpful</p>
-                    </article>
-
-                    <article class="review-item">
-                        <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100"
-                                alt="Profile picture of Sarah M." class="reviewer-avatar">
-                            <div class="reviewer-info">
-                                <p class="reviewer-name">Sarah M.</p>
-                                <p class="review-rating">4 out of 5 stars</p>
-                                <time datetime="2026-01-10">January 10, 2026</time>
-                            </div>
-                        </header>
-                        <h4 class="review-title">Great value for money</h4>
-                        <p class="review-text">Very comfortable for long listening sessions. The only downside is
-                            they're a bit bulky for travel, but the sound quality makes up for it.</p>
-                        <p class="review-helpful">15 people found this helpful</p>
-                    </article>
-
-                    <article class="review-item">
-                        <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
-                                alt="Profile picture of Mike R." class="reviewer-avatar">
-                            <div class="reviewer-info">
-                                <p class="reviewer-name">Mike R.</p>
-                                <p class="review-rating">5 out of 5 stars</p>
-                                <time datetime="2026-01-05">January 5, 2026</time>
-                            </div>
-                        </header>
-                        <h4 class="review-title">Perfect for work from home</h4>
-                        <p class="review-text">The microphone quality is excellent for video calls. Battery life is as
-                            advertised. Very happy with this purchase.</p>
-                        <p class="review-helpful">12 people found this helpful</p>
-                    </article>
-
-                    <article class="review-item">
-                        <header class="review-header">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100"
-                                alt="Profile picture of Emily L." class="reviewer-avatar">
-                            <div class="reviewer-info">
-                                <p class="reviewer-name">Emily L.</p>
-                                <p class="review-rating">4 out of 5 stars</p>
-                                <time datetime="2026-01-02">January 2, 2026</time>
-                            </div>
-                        </header>
-                        <h4 class="review-title">Good quality but pricey</h4>
-                        <p class="review-text">The build quality is excellent and the sound is clear. However, I feel
-                            the price is a bit high compared to similar products. Still, worth it for the features.</p>
-                        <p class="review-helpful">8 people found this helpful</p>
-                    </article>
-
-                    <button type="button" class="load-more-reviews">Load More Reviews</button>
-                </section>
             </div>
         </section>
 
@@ -324,8 +230,6 @@
                                 href="product-detail.php?id=<?php echo $rel_product['id']; ?>"><?php echo htmlspecialchars($rel_product['name']); ?></a>
                         </h3>
                         <p class="product-price">$<?php echo number_format($rel_product['price'], 2); ?></p>
-                        <p class="product-rating"><?php echo $rel_product['rating']; ?> stars
-                            (<?php echo number_format($rel_product['reviews']); ?> reviews)</p>
                     </article>
                 <?php endforeach; ?>
             </div>

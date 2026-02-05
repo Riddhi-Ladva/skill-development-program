@@ -52,6 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
+                if (response.status === 401) {
+                    // Redirect to login if unauthorized
+                    window.location.href = `${EasyCart.baseUrl}/pages/login.php`;
+                    return;
+                }
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -59,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    // Update global header badge using server-returned total
+                    // Update global header badge
                     if (headerCount) {
                         headerCount.textContent = data.totalItems;
                         const cartLink = headerCount.closest('.icon-wrapper');
@@ -67,11 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             cartLink.classList.toggle('has-items', parseInt(data.totalItems) > 0);
                         }
                     }
-                    if (cartCountBadge) {
-                        cartCountBadge.textContent = data.totalItems;
-                    }
 
-                    // Show a nice checkmark for 2 seconds
+                    // Success Feedback
                     button.innerHTML = '✔ Added';
                     button.classList.add('btn-success');
 
@@ -81,22 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         button.classList.remove('btn-success');
                     }, 2000);
                 } else {
-                    // If PHP rejected it, show an error state
-                    console.error('Failed to add to cart:', data.message);
-                    button.innerHTML = 'Error';
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                        button.disabled = false;
-                    }, 2000);
+                    throw new Error(data.message || 'Failed to add to cart');
                 }
 
             } catch (error) {
-                // If the internet goes out or the server crashes
-                console.error('Error adding to cart:', error);
+                console.error('Cart Error:', error);
                 button.innerHTML = 'Error';
+                button.style.backgroundColor = '#ef4444'; // Red for error
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.disabled = false;
+                    button.style.backgroundColor = ''; // Reset
                 }, 2000);
             }
         });

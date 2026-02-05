@@ -38,11 +38,12 @@
             <h2>Shop by Category</h2>
             <div class="category-grid">
                 <?php foreach ($categories as $slug => $category_info): ?>
-                <article class="category-card">
-                    <h3><?php echo htmlspecialchars($category_info['name']); ?></h3>
-                    <p><?php echo htmlspecialchars($category_info['description'] ?? 'Explore our collection'); ?></p>
-                    <a href="<?php echo url('pages/products.php?category=' . $slug); ?>">Explore <?php echo htmlspecialchars($category_info['name']); ?></a>
-                </article>
+                    <article class="category-card">
+                        <h3><?php echo htmlspecialchars($category_info['name']); ?></h3>
+                        <p><?php echo htmlspecialchars($category_info['description'] ?? 'Explore our collection'); ?></p>
+                        <a href="<?php echo url('pages/products.php?category=' . $slug); ?>">Explore
+                            <?php echo htmlspecialchars($category_info['name']); ?></a>
+                    </article>
                 <?php endforeach; ?>
             </div>
         </section>
@@ -67,7 +68,7 @@
         Featured Products
         Purpose: Hardcoded selection of top-selling items to drive immediate engagement.
         -->
-        
+
         <section class="featured-products">
             <h2>Featured Products</h2>
             <div class="product-grid">
@@ -75,19 +76,32 @@
                     <article class="product-card">
                         <img src="<?php echo htmlspecialchars($product['image']); ?>"
                             alt="<?php echo htmlspecialchars($product['name']); ?>">
-                        <center><h3><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <?php if (!empty($product['brand_name'])): ?>
-                            <p class="product-brand" style="font-size: 0.9em; color: gray; margin-bottom: 5px;">
-                                <?php echo htmlspecialchars($product['brand_name']); ?></p>
-                        <?php endif; ?>
-                        <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
-                        <p class="product-rating"><?php echo $product['rating']; ?> stars
-                            (<?php echo number_format($product['reviews']); ?> reviews)</p>
-                        <a href="<?php echo url('pages/product-detail.php?id=' . $product['id']); ?>">View Details</a>
+                        <div
+                            style="text-align: center; display: flex; flex-direction: column; flex-grow: 1; padding: var(--spacing-4) var(--spacing-4) var(--spacing-12) var(--spacing-4);">
+                            <h3><?php echo htmlspecialchars($product['name']); ?></h3>
+                            <?php if (!empty($product['brand_name'])): ?>
+                                <p class="product-brand"
+                                    style="font-size: 0.9em; color: var(--color-text-muted); margin-bottom: 5px;">
+                                    <?php echo htmlspecialchars($product['brand_name']); ?>
+                                </p>
+                            <?php endif; ?>
+                            <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
+
+                            <div class="button-group">
+                                <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
+                                    🛒 Add to Cart
+                                </button>
+                                <a href="<?php echo url('pages/product-detail.php?id=' . $product['id']); ?>"
+                                    style="font-size: var(--font-size-xs); color: var(--color-primary); margin-top: 5px; display: block; text-decoration: none;">View
+                                    Details</a>
+                            </div>
+                        </div>
                     </article>
                 <?php endforeach; ?>
             </div>
-            <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a></center>
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a>
+            </div>
         </section>
 
         <section class="promotional-banner">
