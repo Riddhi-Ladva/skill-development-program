@@ -44,7 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 1. Get detailed breakdown first
-        $cart_details = calculateCartDetails($_SESSION['cart'] ?? [], $products_indexed);
+        $cart = [];
+        if (isset($_SESSION['user_id'])) {
+            // Ensure DB functions are loaded (already required at top)
+            $cart = get_cart_items_db($_SESSION['user_id']);
+        } else {
+            $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        }
+        $cart_details = calculateCartDetails($cart, $products_indexed);
 
         // 2. Calculate Raw Subtotal from details
         $subtotal = 0;

@@ -13,12 +13,18 @@ foreach ($all_products as $p) {
 }
 $brands = get_all_brands();
 
-// ENFORCE AUTH: Cart is for logged-in users only
-require_once dirname(__DIR__) . '/auth/guard.php';
-auth_guard();
+// ENFORCE AUTH: REMOVED to allow guest cart
+// require_once dirname(__DIR__) . '/auth/guard.php';
+// auth_guard();
 
-$user_id = $_SESSION['user_id'];
-$cart_items = get_cart_items_db($user_id);
+$cart_items = [];
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $cart_items = get_cart_items_db($user_id);
+} else {
+    // Guest User -> Session Source
+    $cart_items = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+}
 $total_items = array_sum($cart_items);
 
 $cart_details = calculateCartDetails($cart_items, $products);

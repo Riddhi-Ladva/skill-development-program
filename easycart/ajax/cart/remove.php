@@ -16,8 +16,8 @@ require_once __DIR__ . '/../../includes/bootstrap/session.php';
 require_once ROOT_PATH . '/includes/db_functions.php';
 require_once ROOT_PATH . '/includes/auth/guard.php';
 
-// Protect endpoint: Logged-in users only
-ajax_auth_guard();
+// Protect endpoint: REMOVED for guest access
+// ajax_auth_guard();
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
 require_once ROOT_PATH . '/includes/tax/services.php';
@@ -33,11 +33,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productId = $data['product_id'] ?? null;
 
     if ($productId) {
-        // SYNC WITH DB
-        remove_from_cart_db($_SESSION['user_id'], $productId);
+        // SYNC WITH DB or Session
+        if (isset($_SESSION['user_id'])) {
+            remove_from_cart_db($_SESSION['user_id'], $productId);
+        } else {
+            if (isset($_SESSION['cart'][$productId])) {
+                unset($_SESSION['cart'][$productId]);
+            }
+        }
 
-        // Fetch current cart from DB for calculations
-        $cart = get_cart_items_db($_SESSION['user_id']);
+        // Fetch current cart from DB or Session for calculations
+        $cart = [];
+        if (isset($_SESSION['user_id'])) {
+            $cart = get_cart_items_db($_SESSION['user_id']);
+        } else {
+            $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        }
 
         // Fetch all products for calculation
         $all_products = get_products([]);
@@ -56,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Determine current total items for the badge
-        $totalItems = array_sum($cart);
+        $totalItems = getCartCount();
 
         // 3. Calculate Shipping Constraints
         $constraints = calculateCartShippingConstraints($cart_details);

@@ -15,8 +15,8 @@ require_once __DIR__ . '/../../includes/bootstrap/session.php';
 require_once ROOT_PATH . '/includes/db_functions.php';
 require_once __DIR__ . '/../../includes/auth/guard.php';
 
-// Restore auth guard: Cart is for logged-in users only
-ajax_auth_guard();
+// Restore auth guard: REMOVED for guest access
+// ajax_auth_guard();
 
 ob_end_clean();
 
@@ -32,8 +32,20 @@ $quantity = isset($input_json['quantity']) ? (int) $input_json['quantity'] : 1;
 $product = get_product_by_id($product_id);
 if ($product_id && $product) {
 
-    // SYNC WITH DB (No more session cart)
-    add_to_cart_db($_SESSION['user_id'], $product_id, $quantity);
+    // SYNC WITH DB or Session
+    if (isset($_SESSION['user_id'])) {
+        add_to_cart_db($_SESSION['user_id'], $product_id, $quantity);
+    } else {
+        // Guest - Session Cart
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
+        }
+        if (isset($_SESSION['cart'][$product_id])) {
+            $_SESSION['cart'][$product_id] += $quantity;
+        } else {
+            $_SESSION['cart'][$product_id] = $quantity;
+        }
+    }
 
     // Load necessary services for the response
     require_once ROOT_PATH . '/includes/cart/services.php';
@@ -47,11 +59,16 @@ if ($product_id && $product) {
         $products_indexed[$p['id']] = $p;
     }
 
-    // Fetch current cart from DB for response calculation
-    $cart = get_cart_items_db($_SESSION['user_id']);
+    // Fetch current cart from DB or Session for response calculation
+    $cart = [];
+    if (isset($_SESSION['user_id'])) {
+        $cart = get_cart_items_db($_SESSION['user_id']);
+    } else {
+        $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+    }
 
     // Calculate new total items count for header badge update
-    $total_items = array_sum($cart);
+    $total_items = getCartCount();
 
     // VALIDATION PIPELINE: Ensure shipping method is valid after adding item
     // 1. Get detailed breakdown

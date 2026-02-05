@@ -13,8 +13,8 @@ require_once __DIR__ . '/../../includes/bootstrap/session.php';
 require_once ROOT_PATH . '/includes/db_functions.php';
 require_once ROOT_PATH . '/includes/auth/guard.php';
 
-// Protect endpoint: Logged-in users only
-ajax_auth_guard();
+// Protect endpoint: REMOVED for guest access
+// ajax_auth_guard();
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
 require_once ROOT_PATH . '/includes/tax/services.php';
@@ -41,11 +41,23 @@ if ($quantity < 1)
 if ($quantity > 10)
     $quantity = 10;
 
-// SYNC WITH DB
-update_cart_qty_db($_SESSION['user_id'], $product_id, $quantity);
+// SYNC WITH DB or Session
+if (isset($_SESSION['user_id'])) {
+    update_cart_qty_db($_SESSION['user_id'], $product_id, $quantity);
+} else {
+    // Guest
+    if (isset($_SESSION['cart'][$product_id])) {
+        $_SESSION['cart'][$product_id] = $quantity;
+    }
+}
 
-// Fetch current cart from DB for calculation
-$cart = get_cart_items_db($_SESSION['user_id']);
+// Fetch current cart from DB or Session for calculation
+$cart = [];
+if (isset($_SESSION['user_id'])) {
+    $cart = get_cart_items_db($_SESSION['user_id']);
+} else {
+    $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+}
 
 if (true) { // Logic was wrapped in session check, now using DB
 
@@ -96,7 +108,8 @@ if (true) { // Logic was wrapped in session check, now using DB
             'shipping' => '$' . number_format($totals['shipping'], 2),
             'promo_discount' => isset($totals['promo_discount']) ? '-$' . number_format($totals['promo_discount'], 2) : '$0.00',
             'tax' => '$' . number_format($totals['tax'], 2),
-            'grandTotal' => '$' . number_format($totals['total'], 2)
+            'grandTotal' => '$' . number_format($totals['total'], 2),
+            'totalItems' => getCartCount()
         ],
         'cartItems' => $cart_details,
         'shippingOptions' => [

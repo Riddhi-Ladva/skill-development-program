@@ -129,6 +129,35 @@ function calculateCartShippingConstraints($cart_details)
 }
 
 /**
+ * NEW: Centralized Cart Count Resolver
+ *
+ * Single source of truth for the cart badge count.
+ * - Logged-in: Count from DB
+ * - Guest: Count from Session
+ *
+ * @return int Total number of items
+ */
+function getCartCount()
+{
+    // 1. Logged-in User -> DB Source
+    if (isset($_SESSION['user_id'])) {
+        // Ensure DB functions are loaded
+        if (!function_exists('get_cart_items_db')) {
+            require_once dirname(__DIR__) . '/db_functions.php';
+        }
+        $cart_items = get_cart_items_db($_SESSION['user_id']);
+        return array_sum($cart_items);
+    }
+
+    // 2. Guest User -> Session Source
+    if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+        return array_sum($_SESSION['cart']);
+    }
+
+    return 0;
+}
+
+/**
  * Validates and possibly auto-corrects the selected shipping method.
  *
  * @param string $current_method The currently selected method ID

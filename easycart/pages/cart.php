@@ -1,7 +1,8 @@
 <?php 
 require_once '../includes/cart/logic.php'; 
-require_once ROOT_PATH . '/includes/auth/guard.php';
-auth_guard();
+// Auth guard removed to allow guest access
+// require_once ROOT_PATH . '/includes/auth/guard.php';
+// auth_guard();
 ?>
 <!DOCTYPE html>
 <html lang="en">

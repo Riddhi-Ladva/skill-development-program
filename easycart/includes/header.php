@@ -65,7 +65,10 @@ if (!isset($categories)) {
             </a>
             <?php
             if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
-                $header_cart_count = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0;
+                if (!function_exists('getCartCount')) {
+                    require_once dirname(__DIR__) . '/includes/cart/services.php';
+                }
+                $header_cart_count = getCartCount();
                 ?>
                 <a href="<?php echo url('pages/cart.php'); ?>"
                     class="action-link icon-wrapper cart-link <?php echo $header_cart_count > 0 ? 'has-items' : ''; ?> <?php echo ($current_page == 'cart.php') ? 'active' : ''; ?>"
