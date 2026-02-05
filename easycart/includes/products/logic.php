@@ -44,7 +44,12 @@ $selected_availability = isset($_GET['availability']) && is_array($_GET['availab
 // Handle Sort
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'featured';
 
-// --- 2. Fetch Data ---
+// --- 2. Pagination Calculation ---
+$p = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+$limit = 9; // 3 rows * 3 columns
+$offset = ($p - 1) * $limit;
+
+// --- 3. Fetch Data ---
 
 // Fetch Brands for Filter UI
 $all_brands = get_all_brands();
@@ -60,10 +65,36 @@ $filters = [
     'price_range' => $selected_prices,
     'rating' => $selected_rating,
     'availability' => $selected_availability,
-    'sort' => $sort
+    'sort' => $sort,
+    'limit' => $limit,
+    'offset' => $offset
 ];
 
-// --- 3. View Logic ---
+// Fetch matching products (paginated)
+$products = get_products($filters);
+
+// Fetch total count (ignores limit/offset)
+$total_products = get_products_count($filters);
+$total_pages = ceil($total_products / $limit);
+
+// --- 4. Pagination Window Logic ---
+// We'll show up to 5 neighboring pages around the current page
+$max_visible_pages = 5;
+$pagination_start = max(1, $p - floor($max_visible_pages / 2));
+$pagination_end = min($total_pages, $pagination_start + $max_visible_pages - 1);
+
+// Adjust start if end is at total_pages
+if ($pagination_end === (float) $total_pages || $pagination_end === (int) $total_pages) {
+    $pagination_start = max(1, $pagination_end - $max_visible_pages + 1);
+}
+
+// Ensure $p is within bounds to prevent empty pages if users hack the URL
+if ($total_pages > 0 && $p > $total_pages) {
+    header("Location: ?page=" . $total_pages . (isset($_GET['q']) ? "&q=" . urlencode($_GET['q']) : ''));
+    exit;
+}
+
+// --- 5. View Logic ---
 
 // Determine Page Header / Category Name
 $category = null;
@@ -73,12 +104,3 @@ if (count($selected_categories) === 1) {
         $category = $all_categories[$slug]['name'];
     }
 }
-
-$products = get_products($filters);
-
-// Note: No need for manual PHP pagination here yet as UI passes everything to one page or specific params. 
-// If pagination is needed, we would use $filters['limit'] and $filters['offset'].
-// The current view seems to show "Showing X products" and has pagination links but logic file didn't implement real pagination (it was slicing in view? No, view logic showed all or filtered). 
-// The view has pagination links: products.php?page=1... 
-// The original logic file I read didn't seem to implement slicing, it was just filtering.
-// So I will stick to returning the filtered set.

@@ -210,6 +210,115 @@ function get_products($args = [])
 }
 
 /**
+ * NEW: Count total products matching the current filters.
+ * Required for dynamic pagination.
+ */
+function get_products_count($args = [])
+{
+    $pdo = getDbConnection();
+
+    // Default arguments (same as get_products but limit/offset are ignored here)
+    $defaults = [
+        'query' => '',
+        'category' => [],
+        'brand_id' => [],
+        'price_range' => [],
+        'rating' => 0,
+        'availability' => []
+    ];
+
+    $params = array_merge($defaults, $args);
+    $bindings = [];
+
+    $sql = "SELECT COUNT(*) FROM catalog_product_entity p
+            LEFT JOIN catalog_brand b ON p.brand_id = b.id
+            LEFT JOIN catalog_product_price pp ON pp.product_id = p.id AND pp.customer_group_id = 0
+            WHERE p.status = 1";
+
+    // 1. Search Query
+    if (!empty($params['query'])) {
+        $sql .= " AND (p.name ILIKE :query OR b.name ILIKE :query)";
+        $bindings[':query'] = '%' . $params['query'] . '%';
+    }
+
+    // 2. Category Filter
+    if (!empty($params['category'])) {
+        $cats = is_array($params['category']) ? $params['category'] : [$params['category']];
+        if (!empty($cats)) {
+            $placeholders = [];
+            foreach ($cats as $i => $c) {
+                $key = ":cat_$i";
+                $placeholders[] = $key;
+                $bindings[$key] = $c;
+            }
+            $in_clause = implode(',', $placeholders);
+            $sql .= " AND EXISTS (
+                SELECT 1 FROM catalog_category_products ccp 
+                JOIN catalog_category_entity c ON ccp.category_id = c.id 
+                WHERE ccp.product_id = p.id AND c.slug IN ($in_clause)
+            )";
+        }
+    }
+
+    // 3. Brand Filter
+    if (!empty($params['brand_id'])) {
+        $brands = is_array($params['brand_id']) ? $params['brand_id'] : [$params['brand_id']];
+        if (!empty($brands)) {
+            $placeholders = [];
+            foreach ($brands as $i => $id) {
+                $key = ":brand_$i";
+                $placeholders[] = $key;
+                $bindings[$key] = $id;
+            }
+            $sql .= " AND p.brand_id IN (" . implode(',', $placeholders) . ")";
+        }
+    }
+
+    // 5. Price Ranges
+    if (!empty($params['price_range'])) {
+        $price_sql_parts = [];
+        foreach ($params['price_range'] as $range) {
+            switch ($range) {
+                case '0-25':
+                    $price_sql_parts[] = "(pp.price < 25)";
+                    break;
+                case '25-50':
+                    $price_sql_parts[] = "(pp.price >= 25 AND pp.price <= 50)";
+                    break;
+                case '50-100':
+                    $price_sql_parts[] = "(pp.price > 50 AND pp.price <= 100)";
+                    break;
+                case '100-200':
+                    $price_sql_parts[] = "(pp.price > 100 AND pp.price <= 200)";
+                    break;
+                case '200+':
+                    $price_sql_parts[] = "(pp.price > 200)";
+                    break;
+            }
+        }
+        if (!empty($price_sql_parts)) {
+            $sql .= " AND (" . implode(' OR ', $price_sql_parts) . ")";
+        }
+    }
+
+    // 6. Availability
+    if (!empty($params['availability'])) {
+        if (in_array('in-stock', $params['availability'])) {
+            $sql .= " AND EXISTS (SELECT 1 FROM catalog_product_inventory inv WHERE inv.product_id = p.id AND inv.is_in_stock = TRUE)";
+        }
+    }
+
+    $stmt = $pdo->prepare($sql);
+    foreach ($bindings as $k => $v) {
+        $stmt->bindValue($k, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
+    }
+
+    $stmt->execute();
+    return (int) $stmt->fetchColumn();
+}
+
+
+/**
  * Fetch limited number of products for homepage
  */
 function get_featured_products($limit = 4)

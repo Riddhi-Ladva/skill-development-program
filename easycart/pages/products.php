@@ -25,7 +25,9 @@
                     All Products
                 <?php endif; ?>
             </h1>
-            <p id="product-count-display">Showing <?php echo count($products); ?> products</p>
+            <p id="product-count-display">
+                Showing <?php echo min($total_products, $offset + 1); ?>-<?php echo min($total_products, $offset + $limit); ?> of <?php echo $total_products; ?> products
+            </p>
         </section>
 
         <div class="products-container">
@@ -137,7 +139,7 @@
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-6); padding-bottom: var(--spacing-4); border-bottom: 1px solid var(--color-border-light);">
                     <p class="product-count"
                         style="color: var(--color-text-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);">
-                        Showing <strong><?php echo count($products); ?></strong> products
+                        Showing <strong><?php echo min($total_products, $offset + 1); ?>-<?php echo min($total_products, $offset + $limit); ?></strong> of <strong><?php echo $total_products; ?></strong> products
                     </p>
                     <section class="sorting-controls">
                         <label for="sort-select">Sort by:</label>
@@ -199,16 +201,47 @@
                     </div>
                 </section>
 
-                <nav class="pagination" aria-label="Product pages">
-                    <ul>
-                        <li><a href="products.php?page=1" aria-current="page">1</a></li>
-                        <li><a href="products.php?page=2">2</a></li>
-                        <li><a href="products.php?page=3">3</a></li>
-                        <li><a href="products.php?page=4">4</a></li>
-                        <li><a href="products.php?page=5">5</a></li>
-                        <li><a href="products.php?page=2" aria-label="Next page">Next</a></li>
-                    </ul>
-                </nav>
+                <?php if ($total_pages > 1): ?>
+                    <nav class="pagination" aria-label="Product pages">
+                        <ul>
+                            <?php if ($p > 1): ?>
+                                <li>
+                                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $p - 1])); ?>" aria-label="Previous page">Prev</a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php if ($pagination_start > 1): ?>
+                                <li><a href="?<?php echo http_build_query(array_merge($_GET, ['page' => 1])); ?>">1</a></li>
+                                <?php if ($pagination_start > 2): ?>
+                                    <li class="pagination-ellipsis"><span>...</span></li>
+                                <?php endif; ?>
+                            <?php endif; ?>
+
+                            <?php for ($i = $pagination_start; $i <= $pagination_end; $i++): ?>
+                                <li>
+                                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
+                                       class="<?php echo $i === $p ? 'active' : ''; ?>"
+                                       <?php echo $i === $p ? 'aria-current="page"' : ''; ?>>
+                                        <?php echo $i; ?>
+                                    </a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <?php if ($pagination_end < $total_pages): ?>
+                                <?php if ($pagination_end < $total_pages - 1): ?>
+                                    <li class="pagination-ellipsis"><span>...</span></li>
+                                <?php endif; ?>
+                                <li><a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $total_pages])); ?>"><?php echo $total_pages; ?></a></li>
+                            <?php endif; ?>
+
+                            <?php if ($p < $total_pages): ?>
+                                <li>
+                                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $p + 1])); ?>" aria-label="Next page">Next</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
             </div>
         </div>
     </main>
