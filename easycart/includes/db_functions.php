@@ -362,21 +362,46 @@ function get_cart_items_db($user_id)
 }
 
 /**
- * Completely clear user cart (delete items)
+ * Completely clear user cart (delete items and promo)
  */
 function clear_user_cart_db($user_id)
 {
     $pdo = getDbConnection();
 
-    // Deleting items is cleaner for "starting fresh" per requirements
+    // 1. Delete items
     $stmt = $pdo->prepare("
         DELETE FROM sales_cart_items 
         WHERE cart_id IN (SELECT id FROM sales_cart WHERE user_id = :user_id)
     ");
     $stmt->execute([':user_id' => $user_id]);
 
-    // Also mark cart as inactive if needed, but the requirement says start fresh.
-    // We'll just delete items for now to ensure no persistence.
+    // 2. Clear promo code in cart
+    $stmt = $pdo->prepare("UPDATE sales_cart SET promo_code = NULL WHERE user_id = :user_id AND is_active = TRUE");
+    $stmt->execute([':user_id' => $user_id]);
+}
+
+/**
+ * Update active promo code for user's cart in DB
+ */
+function update_cart_promo_db($user_id, $promo_code)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("UPDATE sales_cart SET promo_code = :promo_code, updated_at = NOW() WHERE user_id = :user_id AND is_active = TRUE");
+    $stmt->execute([
+        ':promo_code' => $promo_code,
+        ':user_id' => $user_id
+    ]);
+}
+
+/**
+ * Fetch active promo code for user's cart from DB
+ */
+function get_cart_promo_db($user_id)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("SELECT promo_code FROM sales_cart WHERE user_id = :user_id AND is_active = TRUE LIMIT 1");
+    $stmt->execute([':user_id' => $user_id]);
+    return $stmt->fetchColumn();
 }
 
 /**

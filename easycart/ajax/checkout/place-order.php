@@ -39,7 +39,7 @@ try {
     }
     error_log("Cart fetched for user " . $_SESSION['user_id']);
 
-    // 2. Fetch products and Calculate Totals
+    // 2. Fetch products and Calculate Totals using Unified Summary
     if (!function_exists('get_products')) {
         throw new Exception('Required function get_products() is missing.');
     }
@@ -49,40 +49,42 @@ try {
         $products_indexed[$p['id']] = $p;
     }
 
-    $subtotal = calculateSubtotal($cart_items, $products_indexed);
-    $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
-    $shipping = calculateShippingCost($shipping_method, $subtotal);
-    $totals = calculateCheckoutTotals($subtotal, $shipping);
-
-    $grand_total = $totals['total'];
-    $subtotal_val = $totals['subtotal'];
-    $tax_val = $totals['tax'];
-    $discount_val = $totals['promo_discount'] ?? 0;
+    $summary = calculateCompleteCartSummary($cart_items, $products_indexed);
 
     // 3. Start Transaction
     $pdo->beginTransaction();
     error_log("Transaction started.");
 
-    // 4. Create Order
+    // 4. Create Order (Using Gross Subtotal + Discount Columns)
     $order_number = 'ORD-' . strtoupper(uniqid());
     $stmt = $pdo->prepare("
-        INSERT INTO sales_order (user_id, order_number, status, grand_total, subtotal, shipping_total, discount_total, tax_total, shipping_method, created_at, updated_at)
-        VALUES (:user_id, :order_number, :status, :grand_total, :subtotal, :shipping_total, :discount_total, :tax_total, :shipping_method, NOW(), NOW())
+        INSERT INTO sales_order (
+            user_id, order_number, status, grand_total, subtotal, shipping_total, 
+            discount_total, tax_total, shipping_method, created_at, updated_at,
+            discount_method, discount_id
+        )
+        VALUES (
+            :user_id, :order_number, :status, :grand_total, :subtotal, :shipping_total, 
+            :discount_total, :tax_total, :shipping_method, NOW(), NOW(),
+            :discount_method, :discount_id
+        )
         RETURNING id
     ");
     $stmt->execute([
         'user_id' => $_SESSION['user_id'],
         'order_number' => $order_number,
         'status' => 'processing',
-        'grand_total' => $grand_total,
-        'subtotal' => $subtotal_val,
-        'shipping_total' => $shipping,
-        'discount_total' => $discount_val,
-        'tax_total' => $tax_val,
-        'shipping_method' => $shipping_method
+        'grand_total' => $summary['grand_total'],
+        'subtotal' => $summary['gross_subtotal'],
+        'shipping_total' => $summary['shipping'],
+        'discount_total' => $summary['final_discount'],
+        'tax_total' => $summary['tax'],
+        'shipping_method' => $summary['shipping_method'],
+        'discount_method' => $summary['discount_method'],
+        'discount_id' => $summary['discount_id']
     ]);
     $order_id = $stmt->fetchColumn();
-    error_log("Order created: " . $order_id);
+    error_log("Order created: " . $order_id . " with discount type: " . ($summary['discount_method'] ?? 'none'));
 
     // 5. Create Order Address
     $stmt_addr = $pdo->prepare("
@@ -108,7 +110,7 @@ try {
     $stmt_pay->execute([
         'order_id' => $order_id,
         'method' => $payment_data['method'] ?? 'card',
-        'amount_paid' => $grand_total,
+        'amount_paid' => $summary['grand_total'],
         'last_4' => substr($payment_data['card_number'] ?? '0000', -4)
     ]);
 

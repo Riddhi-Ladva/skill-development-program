@@ -27,6 +27,9 @@ if (isset($_SESSION['promo_code'])) {
     unset($_SESSION['promo_code']);
     unset($_SESSION['promo_value']);
 
+    // PERSIST REMOVAL TO DB
+    update_cart_promo_db($_SESSION['user_id'], null);
+
     // Recalculate everything
     // VALIDATION PIPELINE
     // 1. Get detailed breakdown first

@@ -225,3 +225,64 @@ function calculateCheckoutTotals($subtotal, $shipping_cost)
         'total' => $total
     ];
 }
+
+/**
+ * NEW: Unified Cart Summary for DB Persistence & UI
+ * 
+ * Provides a single source of truth for Gross Subtotal, Discounts (Promo vs Qty), and Final Totals.
+ * 
+ * @param array $cart_items Session/DB cart items
+ * @param array $products Master product data
+ * @param string|null $shipping_method Method ID
+ * @return array Comprehensive summary object
+ */
+function calculateCompleteCartSummary($cart_items, $products, $shipping_method = null)
+{
+    $details = calculateCartDetails($cart_items, $products);
+
+    $gross_subtotal = 0;
+    $total_quantity_discount = 0;
+    foreach ($details as $item) {
+        $gross_subtotal += $item['original_total'];
+        $total_quantity_discount += $item['discount_amount'];
+    }
+
+    $subtotal_after_qty = $gross_subtotal - $total_quantity_discount;
+
+    $method = $shipping_method ?? ($_SESSION['shipping_method'] ?? 'standard');
+    $shipping_cost = calculateShippingCost($method, $subtotal_after_qty);
+
+    $totals = calculateCheckoutTotals($subtotal_after_qty, $shipping_cost);
+
+    $promo_discount = $totals['promo_discount'] ?? 0;
+
+    // Unified discount logic for persistence
+    $final_discount = 0;
+    $discount_method = null;
+    $discount_id = null;
+
+    if ($promo_discount > 0) {
+        $final_discount = $promo_discount;
+        $discount_method = 'promo';
+        $discount_id = $_SESSION['promo_code'] ?? 'unknown';
+    } elseif ($total_quantity_discount > 0) {
+        $final_discount = $total_quantity_discount;
+        $discount_method = 'quantity';
+        $discount_id = 'quantity_based';
+    }
+
+    return [
+        'gross_subtotal' => $gross_subtotal,
+        'subtotal_after_qty' => $subtotal_after_qty,
+        'quantity_discount' => $total_quantity_discount,
+        'promo_discount' => $promo_discount,
+        'final_discount' => $final_discount,
+        'discount_method' => $discount_method,
+        'discount_id' => $discount_id,
+        'shipping' => $shipping_cost,
+        'shipping_method' => $method,
+        'tax' => $totals['tax'],
+        'grand_total' => $totals['total'],
+        'items' => $details
+    ];
+}

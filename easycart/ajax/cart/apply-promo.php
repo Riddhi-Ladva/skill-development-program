@@ -38,6 +38,9 @@ if (array_key_exists($code, $promocodes)) {
     $_SESSION['promo_code'] = $code;
     $_SESSION['promo_value'] = $promocodes[$code];
 
+    // PERSIST TO DB: Requirements state DB is single source of truth
+    update_cart_promo_db($_SESSION['user_id'], $code);
+
     // SYNC WITH DB: Fetch current items
     $cart = get_cart_items_db($_SESSION['user_id']);
 
