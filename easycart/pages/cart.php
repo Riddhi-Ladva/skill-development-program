@@ -218,12 +218,11 @@ require_once '../includes/cart/logic.php';
         <section class="cart-wishlist" id="wishlist-section">
             <div class="section-header">
                 <h2>Your Wishlist</h2>
-                <!-- Carousel controls optional, removed for simplicity or keep if needed. Keeping layout simple mainly. -->
             </div>
             <div class="wishlist-carousel-container">
                 <div class="wishlist-items" id="wishlist-items-container">
                     <?php
-                    // FETCH WISHLIST ITEMS
+                    // FETCH WISHLIST ITEMS (DB)
                     $wishlist_items = [];
                     if (isset($_SESSION['user_id'])) {
                         if (!function_exists('get_user_wishlist_details')) {
@@ -232,8 +231,10 @@ require_once '../includes/cart/logic.php';
                         $wishlist_items = get_user_wishlist_details($_SESSION['user_id']);
                     }
                     ?>
-
+                    
+                    <!-- If SSR found items (User), render them. JS will take over for Guest or manipulations. -->
                     <?php if (empty($wishlist_items)): ?>
+                        <!-- Empty state rendered by PHP initially for guests too. JS will replace if it finds LS data. -->
                         <div class="wishlist-empty">Your wishlist is empty. Items you save will appear here.</div>
                     <?php else: ?>
                         <?php foreach ($wishlist_items as $w_item): ?>

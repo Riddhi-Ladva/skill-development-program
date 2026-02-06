@@ -617,9 +617,11 @@ function merge_guest_cart_to_db($user_id, $guest_cart)
 function get_user_wishlist($user_id)
 {
     $pdo = getDbConnection();
+    // Explicitly select as integer array
     $stmt = $pdo->prepare("SELECT product_id FROM wishlist WHERE user_id = :user_id");
-    $stmt->execute([':user_id' => $user_id]);
-    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $stmt->execute([':user_id' => (int) $user_id]);
+    $results = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    return is_array($results) ? array_map('intval', $results) : [];
 }
 
 /**
@@ -628,11 +630,18 @@ function get_user_wishlist($user_id)
 function add_to_wishlist_db($user_id, $product_id)
 {
     $pdo = getDbConnection();
-    // Use ON CONFLICT or check before insert
+
+    // Check if exists first (Safe for schemas without unique constraint)
+    $stmt = $pdo->prepare("SELECT 1 FROM wishlist WHERE user_id = :user_id AND product_id = :product_id");
+    $stmt->execute([':user_id' => $user_id, ':product_id' => $product_id]);
+
+    if ($stmt->fetch()) {
+        return true; // Already exists
+    }
+
     $stmt = $pdo->prepare("
         INSERT INTO wishlist (user_id, product_id, created_at)
         VALUES (:user_id, :product_id, NOW())
-        ON CONFLICT (user_id, product_id) DO NOTHING
     ");
     return $stmt->execute([
         ':user_id' => $user_id,
@@ -664,16 +673,22 @@ function merge_guest_wishlist_to_db($user_id, $guest_wishlist)
     $pdo = getDbConnection();
     try {
         $pdo->beginTransaction();
-        $stmt = $pdo->prepare("
+
+        $check = $pdo->prepare("SELECT 1 FROM wishlist WHERE user_id = :user_id AND product_id = :product_id");
+        $insert = $pdo->prepare("
             INSERT INTO wishlist (user_id, product_id, created_at)
             VALUES (:user_id, :product_id, NOW())
-            ON CONFLICT (user_id, product_id) DO NOTHING
         ");
+
         foreach ($guest_wishlist as $product_id) {
-            $stmt->execute([
-                ':user_id' => $user_id,
-                ':product_id' => (int) $product_id
-            ]);
+            $pid = (int) $product_id;
+
+            // Check existence
+            $check->execute([':user_id' => $user_id, ':product_id' => $pid]);
+            if (!$check->fetch()) {
+                // Insert if not exists
+                $insert->execute([':user_id' => $user_id, ':product_id' => $pid]);
+            }
         }
         $pdo->commit();
     } catch (Exception $e) {

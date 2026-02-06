@@ -80,41 +80,4 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Your cart is safe! All items have been preserved.', 'info');
         }
     }
-
-    /**
-     * 4. Wishlist Synchronization
-     * Reads from LocalStorage to update header badge visibility.
-     */
-    const updateHeaderWishlist = () => {
-        const wishlistLink = document.querySelector('.wishlist-link');
-        const wishlistCount = document.getElementById('header-wishlist-count');
-        if (!wishlistLink || !wishlistCount) return;
-
-        // Wishlist is saved in localStorage (Browser memory), not PHP session
-        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        const count = wishlist.length;
-
-        wishlistCount.textContent = count;
-
-        if (count > 0) {
-            wishlistLink.classList.add('has-items');
-        } else {
-            wishlistLink.classList.remove('has-items');
-        }
-    };
-
-    // Listen for storage changes (if user has two tabs open)
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'wishlist') updateHeaderWishlist();
-    });
-
-    // Check count on every click (in case they clicked a wishlist button)
-    document.addEventListener('click', () => {
-        setTimeout(updateHeaderWishlist, 50);
-    });
-
-    window.addEventListener('wishlistUpdated', updateHeaderWishlist);
-
-    // Initial run
-    updateHeaderWishlist();
 });

@@ -35,14 +35,18 @@ if (!isset($categories)) {
         ajaxUrl: '<?php echo url('ajax'); ?>',
         userId: <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'null'; ?>,
         wishlist: <?php
+        $wishlist_ids = [];
         if (isset($_SESSION['user_id'])) {
-            if (!function_exists('get_user_wishlist')) {
-                require_once __DIR__ . '/db_functions.php';
+            try {
+                if (!function_exists('get_user_wishlist')) {
+                    require_once __DIR__ . '/db_functions.php';
+                }
+                $wishlist_ids = get_user_wishlist($_SESSION['user_id']);
+            } catch (Exception $e) {
+                error_log("Wishlist Header Error: " . $e->getMessage());
             }
-            echo json_encode(get_user_wishlist($_SESSION['user_id']));
-        } else {
-            echo '[]';
         }
+        echo json_encode(is_array($wishlist_ids) ? $wishlist_ids : []);
         ?>
     };
 </script>
