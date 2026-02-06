@@ -19,18 +19,7 @@ auth_guard();
 
     <main id="main-content">
         <div class="account-container">
-            <aside class="account-sidebar">
-                <nav aria-label="Account navigation">
-                    <h2>My Account</h2>
-                    <ul>
-                        <li><a href="<?php echo url('pages/orders.php'); ?>" class="active">Orders</a></li>
-                        <li><a href="<?php echo url('pages/edit-profile.php'); ?>">Account Details</a></li>
-                        <li><a href="#">Address Book</a></li>
-                        <li><a href="#">Payment Methods</a></li>
-                        <li><a href="#">Wishlist</a></li>
-                    </ul>
-                </nav>
-            </aside>
+
 
             <section class="account-main">
                 <header class="page-header">
@@ -89,6 +78,31 @@ auth_guard();
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+                    <?php endif; ?>
+                    <?php if (isset($total_pages) && $total_pages > 1): ?>
+                        <nav class="pagination" aria-label="Order pages">
+                            <ul>
+                                <!-- Previous -->
+                                <?php if ($page > 1): ?>
+                                    <li><a href="?page=<?php echo $page - 1; ?>" aria-label="Previous page">Prev</a></li>
+                                <?php endif; ?>
+
+                                <!-- Page Numbers -->
+                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                    <li>
+                                        <a href="?page=<?php echo $i; ?>" class="<?php echo $i === $page ? 'active' : ''; ?>"
+                                            <?php echo $i === $page ? 'aria-current="page"' : ''; ?>>
+                                            <?php echo $i; ?>
+                                        </a>
+                                    </li>
+                                <?php endfor; ?>
+
+                                <!-- Next -->
+                                <?php if ($page < $total_pages): ?>
+                                    <li><a href="?page=<?php echo $page + 1; ?>" aria-label="Next page">Next</a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
                     <?php endif; ?>
                 </div>
             </section>

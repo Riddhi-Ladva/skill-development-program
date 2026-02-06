@@ -173,20 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main id="main-content">
         <div class="account-container">
-            <aside class="account-sidebar">
-                <nav aria-label="Account navigation">
-                    <h2>My Account</h2>
-                    <ul>
-                        <li><a href="<?php echo url('pages/dashboard.php'); ?>">Dashboard</a></li>
-                        <li><a href="<?php echo url('pages/orders.php'); ?>">Orders</a></li>
-                        <li><a href="<?php echo url('pages/edit-profile.php'); ?>" class="active">Account Details</a>
-                        </li>
-                        <li><a href="#">Address Book</a></li>
-                        <li><a href="#">Payment Methods</a></li>
-                        <li><a href="#">Wishlist</a></li>
-                    </ul>
-                </nav>
-            </aside>
+
 
             <section class="account-main">
                 <header class="page-header">

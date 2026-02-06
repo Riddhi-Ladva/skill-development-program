@@ -79,15 +79,36 @@ if ($order_id) {
 } else {
     // --- Orders List Mode ---
     $orders = [];
+    $page = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+    $limit = 5; // Fixed page size
+    $offset = ($page - 1) * $limit;
+    $total_orders = 0;
+    $total_pages = 0;
+
     try {
+        // 1. Get Total Count
+        $stmt_count = $pdo->prepare("SELECT COUNT(*) FROM sales_order WHERE user_id = :user_id");
+        $stmt_count->execute(['user_id' => $user_id]);
+        $total_orders = $stmt_count->fetchColumn();
+        $total_pages = ceil($total_orders / $limit);
+
+        // 2. Get Paginated Orders
         $stmt = $pdo->prepare("
             SELECT id, order_number, created_at, grand_total, status, shipping_method
             FROM sales_order 
             WHERE user_id = :user_id 
             ORDER BY created_at DESC
+            LIMIT :limit OFFSET :offset
         ");
-        $stmt->execute(['user_id' => $user_id]);
+
+        // Bind parameters strictly as integers for LIMIT/OFFSET
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
         $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     } catch (PDOException $e) {
         error_log("Orders List fetch error: " . $e->getMessage());
     }

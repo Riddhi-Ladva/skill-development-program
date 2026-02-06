@@ -76,8 +76,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Payment Info: No extra validation needed for radio buttons (one is always checked)
 
+        // Billing Info (Conditional)
+        const sameAsShipping = document.querySelector('input[name="same-as-shipping"]');
+        if (sameAsShipping && !sameAsShipping.checked) {
+            const billingAddress = document.getElementById('billing-address');
+            const billingCity = document.getElementById('billing-city');
+            const billingState = document.getElementById('billing-state');
+            const billingZip = document.getElementById('billing-zip');
+
+            const billingFields = [
+                { el: billingAddress, msg: 'Billing address is required' },
+                { el: billingCity, msg: 'Billing city is required' },
+                { el: billingState, msg: 'Billing state is required' },
+                { el: billingZip, msg: 'Billing ZIP is required' }
+            ];
+
+            billingFields.forEach(field => {
+                if (!field.el.value.trim()) {
+                    showError(field.el, field.msg);
+                    isValid = false;
+                } else {
+                    clearError(field.el);
+                }
+            });
+        }
+
         return isValid;
     };
+
+    // Toggle Billing Form logic & Auto-Detection
+    const sameAsShippingCheckbox = document.querySelector('input[name="same-as-shipping"]');
+    const billingForm = document.querySelector('.billing-form');
+
+    if (sameAsShippingCheckbox && billingForm) {
+        // Initial state
+        billingForm.hidden = sameAsShippingCheckbox.checked;
+
+        sameAsShippingCheckbox.addEventListener('change', () => {
+            billingForm.hidden = sameAsShippingCheckbox.checked;
+        });
+
+        // Auto-detection: Compare billing inputs with shipping inputs
+        const shippingFields = {
+            address: document.getElementById('address-line1'),
+            city: document.getElementById('city'),
+            state: document.getElementById('state'),
+            zip: document.getElementById('zip')
+        };
+        const billingFields = {
+            address: document.getElementById('billing-address'),
+            city: document.getElementById('billing-city'),
+            state: document.getElementById('billing-state'),
+            zip: document.getElementById('billing-zip')
+        };
+
+        const checkAutoMatch = () => {
+            if (sameAsShippingCheckbox.checked) return;
+
+            const isMatch =
+                billingFields.address.value.trim().toLowerCase() === shippingFields.address.value.trim().toLowerCase() &&
+                billingFields.city.value.trim().toLowerCase() === shippingFields.city.value.trim().toLowerCase() &&
+                billingFields.state.value === shippingFields.state.value &&
+                billingFields.zip.value.trim() === shippingFields.zip.value.trim() &&
+                billingFields.address.value.trim() !== '';
+
+            if (isMatch) {
+                sameAsShippingCheckbox.checked = true;
+                sameAsShippingCheckbox.dispatchEvent(new Event('change'));
+
+                // Show localized message
+                const msg = document.createElement('div');
+                msg.className = 'billing-match-message';
+                msg.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #4CAF50; color: white; padding: 15px; border-radius: 4px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); animation: fadeIn 0.5s;';
+                msg.textContent = 'Billing address matched shipping address. Automatically selected "Same as shipping".';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 4000);
+            }
+        };
+
+        // Attach listeners
+        if (billingFields.address) billingFields.address.addEventListener('input', checkAutoMatch);
+        if (billingFields.city) billingFields.city.addEventListener('input', checkAutoMatch);
+        if (billingFields.state) billingFields.state.addEventListener('change', checkAutoMatch);
+        if (billingFields.zip) billingFields.zip.addEventListener('input', checkAutoMatch);
+    }
 
     if (placeOrderBtn) {
         placeOrderBtn.addEventListener('click', (e) => {
@@ -98,6 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
                 const paymentMethod = selectedPayment ? selectedPayment.value : 'cod';
 
+                // Get billing toggle
+                const sameAsShippingCheckbox = document.querySelector('input[name="same-as-shipping"]');
+                const isSameAsShipping = sameAsShippingCheckbox ? sameAsShippingCheckbox.checked : true;
+
                 // GATHER FORM DATA
                 const orderData = {
                     contact: {
@@ -113,6 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         state: document.getElementById('state').value,
                         country: document.getElementById('country').value,
                         company: document.getElementById('company').value.trim()
+                    },
+                    billing: {
+                        same_as_shipping: isSameAsShipping,
+                        address: isSameAsShipping ? '' : document.getElementById('billing-address').value.trim(),
+                        city: isSameAsShipping ? '' : document.getElementById('billing-city').value.trim(),
+                        state: isSameAsShipping ? '' : document.getElementById('billing-state').value.trim(),
+                        zip: isSameAsShipping ? '' : document.getElementById('billing-zip').value.trim(),
+                        country: 'US' // Default as per form limitation
                     },
                     payment: {
                         method: paymentMethod

@@ -86,7 +86,7 @@ try {
     $order_id = $stmt->fetchColumn();
     error_log("Order created: " . $order_id . " with discount type: " . ($summary['discount_method'] ?? 'none'));
 
-    // 5. Create Order Address
+    // 5. Create Order Address (Shipping)
     $stmt_addr = $pdo->prepare("
         INSERT INTO sales_order_address (order_id, address_type, street, city, state, zip, country, phone, email)
         VALUES (:order_id, 'shipping', :street, :city, :state, :zip, :country, :phone, :email)
@@ -100,6 +100,55 @@ try {
         'country' => $shipping_data['country'] ?? '',
         'phone' => $shipping_data['phone'] ?? '',
         'email' => $contact['email'] ?? ''
+    ]);
+
+    // 5b. Handle Billing Address
+    // Default to true if not strictly 'false' or unchecked
+    $billing_input = $input['billing'] ?? []; // We need to ensure frontend sends this structure
+    // Frontend checkbox usually sends "on" or true if checked.
+    // If we assume "same-as-shipping" key:
+    $same_as_shipping = isset($billing_input['same_as_shipping']) && $billing_input['same_as_shipping'] == true;
+
+    // Backend Auto-Detection: If user unchecked box but entered identical details
+    if (!$same_as_shipping && !empty($billing_input)) {
+        $shipping_str = strtolower(trim($shipping_data['address'] . $shipping_data['city'] . $shipping_data['state'] . $shipping_data['zip']));
+        $billing_str = strtolower(trim(($billing_input['address'] ?? '') . ($billing_input['city'] ?? '') . ($billing_input['state'] ?? '') . ($billing_input['zip'] ?? '')));
+
+        if ($shipping_str === $billing_str && !empty($shipping_str)) {
+            $same_as_shipping = true;
+        }
+    }
+
+    $billing_addr_id = null;
+    if (!$same_as_shipping) {
+        $stmt_bill_addr = $pdo->prepare("
+            INSERT INTO sales_order_address (order_id, address_type, street, city, state, zip, country, phone, email)
+            VALUES (:order_id, 'billing', :street, :city, :state, :zip, :country, :phone, :email)
+            RETURNING id
+        ");
+        $stmt_bill_addr->execute([
+            'order_id' => $order_id,
+            'street' => $billing_input['address'] ?? '',
+            'city' => $billing_input['city'] ?? '',
+            'state' => $billing_input['state'] ?? '',
+            'zip' => $billing_input['zip'] ?? '',
+            'country' => $billing_input['country'] ?? 'US', // Default or from form
+            'phone' => $shipping_data['phone'] ?? '', // Usually same phone, or add field
+            'email' => $contact['email'] ?? ''
+        ]);
+        $billing_addr_id = $stmt_bill_addr->fetchColumn();
+    }
+
+    // Update Order with Billing Info
+    $stmt_update_order = $pdo->prepare("
+        UPDATE sales_order 
+        SET billing_same_as_shipping = :same_as, billing_address_id = :bill_id 
+        WHERE id = :id
+    ");
+    $stmt_update_order->execute([
+        'same_as' => $same_as_shipping ? 'TRUE' : 'FALSE',
+        'bill_id' => $billing_addr_id, // NULL if same
+        'id' => $order_id
     ]);
 
     // 6. Create Order Payment

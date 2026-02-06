@@ -91,6 +91,7 @@ require_once '../includes/cart/logic.php';
                 <?php endif; ?>
             </section>
 
+            <?php if (!empty($cart_items)): ?>
             <aside class="cart-summary order-summary">
 
                 <!-- HEADER (same as checkout) -->
@@ -207,6 +208,7 @@ require_once '../includes/cart/logic.php';
                 </section>
 
             </aside>
+            <?php endif; ?>
 
 
 
