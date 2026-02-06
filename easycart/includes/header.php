@@ -70,20 +70,19 @@ if (!isset($categories)) {
         <div class="header-actions">
             <!-- 1. Wishlist Section -->
             <?php
-            $initial_wishlist_count = 0;
-            if (isset($_SESSION['user_id'])) {
-                if (!function_exists('get_user_wishlist')) {
-                    require_once __DIR__ . '/db_functions.php';
+            if ($current_page !== 'login.php' && $current_page !== 'signup.php'):
+                if (!function_exists('getWishlistCount')) {
+                    require_once dirname(__DIR__) . '/includes/wishlist/services.php';
                 }
-                $initial_wishlist_count = count(get_user_wishlist($_SESSION['user_id']));
-            }
-            ?>
-            <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>"
-                class="action-link icon-wrapper wishlist-link <?php echo $initial_wishlist_count > 0 ? 'has-items' : ''; ?>"
-                aria-label="View wishlist">
-                <i class="wishlist-icon" aria-hidden="true"></i>
-                <span class="icon-badge" id="header-wishlist-count"><?php echo $initial_wishlist_count; ?></span>
-            </a>
+                $initial_wishlist_count = getWishlistCount();
+                ?>
+                <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>"
+                    class="action-link icon-wrapper wishlist-link <?php echo $initial_wishlist_count > 0 ? 'has-items' : ''; ?>"
+                    aria-label="View wishlist">
+                    <i class="wishlist-icon" aria-hidden="true"></i>
+                    <span class="icon-badge" id="header-wishlist-count"><?php echo $initial_wishlist_count; ?></span>
+                </a>
+            <?php endif; ?>
 
             <!-- 2. Cart Section -->
             <?php
@@ -123,7 +122,7 @@ if (!isset($categories)) {
                 <div class="profile-dropdown-container">
                     <button class="action-link icon-wrapper profile-toggle" aria-label="Account menu" aria-haspopup="true"
                         id="profile-menu-toggle">
-                        
+
                         <i class="profile-icon">👤</i>
                         <span class="profile-label"><?php echo htmlspecialchars($user_display_name); ?></span>
                     </button>
@@ -161,5 +160,6 @@ if (!isset($categories)) {
         </ul>
     </nav>
     <script src="<?php echo asset('js/utils/confirm.js'); ?>"></script>
+
     <script src="<?php echo asset('js/layout/profile-dropdown.js'); ?>"></script>
 </header>

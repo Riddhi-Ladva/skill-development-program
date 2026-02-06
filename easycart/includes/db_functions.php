@@ -681,3 +681,45 @@ function merge_guest_wishlist_to_db($user_id, $guest_wishlist)
         error_log("Wishlist merge failed: " . $e->getMessage());
     }
 }
+
+/**
+ * Fetch detailed wishlist items for a user
+ * Returns array of products with basic info
+ */
+function get_user_wishlist_details($user_id)
+{
+    $pdo = getDbConnection();
+    // Join with product entity, images, and brand
+    // Assuming we need id, name, price, brand, image, stock status
+    $sql = "SELECT p.id, p.name, 
+            COALESCE(pp.price, 0) as price,
+            pi.image_path as image,
+            b.name as brand_name,
+            inv.is_in_stock
+            FROM wishlist w
+            JOIN catalog_product_entity p ON w.product_id = p.id
+            LEFT JOIN catalog_product_price pp ON pp.product_id = p.id AND pp.customer_group_id = 0
+            LEFT JOIN catalog_product_images pi ON pi.product_id = p.id AND pi.is_main = TRUE
+            LEFT JOIN catalog_brand b ON p.brand_id = b.id
+            LEFT JOIN catalog_product_inventory inv ON inv.product_id = p.id
+            WHERE w.user_id = :user_id
+            ORDER BY w.created_at DESC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':user_id' => $user_id]);
+    $stmt->execute([':user_id' => $user_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Get total number of items in user's wishlist
+ * Strict count query per requirements.
+ */
+function get_wishlist_count_db($user_id)
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishlist WHERE user_id = :user_id");
+    $stmt->execute([':user_id' => $user_id]);
+    return (int) $stmt->fetchColumn();
+}
+

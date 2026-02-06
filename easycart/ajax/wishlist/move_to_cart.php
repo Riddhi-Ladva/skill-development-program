@@ -12,15 +12,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-
-// Support JSON input consistently
 $input = json_decode(file_get_contents('php://input'), true);
 $product_id = isset($input['product_id']) ? (int) $input['product_id'] : 0;
-
-// Fallback to POST if JSON fails
-if ($product_id === 0 && isset($_POST['product_id'])) {
-    $product_id = (int) $_POST['product_id'];
-}
 
 if ($product_id <= 0) {
     http_response_code(400);
@@ -29,14 +22,35 @@ if ($product_id <= 0) {
 }
 
 try {
-    $success = remove_from_wishlist_db($user_id, $product_id);
+    $pdo = getDbConnection();
+    $cart_id = get_user_cart_id($user_id);
+
+    // 1. Check if product is ALREADY in cart
+    $stmt = $pdo->prepare("SELECT 1 FROM sales_cart_items WHERE cart_id = :cart_id AND product_id = :product_id");
+    $stmt->execute([':cart_id' => $cart_id, ':product_id' => $product_id]);
+    $exists_in_cart = $stmt->fetchColumn();
+
+    // 2. Strict Logic: Only Add if NOT in Cart
+    if (!$exists_in_cart) {
+        add_to_cart_db($user_id, $product_id, 1);
+        $message = 'Moved to cart';
+    } else {
+        $message = 'Removed from wishlist'; // Already in cart, just remove from wishlist
+    }
+
+    // 3. Always Remove from Wishlist
+    remove_from_wishlist_db($user_id, $product_id);
+
+    // 4. Returns updated counts
     $wishlist = get_user_wishlist($user_id);
+    require_once ROOT_PATH . '/includes/cart/services.php';
+    $cart_count = getCartCount();
 
     echo json_encode([
         'success' => true,
-        'message' => 'Removed from wishlist',
+        'message' => $message,
         'wishlist' => $wishlist,
-        'count' => get_wishlist_count_db($user_id)
+        'cartCount' => $cart_count
     ]);
 
 } catch (Exception $e) {

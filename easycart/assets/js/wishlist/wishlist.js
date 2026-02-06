@@ -1,16 +1,14 @@
 /**
  * EasyCart - Wishlist Component
  * 
- * Responsibility: Manages the wishlist (localStorage for guests, DB for users).
+ * Responsibility: Manages the wishlist (DB only).
+ * strict: Guests cannot use wishlist.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const EC = window.EasyCart;
 
     // --- UTILS ---
-    const getGuestWishlist = () => JSON.parse(localStorage.getItem('wishlist') || '[]').map(String);
-    const setGuestWishlist = (wishlist) => localStorage.setItem('wishlist', JSON.stringify([...new Set(wishlist.map(String))]));
-
     const updateWishlistBadge = (count) => {
         const badge = document.getElementById('header-wishlist-count');
         if (badge) {
@@ -19,12 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initial badge sync (especially for guests)
-    if (EC && !EC.userId) {
-        updateWishlistBadge(getGuestWishlist().length);
-    } else if (EC && EC.wishlist) {
-        updateWishlistBadge(EC.wishlist.length);
-    }
+    // Initial Badge Update RE MOVED to rely on PHP SSR to prevent flicker.
+    // The badge is already rendered by header.php.
+    // We only update it when actions occur (Add/Remove).
 
     // --- WISHLIST BUTTON (PDP/PLP) ---
     const wishlistBtn = document.querySelector('.wishlist-button');
@@ -38,123 +33,136 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         // Check initial state
-        const initialWishlist = EC.userId ? (EC.wishlist || []) : getGuestWishlist();
-        updateBtnState(initialWishlist.map(String).includes(productId));
+        if (EC.userId) {
+            const currentWishlist = (EC.wishlist || []).map(String);
+            updateBtnState(currentWishlist.includes(productId));
+        }
 
         wishlistBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            wishlistBtn.disabled = true;
 
-            if (EC.userId) {
-                // LOGGED IN - DB
-                const currentWishlist = (EC.wishlist || []).map(String);
-                const isIn = currentWishlist.includes(productId);
-                const endpoint = isIn ? 'remove.php' : 'add.php';
-
-                try {
-                    const response = await fetch(`${EC.ajaxUrl}/wishlist/${endpoint}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `product_id=${productId}`
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        EC.wishlist = data.wishlist.map(String);
-                        updateBtnState(!isIn);
-                        updateWishlistBadge(EC.wishlist.length);
-                    }
-                } catch (err) {
-                    console.error('Wishlist DB error:', err);
-                }
-            } else {
-                // GUEST - localStorage
-                let wishlist = getGuestWishlist();
-                const isIn = wishlist.includes(productId);
-                wishlist = isIn ? wishlist.filter(id => id !== productId) : [...wishlist, productId];
-                setGuestWishlist(wishlist);
-                updateBtnState(!isIn);
-                updateWishlistBadge(wishlist.length);
+            if (!EC.userId) {
+                // Guests: Login required
+                window.location.href = EC.baseUrl + '/pages/login.php?redirect=' + encodeURIComponent(window.location.href);
+                return;
             }
-            wishlistBtn.disabled = false;
-            window.dispatchEvent(new CustomEvent('wishlistUpdated'));
+
+            const currentWishlist = (EC.wishlist || []).map(String);
+            const isIn = currentWishlist.includes(productId);
+            const endpoint = isIn ? 'remove.php' : 'add.php';
+
+            // STRICT: No Optimistic UI. Wait for server response.
+            wishlistBtn.classList.add('loading-pulse');
+
+            try {
+                const response = await fetch(`${EC.ajaxUrl}/wishlist/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product_id: productId }),
+                    keepalive: true
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Sync Truth from Server
+                    EC.wishlist = data.wishlist.map(String);
+
+                    // Update Badge with count from DB response (matches Cart logic)
+                    updateWishlistBadge(data.count);
+
+                    // Update Button State based on new wishlist array
+                    // This ensures button reflects REAL DB state
+                    const newIsIn = EC.wishlist.includes(productId);
+                    updateBtnState(newIsIn);
+                } else {
+                    // Handle logic error
+                    throw new Error(data.error || 'Server error');
+                }
+            } catch (err) {
+                console.error('Wishlist DB error:', err);
+                // Error handling - notify user
+                alert('Action failed. Please try again.');
+            } finally {
+                wishlistBtn.classList.remove('loading-pulse');
+            }
         });
     }
 
-    // --- WISHLIST CAROUSEL (Cart Page / Wishlist Section) ---
+    // --- WISHLIST SECTION (Cart Page) ---
     const container = document.getElementById('wishlist-items-container');
     if (container) {
-        const renderWishlist = () => {
-            const wishlist = EC.userId ? (EC.wishlist || []) : getGuestWishlist();
-
-            if (wishlist.length === 0) {
-                container.innerHTML = '<div class="wishlist-empty">Your wishlist is empty. Items you save will appear here.</div>';
-                return;
-            }
-
-            if (!window.allProducts) {
-                container.innerHTML = '<div class="wishlist-empty">Loading products...</div>';
-                return;
-            }
-
-            container.innerHTML = '';
-            wishlist.forEach(id => {
-                const product = window.allProducts[id];
-                if (!product) return;
-
-                const card = document.createElement('article');
-                card.className = 'wishlist-card';
-                card.innerHTML = `
-                    <div class="item-image"><img src="${product.image}" alt="${product.name}"></div>
-                    <div class="item-info">
-                        <h3><a href="product-detail.php?id=${id}">${product.name}</a></h3>
-                        <p class="item-price">$${parseFloat(product.price).toFixed(2)}</p>
-                    </div>
-                    <div class="item-actions">
-                        <button type="button" class="remove-wishlist" data-id="${id}">Remove</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        };
-
+        // Event Delegation
         container.addEventListener('click', async (e) => {
-            if (e.target.classList.contains('remove-wishlist')) {
-                const id = String(e.target.dataset.id);
-                e.target.disabled = true;
+            const target = e.target;
 
-                if (EC.userId) {
-                    try {
-                        const response = await fetch(`${EC.ajaxUrl}/wishlist/remove.php`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: `product_id=${id}`
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            EC.wishlist = data.wishlist.map(String);
-                            renderWishlist();
-                            updateWishlistBadge(EC.wishlist.length);
-                            // Also update button if on same page
-                            if (wishlistBtn && wishlistBtn.dataset.productId === id) {
-                                wishlistBtn.classList.remove('active');
-                                if (btnText) btnText.textContent = 'Add to Wishlist';
+            // REMOVE ACTION
+            if (target.classList.contains('remove-wishlist')) {
+                const id = String(target.dataset.id);
+                target.disabled = true;
+
+                if (!EC.userId) return; // Should not happen on cart page as section is hidden for guests usually, but safe guard
+
+                try {
+                    const response = await fetch(`${EC.ajaxUrl}/wishlist/remove.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id: id }),
+                        keepalive: true
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        EC.wishlist = data.wishlist.map(String);
+                        updateWishlistBadge(EC.wishlist.length);
+
+                        // Remove Card
+                        const card = target.closest('.wishlist-card');
+                        if (card) {
+                            card.remove();
+                            // Check empty
+                            if (container.children.length === 0) {
+                                container.innerHTML = '<div class="wishlist-empty">Your wishlist is empty. Items you save will appear here.</div>';
                             }
                         }
-                    } catch (err) {
-                        console.error('Wishlist remove error:', err);
                     }
-                } else {
-                    let wishlist = getGuestWishlist();
-                    wishlist = wishlist.filter(i => i !== id);
-                    setGuestWishlist(wishlist);
-                    renderWishlist();
-                    updateWishlistBadge(wishlist.length);
+                } catch (err) {
+                    console.error('Wishlist remove error:', err);
                 }
-                window.dispatchEvent(new CustomEvent('wishlistUpdated', { detail: { productId: id, removed: true } }));
+            }
+
+            // ADD TO CART ACTION
+            if (target.classList.contains('add-to-cart-from-wishlist')) {
+                const id = String(target.dataset.id);
+                target.disabled = true;
+                target.textContent = 'Moving...';
+
+                try {
+                    // 1. Strict Move to Cart (Atomic backend op)
+                    const response = await fetch(`${EC.ajaxUrl}/wishlist/move_to_cart.php`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id: id })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Update global state if needed, but we are reloading mostly
+                        EC.wishlist = data.wishlist.map(String);
+                        updateWishlistBadge(EC.wishlist.length);
+
+                        // Reload Page to update Cart Table interaction
+                        window.location.reload();
+                    } else {
+                        alert('Could not move to cart: ' + (data.error || 'Unknown error'));
+                        target.disabled = false;
+                        target.textContent = 'Add to Cart';
+                    }
+                } catch (err) {
+                    console.error('Move to cart error:', err);
+                    target.disabled = false;
+                    target.textContent = 'Add to Cart';
+                }
             }
         });
-
-        renderWishlist();
-        window.addEventListener('wishlistUpdated', renderWishlist);
     }
 });

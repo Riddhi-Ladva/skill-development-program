@@ -60,51 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Wishlist Logic
-    const wishlistBtn = document.querySelector('.wishlist-button');
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', async () => {
-            const productId = wishlistBtn.dataset.productId;
-            if (!productId) return;
 
-            // Visual feedback - loading
-            const originalText = wishlistBtn.querySelector('.button-text').textContent;
-            wishlistBtn.querySelector('.button-text').textContent = 'Adding...';
-            wishlistBtn.disabled = true;
-
-            try {
-                const response = await fetch('../ajax/wishlist/add.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ product_id: productId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    wishlistBtn.querySelector('.button-text').textContent = 'Added to Wishlist';
-                    wishlistBtn.classList.add('active'); // Style for filled heart
-                    // Optional: Show toast
-                } else {
-                    if (result.error === 'auth_required') {
-                        window.location.href = '../pages/login.php';
-                    } else if (result.error === 'already_exists') {
-                        wishlistBtn.querySelector('.button-text').textContent = 'In Wishlist';
-                        wishlistBtn.classList.add('active');
-                    } else {
-                        alert(result.message || 'Error adding to wishlist');
-                        wishlistBtn.querySelector('.button-text').textContent = originalText;
-                        wishlistBtn.disabled = false;
-                    }
-                }
-            } catch (error) {
-                console.error('Wishlist error:', error);
-                wishlistBtn.querySelector('.button-text').textContent = originalText;
-                wishlistBtn.disabled = false;
-            }
-        });
-    }
 
 });

@@ -218,20 +218,51 @@ require_once '../includes/cart/logic.php';
         <section class="cart-wishlist" id="wishlist-section">
             <div class="section-header">
                 <h2>Your Wishlist</h2>
-                <div class="carousel-controls">
-                    <button type="button" class="carousel-btn prev" id="wishlist-prev"
-                        aria-label="Previous items">←</button>
-                    <button type="button" class="carousel-btn next" id="wishlist-next"
-                        aria-label="Next items">→</button>
-                </div>
+                <!-- Carousel controls optional, removed for simplicity or keep if needed. Keeping layout simple mainly. -->
             </div>
             <div class="wishlist-carousel-container">
                 <div class="wishlist-items" id="wishlist-items-container">
-                    <!-- Wishlist items will be loaded via JavaScript -->
-                    <p class="wishlist-loading">Loading your wishlist...</p>
+                    <?php
+                    // FETCH WISHLIST ITEMS
+                    $wishlist_items = [];
+                    if (isset($_SESSION['user_id'])) {
+                        if (!function_exists('get_user_wishlist_details')) {
+                            require_once ROOT_PATH . '/includes/db_functions.php';
+                        }
+                        $wishlist_items = get_user_wishlist_details($_SESSION['user_id']);
+                    }
+                    ?>
+
+                    <?php if (empty($wishlist_items)): ?>
+                        <div class="wishlist-empty">Your wishlist is empty. Items you save will appear here.</div>
+                    <?php else: ?>
+                        <?php foreach ($wishlist_items as $w_item): ?>
+                        <article class="wishlist-card" data-product-id="<?php echo $w_item['id']; ?>">
+                            <div class="item-image">
+                                <img src="<?php echo htmlspecialchars($w_item['image']); ?>" alt="<?php echo htmlspecialchars($w_item['name']); ?>">
+                            </div>
+                            <div class="item-info">
+                                <h3><a href="product-detail.php?id=<?php echo $w_item['id']; ?>"><?php echo htmlspecialchars($w_item['name']); ?></a></h3>
+                                <p class="item-price">$<?php echo number_format($w_item['price'], 2); ?></p>
+                                <p class="item-stock" style="font-size: 0.8em; color: <?php echo $w_item['is_in_stock'] ? 'green' : 'red'; ?>;">
+                                    <?php echo $w_item['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?>
+                                </p>
+                            </div>
+                            <div class="item-actions">
+                                <button type="button" class="action-btn add-to-cart-from-wishlist" 
+                                        data-id="<?php echo $w_item['id']; ?>"
+                                        <?php echo $w_item['is_in_stock'] ? '' : 'disabled'; ?>>
+                                    Add to Cart
+                                </button>
+                                <button type="button" class="remove-wishlist" data-id="<?php echo $w_item['id']; ?>">Remove</button>
+                            </div>
+                        </article>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
+
 
         <section class="recommended-products">
             <h2>Frequently Bought Together</h2>
