@@ -69,13 +69,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="phone">Phone Number (Optional)</label>
-                            <input type="tel" id="phone" name="phone" autocomplete="tel"
-                                placeholder="+1 (555) 000-0000">
-                            <p class="field-hint">For delivery updates and customer support</p>
-                        </div>
-
-                        <div class="form-group">
                             <label for="password">Password <abbr title="required">*</abbr></label>
                             <input type="password" id="password" name="password" required autocomplete="new-password"
                                 minlength="8" placeholder="Create a strong password">
@@ -87,62 +80,10 @@
                             <input type="password" id="confirm-password" name="confirm-password" required
                                 autocomplete="new-password" minlength="8" placeholder="Re-enter your password">
                         </div>
-
-                        <div class="form-group">
-                            <label for="dob">Date of Birth (Optional)</label>
-                            <input type="date" id="dob" name="dob" autocomplete="bday">
-                            <p class="field-hint">To send you special birthday offers</p>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>Preferences</legend>
-
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="newsletter" value="yes">
-                                Send me exclusive offers, personalized recommendations, and news
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="sms-updates" value="yes">
-                                Send me SMS updates about my orders
-                            </label>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="terms" value="yes" required>
-                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> <abbr
-                                    title="required">*</abbr>
-                            </label>
-                        </div>
                     </fieldset>
 
                     <button type="submit" class="signup-button">Create Account</button>
                 </form>
-
-                <div class="divider">
-                    <span>Or sign up with</span>
-                </div>
-
-                <section class="social-signup">
-                    <h2 class="visually-hidden">Social signup options</h2>
-                    <button type="button" class="social-button google">
-                        <span class="icon">G</span>
-                        Sign up with Google
-                    </button>
-                    <button type="button" class="social-button facebook">
-                        <span class="icon">f</span>
-                        Sign up with Facebook
-                    </button>
-                    <button type="button" class="social-button apple">
-                        <span class="icon">Apple</span>
-                        Sign up with Apple
-                    </button>
-                </section>
 
                 <footer class="form-footer">
                     <p>

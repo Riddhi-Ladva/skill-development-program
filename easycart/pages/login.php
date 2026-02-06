@@ -64,38 +64,10 @@
                                 autocomplete="current-password" placeholder="Enter your password" minlength="8">
                         </div>
 
-                        <div class="form-options">
-                            <label class="remember-me">
-                                <input type="checkbox" name="remember" value="yes">
-                                Remember me
-                            </label>
-                            <a href="#" class="forgot-password">Forgot password?</a>
-                        </div>
-
                         <input type="hidden" name="guest_wishlist_data" id="guest-wishlist-data">
                         <button type="submit" class="login-button">Login</button>
                     </fieldset>
                 </form>
-
-                <div class="divider">
-                    <span>Or continue with</span>
-                </div>
-
-                <section class="social-login">
-                    <h2 class="visually-hidden">Social login options</h2>
-                    <button type="button" class="social-button google">
-                        <span class="icon">G</span>
-                        Continue with Google
-                    </button>
-                    <button type="button" class="social-button facebook">
-                        <span class="icon">f</span>
-                        Continue with Facebook
-                    </button>
-                    <button type="button" class="social-button apple">
-                        <span class="icon">Apple</span>
-                        Continue with Apple
-                    </button>
-                </section>
 
                 <footer class="form-footer">
                     <p>

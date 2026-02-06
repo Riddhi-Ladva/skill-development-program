@@ -52,8 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearError(emailInput);
             }
 
-            if (passwordInput.value.length < 6) {
-                showError(passwordInput, 'Password must be at least 6 characters');
+            if (passwordInput.value.length < 8) {
+                showError(passwordInput, 'Password must be at least 8 characters');
                 isValid = false;
             } else {
                 clearError(passwordInput);
@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             } else clearError(email);
 
-            if (password.value.length < 6) {
-                showError(password, 'Min 6 characters');
+            if (password.value.length < 8) {
+                showError(password, 'Min 8 characters');
                 isValid = false;
             } else clearError(password);
 
@@ -99,11 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showError(confirm, 'Passwords do not match');
                 isValid = false;
             } else clearError(confirm);
-
-            if (!terms.checked) {
-                showError(terms, 'You must agree to the terms');
-                isValid = false;
-            } else clearError(terms);
 
             if (!isValid) e.preventDefault();
         });
