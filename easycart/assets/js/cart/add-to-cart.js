@@ -78,6 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.innerHTML = '✔ Added';
                     button.classList.add('btn-success');
 
+                    // If "Buy Now", redirect to cart immediately
+                    if (button.classList.contains('buy-now-button')) {
+                        window.location.href = `${EasyCart.baseUrl}/pages/cart.php`;
+                        return;
+                    }
+
                     setTimeout(() => {
                         button.innerHTML = originalText;
                         button.disabled = false;

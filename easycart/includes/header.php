@@ -141,8 +141,8 @@ if (!isset($categories)) {
                     </div>
                 </div>
             <?php else: ?>
-                <a href="<?php echo url('pages/login.php'); ?>" class="action-link profile-link" aria-label="Login">
-                    <i class="profile-icon">👤</i>
+                <a href="<?php echo url('pages/login.php'); ?>" class="action-link header-login-link" aria-label="Login">
+                    <span>Login</span>
                 </a>
             <?php endif; ?>
         </div>

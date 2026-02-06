@@ -136,7 +136,8 @@
                         </button>
                     </form>
                     <?php if ($product['is_in_stock']): ?>
-                        <button type="button" class="buy-now-button">Buy Now</button>
+                        <button type="button" class="buy-now-button add-to-cart-trigger"
+                            data-product-id="<?php echo $product_id; ?>">Buy Now</button>
                     <?php endif; ?>
                     <button type="button" class="wishlist-button" data-product-id="<?php echo $product_id; ?>">
                         <span class="heart-icon" aria-hidden="true"></span>
