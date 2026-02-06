@@ -130,59 +130,31 @@ require_once '../includes/cart/logic.php';
                     <form id="cart-shipping-form">
                         <fieldset>
                             <legend class="visually-hidden">Choose shipping method</legend>
-                            <?php
-                            $current_method = $_SESSION['shipping_method'];
-
-                            // Calculate dynamic prices for display
-                            $standard_price = 40;
-                            $express_price = min(80, $subtotal * 0.10);
-                            $white_glove_price = min(150, $subtotal * 0.05);
-                            $freight_price = max(200, $subtotal * 0.03);
+                            <?php 
+                            $current_method = $_SESSION['shipping_method'] ?? 'standard';
+                            foreach ($shipping_options as $option): 
+                                $is_disabled = false;
+                                // Simple logic: Freight requires freight method. Non-freight requires non-freight (unless user wants to upgrade).
+                                if ($requires_freight && $option['code'] !== 'freight' && $option['code'] !== 'white-glove') {
+                                    $is_disabled = true;
+                                }
+                                // If NO freight required, disable freight options? Or allow them?
+                                // Prompt said "Disable: Freight Shipping... if not required".
+                                if (!$requires_freight && ($option['code'] === 'freight' || $option['code'] === 'white-glove')) {
+                                    $is_disabled = true;
+                                }
                             ?>
-
-                            <label class="shipping-option <?php echo $requires_freight ? 'is-disabled' : ''; ?>">
-                                <input type="radio" name="shipping" value="standard" 
-                                    <?php echo $current_method === 'standard' ? 'checked' : ''; ?>
-                                    <?php echo $requires_freight ? 'disabled' : ''; ?>>
+                            <label class="shipping-option <?php echo $is_disabled ? 'is-disabled' : ''; ?>">
+                                <input type="radio" name="shipping" value="<?php echo htmlspecialchars($option['code']); ?>"
+                                    <?php echo $current_method === $option['code'] ? 'checked' : ''; ?>
+                                    <?php echo $is_disabled ? 'disabled' : ''; ?>>
                                 <div class="option-details">
-                                    <p class="option-name">Standard Shipping</p>
-                                    <p class="option-time">5–7 business days</p>
+                                    <p class="option-name"><?php echo htmlspecialchars($option['title']); ?></p>
+                                    <p class="option-time"><?php echo htmlspecialchars($option['time']); ?></p>
                                 </div>
-                                <p class="option-price">$<?php echo number_format($standard_price, 2); ?></p>
+                                <p class="option-price">$<?php echo number_format($option['cost'], 2); ?></p>
                             </label>
-
-                            <label class="shipping-option <?php echo $requires_freight ? 'is-disabled' : ''; ?>">
-                                <input type="radio" name="shipping" value="express" 
-                                    <?php echo $current_method === 'express' ? 'checked' : ''; ?>
-                                    <?php echo $requires_freight ? 'disabled' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">Express Shipping</p>
-                                    <p class="option-time">2–3 business days</p>
-                                </div>
-                                <p class="option-price">$<?php echo number_format($express_price, 2); ?></p>
-                            </label>
-
-                            <label class="shipping-option <?php echo !$requires_freight ? 'is-disabled' : ''; ?>">
-                                <input type="radio" name="shipping" value="white-glove" 
-                                    <?php echo $current_method === 'white-glove' ? 'checked' : ''; ?>
-                                    <?php echo !$requires_freight ? 'disabled' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">White Glove Delivery</p>
-                                    <p class="option-time">7–10 business days</p>
-                                </div>
-                                <p class="option-price">$<?php echo number_format($white_glove_price, 2); ?></p>
-                            </label>
-
-                            <label class="shipping-option <?php echo !$requires_freight ? 'is-disabled' : ''; ?>">
-                                <input type="radio" name="shipping" value="freight" 
-                                    <?php echo $current_method === 'freight' ? 'checked' : ''; ?>
-                                    <?php echo !$requires_freight ? 'disabled' : ''; ?>>
-                                <div class="option-details">
-                                    <p class="option-name">Freight Shipping</p>
-                                    <p class="option-time">10–14 business days</p>
-                                </div>
-                                <p class="option-price">$<?php echo number_format($freight_price, 2); ?></p>
-                            </label>
+                            <?php endforeach; ?>
                         </fieldset>
                     </form>
                 </section>
@@ -218,11 +190,9 @@ require_once '../includes/cart/logic.php';
                 <section class="payment-methods">
                     <h3>We Accept</h3>
                     <ul class="payment-icons">
-                        <li>Visa</li>
-                        <li>Mastercard</li>
-                        <li>American Express</li>
-                        <li>PayPal</li>
-                        <li>Apple Pay</li>
+                        <?php foreach ($payment_methods as $pm): ?>
+                            <li><?php echo htmlspecialchars($pm['title']); ?></li>
+                        <?php endforeach; ?>
                     </ul>
                 </section>
 
@@ -264,23 +234,13 @@ require_once '../includes/cart/logic.php';
         <section class="recommended-products">
             <h2>Frequently Bought Together</h2>
             <div class="product-grid">
+                <?php foreach ($recommended_products as $rec_prod): ?>
                 <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" alt="Headphone Stand">
-                    <h3><a href="product-detail.php?id=14">Headphone Stand</a></h3>
-                    <p class="product-price">$19.99</p>
+                    <img src="<?php echo htmlspecialchars($rec_prod['image']); ?>" alt="<?php echo htmlspecialchars($rec_prod['name']); ?>">
+                    <h3><a href="product-detail.php?id=<?php echo $rec_prod['id']; ?>"><?php echo htmlspecialchars($rec_prod['name']); ?></a></h3>
+                    <p class="product-price">$<?php echo number_format($rec_prod['price'], 2); ?></p>
                 </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
-                        alt="Audio Cable Premium">
-                    <h3><a href="product-detail.php?id=15">Audio Cable Premium</a></h3>
-                    <p class="product-price">$12.99</p>
-                </article>
-                <article class="product-card">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
-                        alt="Watch Charging Dock">
-                    <h3><a href="product-detail.php?id=17">Watch Charging Dock</a></h3>
-                    <p class="product-price">$24.99</p>
-                </article>
+                <?php endforeach; ?>
             </div>
         </section>
     </main>

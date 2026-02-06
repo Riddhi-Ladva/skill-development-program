@@ -103,15 +103,24 @@ try {
     ]);
 
     // 6. Create Order Payment
+    // For COD/UPI, status might be 'pending' or 'captured' depending on logic.
+    // Assuming 'pending' for COD until delivery. 'captured' for UPI if we assume success.
+    // For now, keeping simple 'pending' for all, or 'captured' if the prompt implies success.
+    // Prompt says: "On successful checkout... Save selected payment method".
+    // We will assume 'captured' or 'pending' based on method? Let's stick to 'pending' for COD.
+
+    $payment_method = $payment_data['method'] ?? 'cod';
+    $payment_status = ($payment_method === 'cod') ? 'pending' : 'pending'; // UPI usually needs verification, so pending is safe.
+
     $stmt_pay = $pdo->prepare("
         INSERT INTO sales_order_payment (order_id, method, amount_paid, status, last_4)
-        VALUES (:order_id, :method, :amount_paid, 'captured', :last_4)
+        VALUES (:order_id, :method, :amount_paid, :status, '0000')
     ");
     $stmt_pay->execute([
         'order_id' => $order_id,
-        'method' => $payment_data['method'] ?? 'card',
+        'method' => $payment_method,
         'amount_paid' => $summary['grand_total'],
-        'last_4' => substr($payment_data['card_number'] ?? '0000', -4)
+        'status' => $payment_status
     ]);
 
     // 7. Process Order Items & Deduct Stock

@@ -1,21 +1,13 @@
 /**
- * MY STUDY NOTES: Checkout Validation
+ * Checkout Validation & Submission
  * 
- * Goal: Ensure all shipping and payment details are perfect 
- * before the user places their order.
- * 
- * Logic:
- * 1. validateEmail: Standard regex check.
- * 2. validateCard: Simple length checks for number, expiry, and cvv.
- * 3. showError / clearError: Consistent UI feedback.
+ * Goal: Ensure contact and shipping details are present.
+ * Payment is now simplified (COD/UPI) with no extra inputs.
  */
 document.addEventListener('DOMContentLoaded', () => {
     const checkoutForm = document.querySelector('.checkout-form');
     if (!checkoutForm) return;
 
-    // We can't use a single form.submit because the checkout has 
-    // multiple <form> segments in the HTML structure.
-    // Instead, we'll target the "Place Order" button directly.
     const placeOrderBtn = checkoutForm.querySelector('.place-order-button');
 
     // Inputs to track
@@ -26,11 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cityInput = document.getElementById('city');
     const zipInput = document.getElementById('zip');
     const phoneInput = document.getElementById('phone');
-
-    const cardNumberInput = document.getElementById('card-number');
-    const cardNameInput = document.getElementById('cardholder-name');
-    const expiryInput = document.getElementById('expiry-date');
-    const cvvInput = document.getElementById('cvv');
 
     const showError = (input, message) => {
         const formGroup = input.closest('.form-group');
@@ -87,34 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Payment Info (Simplified validation for Phase-3)
-        if (cardNumberInput.value.replace(/\s/g, '').length < 13) {
-            showError(cardNumberInput, 'Valid card number required');
-            isValid = false;
-        } else {
-            clearError(cardNumberInput);
-        }
-
-        if (!cardNameInput.value.trim()) {
-            showError(cardNameInput, 'Cardholder name is required');
-            isValid = false;
-        } else {
-            clearError(cardNameInput);
-        }
-
-        if (!/^\d{2}\/\d{2}$/.test(expiryInput.value)) {
-            showError(expiryInput, 'Use MM/YY format');
-            isValid = false;
-        } else {
-            clearError(expiryInput);
-        }
-
-        if (cvvInput.value.length < 3) {
-            showError(cvvInput, 'Valid CVV required');
-            isValid = false;
-        } else {
-            clearError(cvvInput);
-        }
+        // Payment Info: No extra validation needed for radio buttons (one is always checked)
 
         return isValid;
     };
@@ -134,6 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Processing...';
 
+                // Get selected payment method
+                const selectedPayment = document.querySelector('input[name="payment-method"]:checked');
+                const paymentMethod = selectedPayment ? selectedPayment.value : 'cod';
+
                 // GATHER FORM DATA
                 const orderData = {
                     contact: {
@@ -151,11 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         company: document.getElementById('company').value.trim()
                     },
                     payment: {
-                        method: 'card', // For now hardcoded as per UI
-                        card_number: cardNumberInput.value.replace(/\s/g, ''),
-                        card_name: cardNameInput.value.trim(),
-                        expiry: expiryInput.value,
-                        cvv: cvvInput.value
+                        method: paymentMethod
                     }
                 };
 
@@ -187,7 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Live clearing of errors
-    [emailInput, firstNameInput, lastNameInput, addressInput, cityInput, zipInput, phoneInput, cardNumberInput, cardNameInput, expiryInput, cvvInput].forEach(input => {
+    [emailInput, firstNameInput, lastNameInput, addressInput, cityInput, zipInput, phoneInput].forEach(input => {
+        if (!input) return;
         input.addEventListener('input', () => {
             if (input.value.trim()) clearError(input);
         });

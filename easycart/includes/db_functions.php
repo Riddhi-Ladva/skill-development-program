@@ -534,6 +534,17 @@ function get_active_payment_methods()
 }
 
 /**
+ * Fetch active shipping methods from DB
+ */
+function get_active_shipping_methods()
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare("SELECT code, title FROM shipping_methods WHERE is_active = TRUE ORDER BY id ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
  * Log order status change
  */
 function log_order_status_change($order_id, $status, $comment = '', $notify_customer = false)

@@ -46,4 +46,34 @@ $promo_discount = $totals['promo_discount'] ?? 0;
 $shipping = $totals['shipping'];
 $tax = $totals['tax'];
 $order_total = $totals['total'];
+
+// Dynamic Shipping Options
+$shipping_methods = get_active_shipping_methods();
+$shipping_options = [];
+foreach ($shipping_methods as $method) {
+    $code = $method['code'];
+    $cost = calculateShippingCost($code, $subtotal);
+
+    // Time estimates logic (could be DB driven eventually, but rule-based for now)
+    $time_estimate = '5–7 business days';
+    if ($code === 'express')
+        $time_estimate = '2–3 business days';
+    if ($code === 'white-glove')
+        $time_estimate = '7–10 business days';
+    if ($code === 'freight')
+        $time_estimate = '10–14 business days';
+
+    $shipping_options[] = [
+        'code' => $code,
+        'title' => $method['title'],
+        'cost' => $cost,
+        'time' => $time_estimate
+    ];
+}
+
+// Payment Methods
+$payment_methods = get_active_payment_methods();
+
+// Recommended Products
+$recommended_products = get_featured_products(3);
 ?>

@@ -138,14 +138,15 @@ auth_guard();
                 <section class="shipping-method">
                     <h2>Shipping Method</h2>
                     <?php
-                    $shipping_method = $_SESSION['shipping_method'];
+                    $shipping_method = $_SESSION['shipping_method'] ?? 'standard';
+                    // Map codes to user-friendly labels (Logic should be in a helper, but fine here for view)
                     $shipping_labels = [
                         'standard' => 'Standard Shipping (5-7 business days)',
                         'express' => 'Express Shipping (2-3 business days)',
                         'white-glove' => 'White Glove Delivery (7-10 business days)',
                         'freight' => 'Freight Shipping (10-14 business days)'
                     ];
-                    $label = $shipping_labels[$shipping_method];
+                    $label = isset($shipping_labels[$shipping_method]) ? $shipping_labels[$shipping_method] : 'Standard Shipping';
                     $price_display = '$' . number_format($shipping, 2);
                     ?>
                     <div class="selected-shipping-method">
@@ -178,32 +179,9 @@ auth_guard();
                                     </label>
                                 <?php endforeach; ?>
                             </div>
-
-                            <div class="payment-form">
-                                <div class="form-group">
-                                    <label for="card-number">Card Number <abbr title="required">*</abbr></label>
-                                    <input type="text" id="card-number" name="card-number" required
-                                        autocomplete="cc-number" inputmode="numeric" maxlength="19">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardholder-name">Cardholder Name <abbr title="required">*</abbr></label>
-                                    <input type="text" id="cardholder-name" name="cardholder-name" required
-                                        autocomplete="cc-name">
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="expiry-date">Expiry Date <abbr title="required">*</abbr></label>
-                                        <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY"
-                                            required autocomplete="cc-exp" maxlength="5">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cvv">CVV <abbr title="required">*</abbr></label>
-                                        <input type="text" id="cvv" name="cvv" required autocomplete="cc-csc"
-                                            inputmode="numeric" maxlength="4">
-                                        <p class="field-hint">3-4 digits on back of card</p>
-                                    </div>
-                                </div>
-                            </div>
+                            <p class="field-hint" style="margin-top: 1rem;">
+                                Selected payment method will be used for this order. No further details required.
+                            </p>
                         </fieldset>
                     </form>
                 </section>
