@@ -67,27 +67,17 @@
         <article class="product-detail">
             <div class="product-images">
                 <section class="main-image">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>"
-                        alt="<?php echo htmlspecialchars($product['name']); ?> - Main view">
+                    <img src="<?php echo htmlspecialchars($gallery[0]['image_path'] ?? $product['image']); ?>"
+                        alt="<?php echo htmlspecialchars($product['name']); ?> - Main view" id="featured-image">
                 </section>
                 <section class="thumbnail-gallery">
                     <h2 class="visually-hidden">Product Images</h2>
-                    <button type="button" class="active">
-                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
-                            alt="Headphones front view thumbnail">
-                    </button>
-                    <button type="button">
-                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200"
-                            alt="Headphones side view thumbnail">
-                    </button>
-                    <button type="button">
-                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200"
-                            alt="Headphones folded thumbnail">
-                    </button>
-                    <button type="button">
-                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200"
-                            alt="Headphones with case thumbnail">
-                    </button>
+                    <?php foreach ($gallery as $index => $img): ?>
+                        <button type="button" class="<?php echo $index === 0 ? 'active' : ''; ?>">
+                            <img src="<?php echo htmlspecialchars($img['image_path']); ?>"
+                                alt="<?php echo htmlspecialchars($product['name']); ?> thumbnail <?php echo $index + 1; ?>">
+                        </button>
+                    <?php endforeach; ?>
                 </section>
             </div>
 
@@ -103,12 +93,23 @@
 
                 <section class="product-pricing">
                     <h2 class="visually-hidden">Pricing Information</h2>
-                    <p class="current-price">$
-                        <?php echo number_format($product['price'], 2); ?>
-                    </p>
-                    <p class="original-price">$129.99</p>
-                    <p class="discount-badge">Save 38%</p>
-                    <p class="stock-status">In Stock</p>
+                    <p class="current-price">$<?php echo number_format($product['price'], 2); ?></p>
+
+                    <?php if (!empty($product['original_price']) && $product['original_price'] > $product['price']): ?>
+                        <p class="original-price">$<?php echo number_format($product['original_price'], 2); ?></p>
+                        <?php
+                        $saving = $product['original_price'] - $product['price'];
+                        $percentage = round(($saving / $product['original_price']) * 100);
+                        ?>
+                        <p class="discount-badge">Save <?php echo $percentage; ?>%</p>
+                    <?php endif; ?>
+
+                    <?php if ($product['is_in_stock']): ?>
+                        <p class="stock-status in-stock">In Stock (<?php echo $product['stock_qty']; ?> available)</p>
+                    <?php else: ?>
+                        <p class="stock-status out-of-stock">Out of Stock</p>
+                    <?php endif; ?>
+
                     <?php
                     $shipping = getShippingEligibility($product['price']);
                     ?>
@@ -126,12 +127,17 @@
                         <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
                         <div class="quantity-input" style="margin-bottom: 10px;">
                             <label for="quantity">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+                            <input type="number" id="quantity" name="quantity" value="1" min="1"
+                                max="<?php echo max(1, $product['stock_qty']); ?>" <?php echo !$product['is_in_stock'] ? 'disabled' : ''; ?>>
                         </div>
                         <button type="button" class="add-to-cart add-to-cart-trigger"
-                            data-product-id="<?php echo $product_id; ?>">🛒 Add to Cart</button>
+                            data-product-id="<?php echo $product_id; ?>" <?php echo !$product['is_in_stock'] ? 'disabled' : ''; ?>>
+                            <?php echo $product['is_in_stock'] ? '🛒 Add to Cart' : 'Out of Stock'; ?>
+                        </button>
                     </form>
-                    <button type="button" class="buy-now-button">Buy Now</button>
+                    <?php if ($product['is_in_stock']): ?>
+                        <button type="button" class="buy-now-button">Buy Now</button>
+                    <?php endif; ?>
                     <button type="button" class="wishlist-button" data-product-id="<?php echo $product_id; ?>">
                         <span class="heart-icon" aria-hidden="true"></span>
                         <span class="button-text">Add to Wishlist</span>
@@ -156,13 +162,18 @@
                     </p>
                     <h4>Key Features</h4>
                     <ul>
-                        <li>Active Noise Cancellation (ANC) technology</li>
-                        <li>Bluetooth 5.0 for stable connectivity</li>
-                        <li>30-hour battery life with ANC on</li>
-                        <li>Comfortable memory foam ear cushions</li>
-                        <li>Foldable design with carrying case</li>
-                        <li>Built-in microphone for hands-free calls</li>
-                        <li>Compatible with voice assistants</li>
+                        <?php
+                        $features = !empty($product['features']) ? json_decode($product['features'], true) : [];
+                        if (!empty($features) && is_array($features)):
+                            foreach ($features as $feature):
+                                ?>
+                                <li><?php echo htmlspecialchars($feature); ?></li>
+                                <?php
+                            endforeach;
+                        else:
+                            ?>
+                            <li>No specific features listed.</li>
+                        <?php endif; ?>
                     </ul>
                 </section>
 
@@ -170,46 +181,23 @@
                     <h3>Technical Specifications</h3>
                     <table>
                         <tbody>
-                            <tr>
-                                <th>Driver Size</th>
-                                <td>40mm</td>
-                            </tr>
-                            <tr>
-                                <th>Frequency Response</th>
-                                <td>20Hz - 20kHz</td>
-                            </tr>
-                            <tr>
-                                <th>Impedance</th>
-                                <td>32 Ohm</td>
-                            </tr>
-                            <tr>
-                                <th>Bluetooth Version</th>
-                                <td>5.0</td>
-                            </tr>
-                            <tr>
-                                <th>Wireless Range</th>
-                                <td>33 feet (10 meters)</td>
-                            </tr>
-                            <tr>
-                                <th>Battery Type</th>
-                                <td>Rechargeable Lithium-ion</td>
-                            </tr>
-                            <tr>
-                                <th>Charging Time</th>
-                                <td>2.5 hours</td>
-                            </tr>
-                            <tr>
-                                <th>Weight</th>
-                                <td>8.8 oz (250g)</td>
-                            </tr>
-                            <tr>
-                                <th>Color Options</th>
-                                <td>Black, White, Blue, Red</td>
-                            </tr>
-                            <tr>
-                                <th>Package Contents</th>
-                                <td>Headphones, USB-C charging cable, 3.5mm audio cable, carrying case, user manual</td>
-                            </tr>
+                            <?php
+                            $specs = !empty($product['specifications']) ? json_decode($product['specifications'], true) : [];
+                            if (!empty($specs) && is_array($specs)):
+                                foreach ($specs as $key => $value):
+                                    ?>
+                                    <tr>
+                                        <th><?php echo htmlspecialchars($key); ?></th>
+                                        <td><?php echo htmlspecialchars($value); ?></td>
+                                    </tr>
+                                    <?php
+                                endforeach;
+                            else:
+                                ?>
+                                <tr>
+                                    <td colspan="2">No specifications available.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </section>

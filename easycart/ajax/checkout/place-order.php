@@ -114,7 +114,11 @@ try {
         'last_4' => substr($payment_data['card_number'] ?? '0000', -4)
     ]);
 
-    // 7. Create Order Items
+    // 7. Process Order Items & Deduct Stock
+    // Prepared statements for stock management
+    $stmt_check_stock = $pdo->prepare("SELECT qty FROM catalog_product_inventory WHERE product_id = :id FOR UPDATE");
+    $stmt_update_stock = $pdo->prepare("UPDATE catalog_product_inventory SET qty = :qty, is_in_stock = :in_stock WHERE product_id = :id");
+
     $stmt_item = $pdo->prepare("
         INSERT INTO sales_order_items (order_id, product_id, sku, name, price, qty_ordered, row_total, created_at)
         VALUES (:order_id, :product_id, :sku, :name, :price, :qty_ordered, :row_total, NOW())
@@ -125,6 +129,28 @@ try {
             continue;
         $product = $products_indexed[$product_id];
 
+        // 7a. Stock Validation & Deduction
+        $stmt_check_stock->execute(['id' => $product_id]);
+        $current_stock = $stmt_check_stock->fetchColumn();
+
+        if ($current_stock === false) {
+            throw new Exception("Product ID {$product_id} not found in inventory.");
+        }
+
+        if ($current_stock < $qty) {
+            throw new Exception("Insufficient stock for product '{$product['name']}'. Available: {$current_stock}, Requested: {$qty}");
+        }
+
+        $new_qty = $current_stock - $qty;
+        $is_in_stock = ($new_qty > 0) ? 'TRUE' : 'FALSE';
+
+        $stmt_update_stock->execute([
+            'qty' => $new_qty,
+            'in_stock' => $is_in_stock,
+            'id' => $product_id
+        ]);
+
+        // 7b. Create Order Item
         $stmt_item->execute([
             'order_id' => $order_id,
             'product_id' => $product_id,

@@ -34,3 +34,14 @@ $related_products = get_products([
     'limit' => 4,
     'sort' => 'featured'
 ]);
+
+// Fetch Gallery Images (Strict 4-Image Rule)
+// Every product is guaranteed to have exactly 4 images (positions 1-4)
+$stmt = getDbConnection()->prepare("
+    SELECT image_path, image_position 
+    FROM catalog_product_images 
+    WHERE product_id = :product_id 
+    ORDER BY image_position ASC
+");
+$stmt->execute(['product_id' => $product_id]);
+$gallery = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -333,23 +333,32 @@ function get_product_by_id($id)
 {
     $pdo = getDbConnection();
 
-    // EAV Description fetch
-    // catalog_product_attribute table: product_id, attribute_code, value
-    // We'll subselect description.
+    // Fetches:
+    // - Base product info (entity)
+    // - Brand name
+    // - Current Price & Original Price
+    // - Main Image
+    // - Default Category Slug
+    // - Attributes: description, features, specifications
+    // - Inventory: is_in_stock, qty
 
     $sql = "SELECT p.id, p.name, p.status, b.name as brand_name, p.brand_id, p.sku,
             COALESCE(pp.price, 0) as price,
+            pp.original_price,
             pi.image_path as image,
+            inv.is_in_stock,
+            inv.qty as stock_qty,
             (SELECT c.slug FROM catalog_category_entity c 
              JOIN catalog_category_products ccp ON ccp.category_id = c.id 
              WHERE ccp.product_id = p.id LIMIT 1) as category,
             (SELECT value FROM catalog_product_attribute pa WHERE pa.product_id = p.id AND pa.attribute_code = 'description' LIMIT 1) as description,
-            4.5 as rating,
-            0 as reviews
+            (SELECT value FROM catalog_product_attribute pa WHERE pa.product_id = p.id AND pa.attribute_code = 'features' LIMIT 1) as features,
+            (SELECT value FROM catalog_product_attribute pa WHERE pa.product_id = p.id AND pa.attribute_code = 'specifications' LIMIT 1) as specifications
             FROM catalog_product_entity p
             LEFT JOIN catalog_brand b ON p.brand_id = b.id
             LEFT JOIN catalog_product_price pp ON pp.product_id = p.id AND pp.customer_group_id = 0
             LEFT JOIN catalog_product_images pi ON pi.product_id = p.id AND pi.is_main = TRUE
+            LEFT JOIN catalog_product_inventory inv ON inv.product_id = p.id
             WHERE p.id = :id AND p.status = 1";
 
     $stmt = $pdo->prepare($sql);
