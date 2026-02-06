@@ -1,0 +1,116 @@
+Found 21 tables.
+----------------------------------------
+Table: catalog_brand
+Rows: 6
+Columns: id, name, logo_url, description, created_at, updated_at
+----------------------------------------
+Table: catalog_category_entity
+Rows: 4
+Columns: id, parent_id, name, slug, created_at, updated_at
+Foreign Keys:
+  - parent_id -> catalog_category_entity(id)
+----------------------------------------
+Table: catalog_category_products
+Rows: 16
+Columns: id, category_id, product_id
+Foreign Keys:
+  - category_id -> catalog_category_entity(id)
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: catalog_product_attribute
+Rows: 16
+Columns: id, product_id, attribute_code, value
+Foreign Keys:
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: catalog_product_entity
+Rows: 16
+Columns: id, brand_id, sku, name, type, status, created_at, updated_at
+Foreign Keys:
+  - brand_id -> catalog_brand(id)
+----------------------------------------
+Table: catalog_product_images
+Rows: 16
+Columns: id, product_id, image_path, is_main, sort_order, created_at
+Foreign Keys:
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: catalog_product_inventory
+Rows: 16
+Columns: id, product_id, qty, is_in_stock, stock_status
+Foreign Keys:
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: catalog_product_price
+Rows: 16
+Columns: id, product_id, price, currency, customer_group_id
+Foreign Keys:
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: order_statuses
+Rows: 5
+Columns: status_code, label, is_visible_on_front
+----------------------------------------
+Table: payment_methods
+Rows: 3
+Columns: id, code, title, is_active, created_at, updated_at
+----------------------------------------
+Table: sales_cart
+Rows: 3
+Columns: id, user_id, session_id, is_active, created_at, updated_at
+Foreign Keys:
+  - user_id -> users(id)
+----------------------------------------
+Table: sales_cart_items
+Rows: 4
+Columns: id, cart_id, product_id, qty, added_at, updated_at
+Foreign Keys:
+  - cart_id -> sales_cart(id)
+  - product_id -> catalog_product_entity(id)
+----------------------------------------
+Table: sales_order
+Rows: 7
+Columns: id, user_id, order_number, status, grand_total, subtotal, shipping_total, discount_total, tax_total, created_at, updated_at, shipping_method
+Foreign Keys:
+  - user_id -> users(id)
+----------------------------------------
+Table: sales_order_address
+Rows: 7
+Columns: id, order_id, address_type, street, city, state, zip, country, phone, email
+Foreign Keys:
+  - order_id -> sales_order(id)
+----------------------------------------
+Table: sales_order_items
+Rows: 12
+Columns: id, order_id, product_id, sku, name, price, qty_ordered, row_total, created_at
+Foreign Keys:
+  - order_id -> sales_order(id)
+----------------------------------------
+Table: sales_order_payment
+Rows: 7
+Columns: id, order_id, method, transaction_id, amount_paid, status, card_type, last_4
+Foreign Keys:
+  - order_id -> sales_order(id)
+----------------------------------------
+Table: sales_order_status_history
+Rows: 1
+Columns: id, order_id, status, comment, is_customer_notified, created_at
+Foreign Keys:
+  - order_id -> sales_order(id)
+----------------------------------------
+Table: shipping_methods
+Rows: 4
+Columns: id, code, title, is_active, created_at, updated_at
+----------------------------------------
+Table: tax_rates
+Rows: 1
+Columns: id, country_code, region, postcode, percentage, code, created_at
+----------------------------------------
+Table: users
+Rows: 5
+Columns: id, email, password_hash, first_name, last_name, created_at, updated_at
+----------------------------------------
+Table: wishlist
+Rows: 2
+Columns: id, user_id, product_id, created_at
+----------------------------------------
