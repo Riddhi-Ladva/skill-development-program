@@ -66,12 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.success) {
                     // Update global header badge
+                    // Update global header badge
                     if (headerCount) {
                         headerCount.textContent = data.totalItems;
                         const cartLink = headerCount.closest('.icon-wrapper');
                         if (cartLink) {
                             cartLink.classList.toggle('has-items', parseInt(data.totalItems) > 0);
                         }
+                    }
+
+                    // REFRESH CART UI (If we are on the cart page)
+                    if (window.EasyCart && window.EasyCart.UI && window.EasyCart.UI.refreshCartHTML) {
+                        window.EasyCart.UI.refreshCartHTML();
                     }
 
                     // Success Feedback

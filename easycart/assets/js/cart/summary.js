@@ -189,4 +189,40 @@ window.EasyCart.UI = window.EasyCart.UI || {};
             document.querySelector('.cart-summary')?.remove();
         }
     };
+    /**
+     * Refreshes the entire cart UI by fetching updated HTML from server.
+     * Updates: .cart-items, .cart-summary, #cart-page-count
+     */
+    window.EasyCart.UI.refreshCartHTML = async () => {
+        const cartItemsContainer = document.querySelector('.cart-items');
+        if (!cartItemsContainer) return; // Not on cart page
+
+        try {
+            const htmlResponse = await fetch(`${EasyCart.ajaxUrl}/cart/get_cart_html.php`);
+            const htmlData = await htmlResponse.json();
+
+            if (htmlData.success) {
+                // Replace Cart Items
+                cartItemsContainer.innerHTML = htmlData.cartHtml;
+
+                // Replace Cart Summary
+                const cartContainer = document.querySelector('.cart-container');
+                const existingSummary = document.querySelector('.cart-summary');
+
+                if (existingSummary) {
+                    existingSummary.outerHTML = htmlData.summaryHtml;
+                } else if (htmlData.summaryHtml && cartContainer) {
+                    cartContainer.insertAdjacentHTML('beforeend', htmlData.summaryHtml);
+                }
+
+                // Update Page Header Count (Specific to Cart Page)
+                const cartPageCount = document.getElementById('cart-page-count');
+                const cartPageText = document.getElementById('cart-page-text');
+                if (cartPageCount) cartPageCount.textContent = htmlData.totalItems;
+                if (cartPageText) cartPageText.textContent = parseInt(htmlData.totalItems) === 1 ? 'item' : 'items';
+            }
+        } catch (err) {
+            console.error('Error refreshing cart UI:', err);
+        }
+    };
 })();

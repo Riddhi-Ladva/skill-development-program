@@ -261,6 +261,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (container.querySelectorAll('.wishlist-card').length === 0) {
                             container.innerHTML = '<div class="wishlist-empty">Your wishlist is empty.</div>';
                         }
+
+                        // REFRESH CART UI (If on cart page)
+                        if (window.EasyCart && window.EasyCart.UI && window.EasyCart.UI.refreshCartHTML) {
+                            window.EasyCart.UI.refreshCartHTML();
+                        }
                     } else {
                         target.disabled = false;
                         target.textContent = originalText;

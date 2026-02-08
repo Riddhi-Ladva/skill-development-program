@@ -5,8 +5,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const shippingRadios = document.querySelectorAll('input[name="shipping"]');
-    if (shippingRadios.length === 0) return; // Exit if not on a page with shipping options
+    // const shippingRadios = document.querySelectorAll('input[name="shipping"]');
+    // if (shippingRadios.length === 0) return; // Removed to allow dynamic injection
 
     // Shared update function
     const updateShipping = async (method) => {
@@ -29,12 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Attach listeners
-    shippingRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
+    // Attach listeners via Delegation (to handle dynamic replacements)
+    document.addEventListener('change', (e) => {
+        if (e.target.name === 'shipping' && e.target.type === 'radio') {
             if (e.target.checked) {
                 updateShipping(e.target.value);
             }
-        });
+        }
     });
 
     /**
