@@ -12,6 +12,9 @@
 // Load configuration
 require_once __DIR__ . '/bootstrap/config.php';
 
+// Enforce Cache Control for any page with a header (User/Auth state visible)
+require_once __DIR__ . '/auth/cache_control.php';
+
 // Determine current page and category for navigation highlighting
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_category = isset($_GET['category']) ? $_GET['category'] : '';
