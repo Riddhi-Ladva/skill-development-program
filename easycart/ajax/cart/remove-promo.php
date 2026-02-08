@@ -12,8 +12,10 @@ require_once __DIR__ . '/../../includes/bootstrap/session.php';
 require_once __DIR__ . '/../../includes/auth/guard.php';
 
 // Protect endpoint
+// Protect endpoint
 ajax_auth_guard();
-require_once ROOT_PATH . '/data/products.php';
+require_once ROOT_PATH . '/includes/db_functions.php';
+// Removed: require_once ROOT_PATH . '/data/products.php';
 // require_once ROOT_PATH . '/data/promocodes.php'; // Not needed for removal
 require_once ROOT_PATH . '/includes/cart/services.php';
 require_once ROOT_PATH . '/includes/shipping/services.php';
@@ -26,14 +28,25 @@ header('Content-Type: application/json');
 if (isset($_SESSION['promo_code'])) {
     unset($_SESSION['promo_code']);
     unset($_SESSION['promo_value']);
+    unset($_SESSION['promo_type']);
 
     // PERSIST REMOVAL TO DB
     update_cart_promo_db($_SESSION['user_id'], null);
 
     // Recalculate everything
+    // SYNC WITH DB: Fetch current items
+    $cart = get_cart_items_db($_SESSION['user_id']);
+
+    // Fetch all products for calculation
+    $all_products = get_products([]);
+    $products_indexed = [];
+    foreach ($all_products as $p) {
+        $products_indexed[$p['id']] = $p;
+    }
+
     // VALIDATION PIPELINE
     // 1. Get detailed breakdown first
-    $cart_details = calculateCartDetails($_SESSION['cart'], $products);
+    $cart_details = calculateCartDetails($cart, $products_indexed);
 
     // 2. Calculate Raw Subtotal from details
     $subtotal = 0;
@@ -50,17 +63,18 @@ if (isset($_SESSION['promo_code'])) {
     $_SESSION['shipping_method'] = $validated_method; // Persist correction
 
     // 5. Calculate Shipping Cost
-    $shipping_cost = (count($_SESSION['cart']) > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
+    $shipping_count = count($cart);
+    $shipping_cost = ($shipping_count > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
 
     // 6. Calculate Finals
     $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
     // 7. Get Shipping Options for UI
     $shipping_options = [
-        'standard' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('standard', $subtotal) : 0,
-        'express' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('express', $subtotal) : 0,
-        'white-glove' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('white-glove', $subtotal) : 0,
-        'freight' => (count($_SESSION['cart']) > 0) ? calculateShippingCost('freight', $subtotal) : 0
+        'standard' => ($shipping_count > 0) ? calculateShippingCost('standard', $subtotal) : 0,
+        'express' => ($shipping_count > 0) ? calculateShippingCost('express', $subtotal) : 0,
+        'white-glove' => ($shipping_count > 0) ? calculateShippingCost('white-glove', $subtotal) : 0,
+        'freight' => ($shipping_count > 0) ? calculateShippingCost('freight', $subtotal) : 0
     ];
 
     echo json_encode([
