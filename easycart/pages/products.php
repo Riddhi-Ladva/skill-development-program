@@ -32,7 +32,7 @@
 
         <div class="products-container">
             <aside class="filters-sidebar" aria-label="Product filters">
-                <form action="products.php" method="GET" id="filter-form">
+                <form action="<?php echo url('products'); ?>" method="GET" id="filter-form">
                     <!-- Persist search query -->
                     <?php if ($query): ?>
                         <input type="hidden" name="q" value="<?php echo htmlspecialchars($query); ?>">
@@ -128,7 +128,7 @@
                     </section>
 
                     <button type="submit" class="apply-filters-button">Apply Filters</button>
-                    <a href="products.php" class="clear-filters-button"
+                    <a href="<?php echo url('products'); ?>" class="clear-filters-button"
                         style="text-decoration: none; display: inline-block; text-align: center; width: 100%; border: 1px solid var(--color-border); padding: var(--spacing-2); border-radius: var(--border-radius-md); margin-top: var(--spacing-2); color: var(--color-text-primary); font-weight: var(--font-weight-medium);">Clear
                         All</a>
                 </form>
@@ -166,7 +166,7 @@
                                 <h3>No products found</h3>
                                 <p>We couldn't find any products matching "<?php echo htmlspecialchars($query); ?>".</p>
                                 <p>Try checking your spelling or using more general keywords.</p>
-                                <a href="products.php" class="btn btn-primary"
+                                <a href="<?php echo url('products'); ?>" class="btn btn-primary"
                                     style="display: inline-block; margin-top: 1rem; text-decoration: none; padding: 0.8rem 1.5rem; background: var(--primary-color); color: white; border-radius: var(--radius-md);">View
                                     All Products</a>
                             </div>
@@ -177,7 +177,7 @@
                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
                                     <div style="display: flex; flex-direction: column; flex-grow: 1; padding: var(--spacing-4) var(--spacing-4) var(--spacing-12) var(--spacing-4);">
                                         <h3 style="text-align: center;"><a
-                                                href="product-detail.php?id=<?php echo $product['id']; ?>"><?php echo htmlspecialchars($product['name']); ?></a>
+                                                href="<?php echo url('product-detail?id=' . $product['id']); ?>"><?php echo htmlspecialchars($product['name']); ?></a>
                                         </h3>
                                         <p class="product-price">$<?php echo number_format($product['price'], 2); ?></p>
                                         <?php

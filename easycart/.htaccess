@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# 1. Do not interfere with existing files or directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 2. Handle root index explicitly
+RewriteRule ^index/?$ index.php [L]
+
+# 3. Handle pages (cart, checkout, etc.)
+RewriteRule ^([^/]+)/?$ pages/$1.php [L]

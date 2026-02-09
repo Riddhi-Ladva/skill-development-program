@@ -90,7 +90,7 @@ if ($pagination_end === (float) $total_pages || $pagination_end === (int) $total
 
 // Ensure $p is within bounds to prevent empty pages if users hack the URL
 if ($total_pages > 0 && $p > $total_pages) {
-    header("Location: ?page=" . $total_pages . (isset($_GET['q']) ? "&q=" . urlencode($_GET['q']) : ''));
+    header("Location: " . url('products') . "?page=" . $total_pages . (isset($_GET['q']) ? "&q=" . urlencode($_GET['q']) : ''));
     exit;
 }
 

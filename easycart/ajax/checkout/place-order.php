@@ -235,7 +235,7 @@ try {
         'success' => true,
         'order_id' => $order_id,
         'order_number' => $order_number,
-        'redirect' => url('pages/orders.php')
+        'redirect' => url('orders')
     ]);
 
 } catch (Throwable $e) {

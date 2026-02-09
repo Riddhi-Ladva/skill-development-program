@@ -185,7 +185,7 @@ window.EasyCart.UI = window.EasyCart.UI || {};
 
         if (items.length === 0) {
             const container = document.querySelector('.cart-items');
-            if (container) container.innerHTML = '<p>Your cart is empty. <a href="products.php">Start shopping!</a></p>';
+            if (container) container.innerHTML = `<p>Your cart is empty. <a href="${EasyCart.baseUrl}/products">Start shopping!</a></p>`;
             document.querySelector('.cart-summary')?.remove();
         }
     };

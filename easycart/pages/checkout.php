@@ -25,10 +25,10 @@ auth_guard();
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
+                <h1><a href="<?php echo url('index'); ?>">EasyCart</a></h1>
             </div>
             <div class="header-checkout-actions">
-                <a href="cart.php" class="back-link">← Back to Cart</a>
+                <a href="<?php echo url('cart'); ?>" class="back-link">← Back to Cart</a>
             </div>
             <div class="secure-checkout-badge">
                 <p>Secure Checkout</p>
@@ -157,7 +157,7 @@ auth_guard();
                             <?php echo $price_display; ?>
                         </p>
                     </div>
-                    <p class="change-shipping-hint">To change shipping method, <a href="cart.php">return to cart</a>.
+                    <p class="change-shipping-hint">To change shipping method, <a href="<?php echo url('cart'); ?>">return to cart</a>.
                     </p>
                 </section>
 
@@ -228,7 +228,7 @@ auth_guard();
 
                 <section class="order-actions">
                     <button type="submit" class="place-order-button">Place Order</button>
-                    <a href="cart.php" class="back-to-cart">Return to Cart</a>
+                    <a href="<?php echo url('cart'); ?>" class="back-to-cart">Return to Cart</a>
                     <p class="terms-notice">
                         By placing your order, you agree to our
                         <a href="#">Terms of Service</a> and

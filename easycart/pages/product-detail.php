@@ -52,9 +52,9 @@
     <main id="main-content">
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
-                <li><a href="<?php echo url('index.php'); ?>">Home</a></li>
-                <li><a href="<?php echo url('pages/products.php'); ?>">Products</a></li>
-                <li><a href="products.php?category=<?php echo urlencode($product['category']); ?>">
+                <li><a href="<?php echo url('index'); ?>">Home</a></li>
+                <li><a href="<?php echo url('products'); ?>">Products</a></li>
+                <li><a href="<?php echo url('products?category=' . urlencode($product['category'])); ?>">
                         <?php echo htmlspecialchars($category['name']); ?>
                     </a>
                 </li>
@@ -216,7 +216,7 @@
                         <img src="<?php echo htmlspecialchars($rel_product['image']); ?>"
                             alt="<?php echo htmlspecialchars($rel_product['name']); ?>">
                         <h3><a
-                                href="product-detail.php?id=<?php echo $rel_product['id']; ?>"><?php echo htmlspecialchars($rel_product['name']); ?></a>
+                                href="<?php echo url('product-detail?id=' . $rel_product['id']); ?>"><?php echo htmlspecialchars($rel_product['name']); ?></a>
                         </h3>
                         <p class="product-price">$<?php echo number_format($rel_product['price'], 2); ?></p>
                     </article>

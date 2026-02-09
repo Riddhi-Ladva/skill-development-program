@@ -20,7 +20,7 @@ $user_id = $_SESSION['user_id'];
 $cart_items = get_cart_items_db($user_id);
 
 if (empty($cart_items)) {
-    header('Location: cart.php');
+    header('Location: ' . url('cart'));
     exit;
 }
 

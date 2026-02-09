@@ -35,7 +35,7 @@ session_destroy();
     localStorage.removeItem('wishlist');
 
     // Redirect to home and replace history to prevent back button navigation to this page
-    window.location.replace('../index.php');
+    window.location.replace('<?php echo url('index'); ?>');
 </script>
 <?php
 exit;

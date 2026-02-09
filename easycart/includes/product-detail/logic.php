@@ -6,7 +6,7 @@ require_once ROOT_PATH . '/includes/shipping/services.php';
 $product_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($product_id <= 0) {
-    header('Location: products.php');
+    header('Location: ' . url('products'));
     exit;
 }
 
@@ -14,7 +14,7 @@ if ($product_id <= 0) {
 $product = get_product_by_id($product_id);
 
 if (!$product) {
-    header('Location: products.php');
+    header('Location: ' . url('products'));
     exit;
 }
 

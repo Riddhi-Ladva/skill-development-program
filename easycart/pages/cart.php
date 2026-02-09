@@ -1,5 +1,5 @@
-<?php 
-require_once '../includes/cart/logic.php'; 
+<?php
+require_once '../includes/cart/logic.php';
 // Auth guard removed to allow guest access
 // require_once ROOT_PATH . '/includes/auth/guard.php';
 // auth_guard();
@@ -59,33 +59,37 @@ require_once '../includes/cart/logic.php';
                         $wishlist_items = get_user_wishlist_details($_SESSION['user_id']);
                     }
                     ?>
-                    
+
                     <!-- If SSR found items (User), render them. JS will take over for Guest or manipulations. -->
                     <?php if (empty($wishlist_items)): ?>
                         <!-- Empty state rendered by PHP initially for guests too. JS will replace if it finds LS data. -->
                         <div class="wishlist-empty">Your wishlist is empty. Items you save will appear here.</div>
                     <?php else: ?>
                         <?php foreach ($wishlist_items as $w_item): ?>
-                        <article class="wishlist-card" data-product-id="<?php echo $w_item['id']; ?>">
-                            <div class="item-image">
-                                <img src="<?php echo htmlspecialchars($w_item['image']); ?>" alt="<?php echo htmlspecialchars($w_item['name']); ?>">
-                            </div>
-                            <div class="item-info">
-                                <h3><a href="product-detail.php?id=<?php echo $w_item['id']; ?>"><?php echo htmlspecialchars($w_item['name']); ?></a></h3>
-                                <p class="item-price">$<?php echo number_format($w_item['price'], 2); ?></p>
-                                <p class="item-stock" style="font-size: 0.8em; color: <?php echo $w_item['is_in_stock'] ? 'green' : 'red'; ?>;">
-                                    <?php echo $w_item['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?>
-                                </p>
-                            </div>
-                            <div class="item-actions">
-                                <button type="button" class="action-btn add-to-cart-from-wishlist" 
-                                        data-id="<?php echo $w_item['id']; ?>"
-                                        <?php echo $w_item['is_in_stock'] ? '' : 'disabled'; ?>>
-                                    Add to Cart
-                                </button>
-                                <button type="button" class="remove-wishlist" data-id="<?php echo $w_item['id']; ?>">Remove</button>
-                            </div>
-                        </article>
+                            <article class="wishlist-card" data-product-id="<?php echo $w_item['id']; ?>">
+                                <div class="item-image">
+                                    <img src="<?php echo htmlspecialchars($w_item['image']); ?>"
+                                        alt="<?php echo htmlspecialchars($w_item['name']); ?>">
+                                </div>
+                                <div class="item-info">
+                                    <h3><a
+                                            href="<?php echo url('product-detail?id=' . $w_item['id']); ?>"><?php echo htmlspecialchars($w_item['name']); ?></a>
+                                    </h3>
+                                    <p class="item-price">$<?php echo number_format($w_item['price'], 2); ?></p>
+                                    <p class="item-stock"
+                                        style="font-size: 0.8em; color: <?php echo $w_item['is_in_stock'] ? 'green' : 'red'; ?>;">
+                                        <?php echo $w_item['is_in_stock'] ? 'In Stock' : 'Out of Stock'; ?>
+                                    </p>
+                                </div>
+                                <div class="item-actions">
+                                    <button type="button" class="action-btn add-to-cart-from-wishlist"
+                                        data-id="<?php echo $w_item['id']; ?>" <?php echo $w_item['is_in_stock'] ? '' : 'disabled'; ?>>
+                                        Add to Cart
+                                    </button>
+                                    <button type="button" class="remove-wishlist"
+                                        data-id="<?php echo $w_item['id']; ?>">Remove</button>
+                                </div>
+                            </article>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
@@ -97,11 +101,14 @@ require_once '../includes/cart/logic.php';
             <h2>Frequently Bought Together</h2>
             <div class="product-grid">
                 <?php foreach ($recommended_products as $rec_prod): ?>
-                <article class="product-card">
-                    <img src="<?php echo htmlspecialchars($rec_prod['image']); ?>" alt="<?php echo htmlspecialchars($rec_prod['name']); ?>">
-                    <h3><a href="product-detail.php?id=<?php echo $rec_prod['id']; ?>"><?php echo htmlspecialchars($rec_prod['name']); ?></a></h3>
-                    <p class="product-price">$<?php echo number_format($rec_prod['price'], 2); ?></p>
-                </article>
+                    <article class="product-card">
+                        <img src="<?php echo htmlspecialchars($rec_prod['image']); ?>"
+                            alt="<?php echo htmlspecialchars($rec_prod['name']); ?>">
+                        <h3><a
+                                href="<?php echo url('product-detail?id=' . $rec_prod['id']); ?>"><?php echo htmlspecialchars($rec_prod['name']); ?></a>
+                        </h3>
+                        <p class="product-price">$<?php echo number_format($rec_prod['price'], 2); ?></p>
+                    </article>
                 <?php endforeach; ?>
             </div>
         </section>

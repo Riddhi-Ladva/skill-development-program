@@ -4,7 +4,7 @@ require_once ROOT_PATH . '/config/db.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
+    header('Location: ' . url('index'));
     exit;
 }
 
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 // ---------------------------------------------------------
 
-                header('Location: ../index.php');
+                header('Location: ' . url('index'));
                 exit;
             } else {
                 $errors[] = "Invalid email or password.";

@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Detects page reloads on cart/detail pages to reassure users about state persistence.
     const navigationType = performance.getEntriesByType("navigation")[0]?.type;
     if (navigationType === 'reload') {
-        const isCartRelated = window.location.pathname.includes('cart.php') || window.location.pathname.includes('product-detail.php');
+        const isCartRelated = window.location.pathname.includes('/cart') || window.location.pathname.includes('/product-detail');
         if (isCartRelated) {
             showNotification('Your cart is safe! All items have been preserved.', 'info');
         }

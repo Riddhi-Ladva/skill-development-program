@@ -15,11 +15,11 @@
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
+                <h1><a href="<?php echo url('index'); ?>">EasyCart</a></h1>
             </div>
             <div class="header-actions">
-                <a href="<?php echo url('index.php'); ?>" class="action-link">Back to Home</a>
-                <a href="<?php echo url('pages/login.php'); ?>" class="action-link">Login</a>
+                <a href="<?php echo url('index'); ?>" class="action-link">Back to Home</a>
+                <a href="<?php echo url('login'); ?>" class="action-link">Login</a>
             </div>
         </div>
     </header>
@@ -43,7 +43,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="signup.php" method="post" novalidate>
+                <form action="<?php echo url('signup'); ?>" method="post" novalidate>
                     <fieldset>
                         <legend class="visually-hidden">Personal Information</legend>
 
@@ -88,7 +88,7 @@
                 <footer class="form-footer">
                     <p>
                         Already have an account?
-                        <a href="login.php">Login here</a>
+                        <a href="<?php echo url('login'); ?>">Login here</a>
                     </p>
                 </footer>
             </section>

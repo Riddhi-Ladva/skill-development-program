@@ -23,7 +23,7 @@ auth_guard();
         <div class="account-container detail-view">
             <!-- Order Header -->
             <header class="detail-header">
-                <a href="<?php echo url('pages/orders.php'); ?>" class="back-link">← Back to My Orders</a>
+                <a href="<?php echo url('orders'); ?>" class="back-link">← Back to My Orders</a>
                 <div class="header-main">
                     <h1>Order #<?php echo htmlspecialchars($order['order_number']); ?></h1>
                     <span class="status-badge <?php echo htmlspecialchars($order['status']); ?>">
@@ -113,7 +113,8 @@ auth_guard();
                                 <p><strong><?php echo htmlspecialchars($order_address['street']); ?></strong></p>
                                 <p><?php echo htmlspecialchars($order_address['city']); ?>,
                                     <?php echo htmlspecialchars($order_address['state']); ?>
-                                    <?php echo htmlspecialchars($order_address['zip']); ?></p>
+                                    <?php echo htmlspecialchars($order_address['zip']); ?>
+                                </p>
                                 <p><?php echo htmlspecialchars($order_address['country']); ?></p>
                                 <?php if ($order_address['phone']): ?>
                                     <a href="tel:<?php echo htmlspecialchars($order_address['phone']); ?>" class="phone-link">

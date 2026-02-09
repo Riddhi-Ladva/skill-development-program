@@ -65,8 +65,7 @@
                         }
                         ?>
                         <label class="shipping-option <?php echo $is_disabled ? 'is-disabled' : ''; ?>">
-                            <input type="radio" name="shipping" value="<?php echo htmlspecialchars($option['code']); ?>" <?php echo $current_method === $option['code'] ? 'checked' : ''; ?>
-                            <?php echo $is_disabled ? 'disabled' : ''; ?>>
+                            <input type="radio" name="shipping" value="<?php echo htmlspecialchars($option['code']); ?>" <?php echo $current_method === $option['code'] ? 'checked' : ''; ?>         <?php echo $is_disabled ? 'disabled' : ''; ?>>
                             <div class="option-details">
                                 <p class="option-name">
                                     <?php echo htmlspecialchars($option['title']); ?>
@@ -109,7 +108,7 @@
 
         <!-- CHECKOUT CTA -->
         <section class="checkout-section">
-            <a href="checkout.php" class="checkout-button">Proceed to Checkout</a>
+            <a href="<?php echo url('checkout'); ?>" class="checkout-button">Proceed to Checkout</a>
         </section>
 
         <!-- PAYMENT -->

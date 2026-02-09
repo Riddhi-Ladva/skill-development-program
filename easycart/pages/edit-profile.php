@@ -26,7 +26,7 @@ try {
 
     if (!$user) {
         // This shouldn't happen if auth_guard works, but safety first
-        header("Location: " . url('pages/login.php'));
+        header("Location: " . url('login'));
         exit;
     }
 } catch (PDOException $e) {

@@ -15,7 +15,7 @@ if (!function_exists('auth_guard')) {
         require_once dirname(__DIR__) . '/auth/cache_control.php';
 
         if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . url('pages/login.php'));
+            header('Location: ' . url('login'));
             exit;
         }
     }

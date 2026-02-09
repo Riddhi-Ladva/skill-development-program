@@ -63,10 +63,10 @@ if (!isset($categories)) {
 <header id="site-header">
     <div class="header-top">
         <div class="logo">
-            <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
+            <h1><a href="<?php echo url('index'); ?>">EasyCart</a></h1>
         </div>
         <div class="search-bar">
-            <form action="<?php echo url('pages/products.php'); ?>" method="get" role="search">
+            <form action="<?php echo url('products'); ?>" method="get" role="search">
                 <input type="search" id="search-input" name="q" placeholder="Search products..."
                     aria-label="Search products">
                 <button type="submit">Search</button>
@@ -83,7 +83,7 @@ if (!isset($categories)) {
                 }
                 $initial_wishlist_count = getWishlistCount();
                 ?>
-                <a href="<?php echo url('pages/cart.php#wishlist-section'); ?>"
+                <a href="<?php echo url('cart#wishlist-section'); ?>"
                     class="action-link icon-wrapper wishlist-link <?php echo $initial_wishlist_count > 0 ? 'has-items' : ''; ?>"
                     aria-label="View wishlist">
                     <i class="wishlist-icon" aria-hidden="true"></i>
@@ -99,7 +99,7 @@ if (!isset($categories)) {
                 }
                 $header_cart_count = getCartCount();
                 ?>
-                <a href="<?php echo url('pages/cart.php'); ?>"
+                <a href="<?php echo url('cart'); ?>"
                     class="action-link icon-wrapper cart-link <?php echo $header_cart_count > 0 ? 'has-items' : ''; ?> <?php echo ($current_page == 'cart.php') ? 'active' : ''; ?>"
                     aria-label="View cart">
                     <i class="cart-icon">🛒</i>
@@ -135,16 +135,16 @@ if (!isset($categories)) {
                     </button>
                     <div class="profile-dropdown" id="profile-dropdown-menu">
                         <ul>
-                            <li><a href="<?php echo url('pages/dashboard.php'); ?>">Dashboard</a></li>
-                            <li><a href="<?php echo url('pages/orders.php'); ?>">Orders</a></li>
-                            <li><a href="<?php echo url('pages/edit-profile.php'); ?>">Edit Profile</a></li>
+                            <li><a href="<?php echo url('dashboard'); ?>">Dashboard</a></li>
+                            <li><a href="<?php echo url('orders'); ?>">Orders</a></li>
+                            <li><a href="<?php echo url('edit-profile'); ?>">Edit Profile</a></li>
                             <li class="divider"></li>
-                            <li><a href="<?php echo url('pages/logout.php'); ?>" class="logout-link">Logout</a></li>
+                            <li><a href="<?php echo url('logout'); ?>" class="logout-link">Logout</a></li>
                         </ul>
                     </div>
                 </div>
             <?php else: ?>
-                <a href="<?php echo url('pages/login.php'); ?>" class="action-link header-login-link" aria-label="Login">
+                <a href="<?php echo url('login'); ?>" class="action-link header-login-link" aria-label="Login">
                     <span>Login</span>
                 </a>
             <?php endif; ?>
@@ -152,13 +152,13 @@ if (!isset($categories)) {
     </div>
     <nav id="main-navigation" aria-label="Main navigation">
         <ul>
-            <li><a href="<?php echo url('index.php'); ?>"
+            <li><a href="<?php echo url('index'); ?>"
                     class="<?php echo ($current_page == 'index.php') ? 'active' : ''; ?>">Home</a></li>
-            <li><a href="<?php echo url('pages/products.php'); ?>"
+            <li><a href="<?php echo url('products'); ?>"
                     class="<?php echo ($current_page == 'products.php' && empty($current_category)) ? 'active' : ''; ?>">Products</a>
             </li>
             <?php foreach ($categories as $slug => $cat_info): ?>
-                <li><a href="<?php echo url('pages/products.php?category=' . $slug); ?>"
+                <li><a href="<?php echo url('products?category=' . $slug); ?>"
                         class="<?php echo ($current_page == 'products.php' && $current_category == $slug) ? 'active' : ''; ?>">
                         <?php echo htmlspecialchars($cat_info['name']); ?>
                     </a>

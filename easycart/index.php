@@ -22,7 +22,7 @@
             <article class="hero-banner">
                 <h2>Winter Sale - Up to 50% Off</h2>
                 <p>Discover amazing deals on thousands of products</p>
-                <a href="<?php echo url('pages/products.php'); ?>" class="cta-button">Shop Now</a>
+                <a href="<?php echo url('products'); ?>" class="cta-button">Shop Now</a>
             </article>
             <img class="hero-img hero-img--left" src="<?= url('assets/img/hero-left.png') ?>" alt="Decorative left"
                 aria-hidden="true">
@@ -41,7 +41,7 @@
                     <article class="category-card">
                         <h3><?php echo htmlspecialchars($category_info['name']); ?></h3>
                         <p><?php echo htmlspecialchars($category_info['description'] ?? 'Explore our collection'); ?></p>
-                        <a href="<?php echo url('pages/products.php?category=' . $slug); ?>">Explore
+                        <a href="<?php echo url('products?category=' . $slug); ?>">Explore
                             <?php echo htmlspecialchars($category_info['name']); ?></a>
                     </article>
                 <?php endforeach; ?>
@@ -53,7 +53,7 @@
                 <h2>Popular Brands</h2>
                 <div class="brand-grid">
                     <?php foreach ($brands as $id => $brand): ?>
-                        <a href="<?php echo url('pages/products.php?brand_id=' . $id); ?>" class="brand-card"
+                        <a href="<?php echo url('products?brand_id=' . $id); ?>" class="brand-card"
                             aria-label="View <?php echo htmlspecialchars($brand['name']); ?> products">
                             <img src="<?php echo url($brand['logo']); ?>"
                                 alt="<?php echo htmlspecialchars($brand['name']); ?> Logo">
@@ -91,7 +91,7 @@
                                 <button class="add-to-cart-btn" data-product-id="<?php echo $product['id']; ?>">
                                     🛒 Add to Cart
                                 </button>
-                                <a href="<?php echo url('pages/product-detail.php?id=' . $product['id']); ?>"
+                                <a href="<?php echo url('product-detail?id=' . $product['id']); ?>"
                                     style="font-size: var(--font-size-xs); color: var(--color-primary); margin-top: 5px; display: block; text-decoration: none;">View
                                     Details</a>
                             </div>
@@ -100,7 +100,7 @@
                 <?php endforeach; ?>
             </div>
             <div style="text-align: center; margin-top: 20px;">
-                <a href="<?php echo url('pages/products.php'); ?>" class="view-all-link">View All Products</a>
+                <a href="<?php echo url('products'); ?>" class="view-all-link">View All Products</a>
             </div>
         </section>
 

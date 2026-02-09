@@ -15,11 +15,11 @@
     <header id="site-header">
         <div class="header-top">
             <div class="logo">
-                <h1><a href="<?php echo url('index.php'); ?>">EasyCart</a></h1>
+                <h1><a href="<?php echo url('index'); ?>">EasyCart</a></h1>
             </div>
             <div class="header-actions">
-                <a href="<?php echo url('index.php'); ?>" class="action-link">Back to Home</a>
-                <a href="<?php echo url('pages/signup.php'); ?>" class="action-link">Sign Up</a>
+                <a href="<?php echo url('index'); ?>" class="action-link">Back to Home</a>
+                <a href="<?php echo url('signup'); ?>" class="action-link">Sign Up</a>
             </div>
         </div>
     </header>
@@ -48,7 +48,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="login.php" method="post" novalidate>
+                <form action="<?php echo url('login'); ?>" method="post" novalidate>
                     <fieldset>
                         <legend class="visually-hidden">Login credentials</legend>
 
@@ -72,7 +72,7 @@
                 <footer class="form-footer">
                     <p>
                         Don't have an account?
-                        <a href="signup.php">Sign up for free</a>
+                        <a href="<?php echo url('signup'); ?>">Sign up for free</a>
                     </p>
                 </footer>
             </section>
@@ -126,7 +126,7 @@
     <?php include '../includes/footer.php'; ?>
     <script src="<?php echo asset('js/auth/auth-validation.js'); ?>"></script>
     <script>
-        document.querySelector('form[action="login.php"]').addEventListener('submit', function () {
+        document.querySelector('form').addEventListener('submit', function () {
             const wishlist = localStorage.getItem('wishlist');
             if (wishlist) {
                 document.getElementById('guest-wishlist-data').value = wishlist;

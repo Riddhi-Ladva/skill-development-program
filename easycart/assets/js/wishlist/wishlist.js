@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <article class="wishlist-card" data-product-id="${item.id}">
                             <div class="item-image"><img src="${item.image}" alt="${item.name}"></div>
                             <div class="item-info">
-                                <h3><a href="product-detail.php?id=${item.id}">${item.name}</a></h3>
+                                <h3><a href="${EC.baseUrl}/product-detail?id=${item.id}">${item.name}</a></h3>
                                 <p class="item-price">$${parseFloat(item.price).toFixed(2)}</p>
                             </div>
                             <div class="item-actions">

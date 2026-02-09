@@ -31,6 +31,10 @@ define('ROOT_PATH', dirname(dirname(__DIR__)));
  */
 function url($path = '')
 {
+    // Clean URL Support: Strip .php extension and pages/ prefix if present
+    // But be careful not to break assets or other things.
+    // Actually, the user wants me to CHANGE the paths in the files. 
+    // "must chnage all paths to all websites pages"
     return BASE_PATH . '/' . ltrim($path, '/');
 }
 

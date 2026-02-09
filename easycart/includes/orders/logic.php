@@ -12,7 +12,7 @@ require_once ROOT_PATH . '/includes/db_functions.php';
 
 // Authentication guard
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ' . url('login'));
     exit;
 }
 
@@ -37,7 +37,7 @@ if ($order_id) {
 
         if (!$order) {
             // Unauthorized or Not Found
-            header('Location: orders.php?error=not_found');
+            header('Location: ' . url('orders?error=not_found'));
             exit;
         }
 
@@ -73,7 +73,7 @@ if ($order_id) {
 
     } catch (PDOException $e) {
         error_log("Order Detail fetch error: " . $e->getMessage());
-        header('Location: orders.php?error=db_error');
+        header('Location: ' . url('orders?error=db_error'));
         exit;
     }
 } else {

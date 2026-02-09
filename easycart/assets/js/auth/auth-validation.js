@@ -6,8 +6,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. SELECTORS
-    const loginForm = document.querySelector('form[action*="login.php"], form[action*="orders.php"]');
-    const signupForm = document.querySelector('form[action*="signup.php"]');
+    const loginForm = document.querySelector('form[action*="login"], form[action*="orders"]');
+    const signupForm = document.querySelector('form[action*="signup"]');
 
     // 2. SHARED HELPERS
     const showError = (input, message) => {

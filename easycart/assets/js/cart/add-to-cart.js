@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.status === 401) {
                     // Redirect to login if unauthorized
-                    window.location.href = `${EasyCart.baseUrl}/pages/login.php`;
+                    window.location.href = `${EasyCart.baseUrl}/login`;
                     return;
                 }
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // If "Buy Now", redirect to cart immediately
                     if (button.classList.contains('buy-now-button')) {
-                        window.location.href = `${EasyCart.baseUrl}/pages/cart.php`;
+                        window.location.href = `${EasyCart.baseUrl}/cart`;
                         return;
                     }
 

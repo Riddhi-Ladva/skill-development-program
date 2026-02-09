@@ -1,5 +1,5 @@
 <?php if (empty($cart_items)): ?>
-    <p>Your cart is empty. <a href="products.php">Start shopping!</a></p>
+    <p>Your cart is empty. <a href="<?php echo url('products'); ?>">Start shopping!</a></p>
 <?php else: ?>
     <?php foreach ($cart_details as $id => $item):
         // $item now contains all the calculated fields from services.php
@@ -11,7 +11,7 @@
                     alt="<?php echo htmlspecialchars($products[$id]['name']); ?>">
             </div>
             <div class="item-details">
-                <h3><a href="product-detail.php?id=<?php echo $id; ?>">
+                <h3><a href="<?php echo url('product-detail?id=' . $id); ?>">
                         <?php echo htmlspecialchars($products[$id]['name']); ?>
                     </a>
                 </h3>

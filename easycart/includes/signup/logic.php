@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 // Success! Redirect to login
-                header('Location: login.php?signup=success');
+                header('Location: ' . url('login?signup=success'));
                 exit;
             }
         } catch (PDOException $e) {

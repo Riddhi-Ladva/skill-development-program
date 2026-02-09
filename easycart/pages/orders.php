@@ -42,7 +42,7 @@ auth_guard();
                     <?php if (empty($orders)): ?>
                         <div class="empty-state">
                             <p>You haven't placed any orders yet.</p>
-                            <a href="<?php echo url('pages/products.php'); ?>" class="btn primary">Start Shopping</a>
+                            <a href="<?php echo url('products'); ?>" class="btn primary">Start Shopping</a>
                         </div>
                     <?php else: ?>
                         <table>
@@ -71,8 +71,8 @@ auth_guard();
                                         </td>
                                         <td class="order-total">$<?php echo number_format($o['grand_total'], 2); ?></td>
                                         <td>
-                                            <a href="<?php echo url('pages/order-detail.php?id=' . $o['id']); ?>"
-                                                class="view-link">View Details</a>
+                                            <a href="<?php echo url('order-detail?id=' . $o['id']); ?>" class="view-link">View
+                                                Details</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
