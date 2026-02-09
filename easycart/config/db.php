@@ -31,11 +31,11 @@ function getDbConnection()
 
     // Database Configuration Variables
     // In a real production environment, load these from .env files or environment variables.
-    $host = 'localhost';
-    $port = '5432';       // Default PostgreSQL port
-    $dbname = 'easycart';
-    $user = 'postgres';
-    $password = '1513'; // UPDATE THIS with your actual password
+    $host = getenv('DB_HOST') ?: 'localhost';
+    $port = getenv('DB_PORT') ?: '5432';
+    $dbname = getenv('DB_NAME') ?: 'easycart';
+    $user = getenv('DB_USER') ?: 'postgres';
+    $password = getenv('DB_PASSWORD') ?: '';
 
     // Data Source Name (DSN) for PostgreSQL
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";

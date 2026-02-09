@@ -11,6 +11,9 @@
  * When it runs: At the very top of every PHP file in this project.
  */
 
+// Load Environment Variables
+require_once __DIR__ . '/env.php';
+
 // Include the configuration file for paths and constants
 require_once __DIR__ . '/config.php';
 
