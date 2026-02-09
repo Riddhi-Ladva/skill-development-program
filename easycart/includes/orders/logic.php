@@ -61,6 +61,19 @@ if ($order_id) {
         $stmt_addr->execute(['order_id' => $order_id]);
         $order_address = $stmt_addr->fetch(PDO::FETCH_ASSOC);
 
+        // 3b. Fetch Billing Address (if different)
+        $order_billing_address = null;
+        if (isset($order['billing_same_as_shipping']) && !$order['billing_same_as_shipping']) {
+            $stmt_bill = $pdo->prepare("
+                SELECT * 
+                FROM sales_order_address 
+                WHERE order_id = :order_id AND address_type = 'billing'
+                LIMIT 1
+            ");
+            $stmt_bill->execute(['order_id' => $order_id]);
+            $order_billing_address = $stmt_bill->fetch(PDO::FETCH_ASSOC);
+        }
+
         // 4. Fetch Payment Info
         $stmt_pay = $pdo->prepare("
             SELECT * 

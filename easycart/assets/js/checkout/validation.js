@@ -198,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         phone: phoneInput.value.trim(),
                         state: document.getElementById('state').value,
                         country: document.getElementById('country').value,
-                        company: document.getElementById('company').value.trim()
                     },
                     billing: {
                         same_as_shipping: isSameAsShipping,

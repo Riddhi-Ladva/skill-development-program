@@ -54,14 +54,8 @@ auth_guard();
                         <div class="form-group">
                             <label for="email">Email Address <abbr title="required">*</abbr></label>
                             <input type="email" id="email" name="email" required autocomplete="email">
-                            <p class="field-hint">We'll send order confirmation to this email</p>
                         </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="newsletter" value="yes">
-                                Keep me updated on special offers and news
-                            </label>
-                        </div>
+    
                     </form>
                 </section>
 
@@ -82,10 +76,7 @@ auth_guard();
                                         autocomplete="family-name">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="company">Company Name (Optional)</label>
-                                <input type="text" id="company" name="company" autocomplete="organization">
-                            </div>
+                            
                             <div class="form-group">
                                 <label for="address-line1">Street Address <abbr title="required">*</abbr></label>
                                 <input type="text" id="address-line1" name="address-line1" required

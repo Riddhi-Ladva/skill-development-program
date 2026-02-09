@@ -105,7 +105,6 @@ auth_guard();
                         </div>
                     </section>
 
-                    <!-- Shipping Address Card -->
                     <section class="detail-section shipping-card">
                         <h3>Shipping Address</h3>
                         <?php if ($order_address): ?>
@@ -127,6 +126,21 @@ auth_guard();
                         <?php endif; ?>
                     </section>
 
+                    <!-- Billing Address Card (Conditional) -->
+                    <?php if (isset($order['billing_same_as_shipping']) && !$order['billing_same_as_shipping'] && $order_billing_address): ?>
+                        <section class="detail-section billing-card" style="margin-top: 1.5rem;">
+                            <h3>Billing Address</h3>
+                            <address>
+                                <p><strong><?php echo htmlspecialchars($order_billing_address['street']); ?></strong></p>
+                                <p><?php echo htmlspecialchars($order_billing_address['city']); ?>,
+                                    <?php echo htmlspecialchars($order_billing_address['state']); ?>
+                                    <?php echo htmlspecialchars($order_billing_address['zip']); ?>
+                                </p>
+                                <p><?php echo htmlspecialchars($order_billing_address['country']); ?></p>
+                            </address>
+                        </section>
+                    <?php endif; ?>
+
                     <!-- Payment info Card -->
                     <section class="detail-section payment-card">
                         <h3>Payment Method</h3>
@@ -137,13 +151,13 @@ auth_guard();
                                     <span
                                         class="payment-value"><?php echo ucfirst(htmlspecialchars($order_payment['method'])); ?></span>
                                 </div>
-                                <?php if ($order_payment['last_4']): ?>
+                                <!-- <?php if ($order_payment['last_4']): ?>
                                     <div class="payment-item">
                                         <span class="payment-label">Card</span>
                                         <span class="payment-value">••••
                                             <?php echo htmlspecialchars($order_payment['last_4']); ?></span>
                                     </div>
-                                <?php endif; ?>
+                                <?php endif; ?> -->
                                 <div class="payment-item">
                                     <span class="payment-label">Status</span>
                                     <span class="payment-value">
