@@ -31,7 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $method = $data['type'] ?? 'standard';
 
     // Business Rule: Valid shipping types allowed in our system
-    $valid_methods = ['standard', 'express', 'white-glove', 'freight'];
+    // FIX: Fetch from DB instead of hardcoded list
+    $shipping_methods_db = get_active_shipping_methods();
+    $valid_methods = array_column($shipping_methods_db, 'code');
 
     if (in_array($method, $valid_methods)) {
 
@@ -70,18 +72,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['shipping_method'] = $validated_method;
 
         // 5. Calculate Shipping Cost (using the VALIDATED method)
-        $shipping_cost = (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
+        // FIX: Use subtotal check instead of session cart count (which is empty for logged in users)
+        $shipping_cost = ($subtotal > 0) ? calculateShippingCost($validated_method, $subtotal) : 0;
 
         // 6. Calculate Finals
         $totals = calculateCheckoutTotals($subtotal, $shipping_cost);
 
         // 7. Shipping Options
-        $shipping_options = [
-            'standard' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('standard', $subtotal) : 0,
-            'express' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('express', $subtotal) : 0,
-            'white-glove' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('white-glove', $subtotal) : 0,
-            'freight' => (count($_SESSION['cart'] ?? []) > 0) ? calculateShippingCost('freight', $subtotal) : 0
-        ];
+        // Reuse DB methods fetched at top
+        $formatted_shipping_options = [];
+
+        foreach ($shipping_methods_db as $method_db) {
+            $code = $method_db['code'];
+            // FIX: Use subtotal check here too
+            $cost_val = ($subtotal > 0) ? calculateShippingCost($code, $subtotal) : 0;
+            $formatted_shipping_options[$code] = '$' . number_format($cost_val, 2);
+        }
 
         // Return updated values to the frontend
         echo json_encode([
@@ -94,12 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'tax' => '$' . number_format($totals['tax'], 2),
                 'grandTotal' => '$' . number_format($totals['total'], 2)
             ],
-            'shippingOptions' => [
-                'standard' => '$' . number_format($shipping_options['standard'], 2),
-                'express' => '$' . number_format($shipping_options['express'], 2),
-                'white-glove' => '$' . number_format($shipping_options['white-glove'], 2),
-                'freight' => '$' . number_format($shipping_options['freight'], 2)
-            ],
+            'shippingOptions' => $formatted_shipping_options,
             'shippingConstraints' => $constraints // NEW: Required by JS
         ]);
     } else {

@@ -539,7 +539,8 @@ function get_active_payment_methods()
 function get_active_shipping_methods()
 {
     $pdo = getDbConnection();
-    $stmt = $pdo->prepare("SELECT code, title FROM shipping_methods WHERE is_active = TRUE ORDER BY id ASC");
+    // Select cost as well for DB-driven display
+    $stmt = $pdo->prepare("SELECT code, title, cost FROM shipping_methods WHERE is_active = TRUE ORDER BY id ASC");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

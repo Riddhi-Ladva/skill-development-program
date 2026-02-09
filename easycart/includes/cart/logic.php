@@ -37,6 +37,24 @@ foreach ($cart_details as $item) {
 }
 
 $shipping_method = isset($_SESSION['shipping_method']) ? $_SESSION['shipping_method'] : 'standard';
+
+// --- SHIPPING AUTO-CORRECTION LOGIC ---
+// Ensure the selected method is valid for the current cart.
+if ($requires_freight) {
+    // If Freight is required, Standard and Express are invalid.
+    if ($shipping_method !== 'freight' && $shipping_method !== 'white-glove') {
+        $shipping_method = 'freight'; // Default to Freight
+        $_SESSION['shipping_method'] = $shipping_method; // Sync Session
+    }
+} else {
+    // If Freight is NOT required, Freight and White Glove are disabled.
+    if ($shipping_method === 'freight' || $shipping_method === 'white-glove') {
+        $shipping_method = 'standard'; // Default back to Standard
+        $_SESSION['shipping_method'] = $shipping_method; // Sync Session
+    }
+}
+// --------------------------------------
+
 $shipping = calculateShippingCost($shipping_method, $subtotal);
 
 $totals = calculateCheckoutTotals($subtotal, $shipping);
