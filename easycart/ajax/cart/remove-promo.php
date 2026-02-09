@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../includes/auth/guard.php';
 // Protect endpoint
 // Protect endpoint
 ajax_auth_guard();
-require_once ROOT_PATH . '/includes/db_functions.php';
+require_once ROOT_PATH . '/includes/db-functions.php';
 // Removed: require_once ROOT_PATH . '/data/products.php';
 // require_once ROOT_PATH . '/data/promocodes.php'; // Not needed for removal
 require_once ROOT_PATH . '/includes/cart/services.php';

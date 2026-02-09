@@ -23,7 +23,7 @@ function getWishlistCount()
     if (isset($_SESSION['user_id'])) {
         // Ensure DB functions are loaded
         if (!function_exists('get_wishlist_count_db')) {
-            require_once dirname(__DIR__) . '/db_functions.php';
+            require_once dirname(__DIR__) . '/db-functions.php';
         }
 
         try {

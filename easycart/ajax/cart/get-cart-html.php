@@ -15,12 +15,12 @@ require_once ROOT_PATH . '/includes/cart/logic.php';
 
 // Render Cart Items
 ob_start();
-include ROOT_PATH . '/includes/cart/components/cart_items.php';
+include ROOT_PATH . '/includes/cart/components/cart-items.php';
 $cart_html = ob_get_clean();
 
 // Render Cart Summary
 ob_start();
-include ROOT_PATH . '/includes/cart/components/cart_summary.php';
+include ROOT_PATH . '/includes/cart/components/cart-summary.php';
 $summary_html = ob_get_clean();
 
 header('Content-Type: application/json');

@@ -2,7 +2,7 @@
 require_once '../includes/bootstrap/session.php';
 
 // Prevent caching of this logout page
-require_once '../includes/auth/cache_control.php';
+require_once '../includes/auth/cache-control.php';
 
 // Clear session
 // Clear session but do NOT clear DB cart (it persists for the user)

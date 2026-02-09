@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
 require_once ROOT_PATH . '/config/db.php';
-require_once ROOT_PATH . '/includes/db_functions.php';
+require_once ROOT_PATH . '/includes/db-functions.php';
 
 header('Content-Type: application/json');
 

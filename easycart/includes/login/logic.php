@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // CART & WISHLIST MERGE LOGIC (Guest -> DB)
                 // ---------------------------------------------------------
                 if (!function_exists('merge_guest_cart_to_db')) {
-                    require_once ROOT_PATH . '/includes/db_functions.php';
+                    require_once ROOT_PATH . '/includes/db-functions.php';
                 }
 
                 // Cart Merge

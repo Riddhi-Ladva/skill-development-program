@@ -143,7 +143,7 @@ function getCartCount()
     if (isset($_SESSION['user_id'])) {
         // Ensure DB functions are loaded
         if (!function_exists('get_cart_items_db')) {
-            require_once dirname(__DIR__) . '/db_functions.php';
+            require_once dirname(__DIR__) . '/db-functions.php';
         }
         $cart_items = get_cart_items_db($_SESSION['user_id']);
         return array_sum($cart_items);

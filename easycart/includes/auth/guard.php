@@ -12,7 +12,7 @@ if (!function_exists('auth_guard')) {
     function auth_guard()
     {
         // Enforce no-cache for protected pages
-        require_once dirname(__DIR__) . '/auth/cache_control.php';
+        require_once dirname(__DIR__) . '/auth/cache-control.php';
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . url('login'));

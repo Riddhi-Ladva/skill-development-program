@@ -13,25 +13,20 @@ require_once __DIR__ . '/../includes/auth/guard.php';
 auth_guard();
 
 $user_id = $_SESSION['user_id'];
-$pdo = getDbConnection();
+require_once __DIR__ . '/../includes/auth/services.php';
 
 $errors = [];
 $success_message = "";
 
 // 1. Fetch current user data
-try {
-    $stmt = $pdo->prepare("SELECT email, first_name, last_name, phone FROM users WHERE id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = get_user_profile($user_id);
 
-    if (!$user) {
-        // This shouldn't happen if auth_guard works, but safety first
-        header("Location: " . url('login'));
-        exit;
+if (!$user) {
+    // This shouldn't happen if auth_guard works, but safety first
+    // Or if fetch failed
+    if (empty($user) && !isset($errors)) {
+        $errors[] = "Could not load profile data.";
     }
-} catch (PDOException $e) {
-    error_log("Profile Fetch Error: " . $e->getMessage());
-    $errors[] = "Could not load profile data.";
 }
 
 // 2. Handle Update Logic
@@ -49,31 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        try {
-            // Check if email is already taken by ANOTHER user
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE email = :email AND id != :user_id");
-            $stmt->execute(['email' => $email, 'user_id' => $user_id]);
-            if ($stmt->fetch()) {
-                $errors[] = "This email is already in use by another account.";
-            } else {
-                // Update DB
-                $stmt = $pdo->prepare("
-                    UPDATE users 
-                    SET first_name = :first_name, 
-                        last_name = :last_name, 
-                        email = :email, 
-                        phone = :phone,
-                        updated_at = CURRENT_TIMESTAMP
-                    WHERE id = :user_id
-                ");
-                $stmt->execute([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'email' => $email,
-                    'phone' => $phone,
-                    'user_id' => $user_id
-                ]);
-
+        // Check if email is already taken by ANOTHER user
+        if (is_email_taken($email, $user_id)) {
+            $errors[] = "This email is already in use by another account.";
+        } else {
+            // Update DB
+            if (update_user_profile($user_id, $firstName, $lastName, $email, $phone)) {
                 $success_message = "Profile updated successfully!";
 
                 // Refresh local user data for the form
@@ -81,10 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user['last_name'] = $lastName;
                 $user['email'] = $email;
                 $user['phone'] = $phone;
+            } else {
+                $errors[] = "An error occurred while updating your profile.";
             }
-        } catch (PDOException $e) {
-            error_log("Profile Update Error: " . $e->getMessage());
-            $errors[] = "An error occurred while updating your profile.";
         }
     }
 }

@@ -7,7 +7,7 @@
  */
 
 require_once __DIR__ . '/../../config/db.php';
-require_once __DIR__ . '/../db_functions.php';
+require_once __DIR__ . '/../db-functions.php';
 
 /**
  * Fetch tax rate from DB (Simple Global Implementation)

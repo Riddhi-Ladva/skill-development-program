@@ -8,7 +8,7 @@
 
 require_once dirname(__DIR__) . '/bootstrap/session.php';
 require_once ROOT_PATH . '/config/db.php';
-require_once ROOT_PATH . '/includes/db_functions.php';
+require_once ROOT_PATH . '/includes/db-functions.php';
 
 // Authentication guard
 if (!isset($_SESSION['user_id'])) {

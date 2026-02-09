@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 container.innerHTML = '<p>Loading wishlist...</p>';
-                const response = await fetch(`${EC.ajaxUrl}/wishlist/get_products.php`, {
+                const response = await fetch(`${EC.ajaxUrl}/wishlist/get-products.php`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: list })
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             updateWishlistBadge(list.length);
                         }
                     } else {
-                        const res = await fetch(`${EC.ajaxUrl}/wishlist/move_to_cart.php`, {
+                        const res = await fetch(`${EC.ajaxUrl}/wishlist/move-to-cart.php`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ product_id: id })

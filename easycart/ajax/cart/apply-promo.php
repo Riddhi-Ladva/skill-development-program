@@ -9,7 +9,7 @@
 ob_start();
 
 require_once __DIR__ . '/../../includes/bootstrap/session.php';
-require_once ROOT_PATH . '/includes/db_functions.php';
+require_once ROOT_PATH . '/includes/db-functions.php';
 require_once ROOT_PATH . '/includes/auth/guard.php';
 
 // Protect endpoint: Logged-in users only

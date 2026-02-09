@@ -198,7 +198,7 @@ window.EasyCart.UI = window.EasyCart.UI || {};
         if (!cartItemsContainer) return; // Not on cart page
 
         try {
-            const htmlResponse = await fetch(`${EasyCart.ajaxUrl}/cart/get_cart_html.php`);
+            const htmlResponse = await fetch(`${EasyCart.ajaxUrl}/cart/get-cart-html.php`);
             const htmlData = await htmlResponse.json();
 
             if (htmlData.success) {

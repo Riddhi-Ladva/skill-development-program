@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
 
     // Fetch data from refined API
-    fetch(window.EasyCart.baseUrl + '/ajax/dashboard/order_spending.php')
+    fetch(window.EasyCart.baseUrl + '/ajax/dashboard/order-spending.php')
         .then(response => response.json())
         .then(res => {
             if (!res.success || !res.data || res.data.length === 0) {

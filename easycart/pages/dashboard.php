@@ -13,30 +13,18 @@ require_once __DIR__ . '/../includes/auth/guard.php';
 auth_guard();
 
 $user_id = $_SESSION['user_id'];
-$pdo = getDbConnection();
+require_once __DIR__ . '/../includes/dashboard/services.php';
+
+$user_id = $_SESSION['user_id'];
 
 // Fetch Profile and Metrics
-try {
-    // 1. User Info for greeting
-    $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
-    $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
-    $user_email = $user_data ? $user_data['email'] : 'User';
-    $display_name = ucfirst(explode('@', $user_email)[0]);
+$metrics = get_user_dashboard_metrics($user_id);
 
-    // 2. Metrics
-    // Total Orders
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM sales_order WHERE user_id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
-    $total_orders = $stmt->fetchColumn();
-
-    // Total Spent
-    $stmt = $pdo->prepare("SELECT SUM(grand_total) FROM sales_order WHERE user_id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
-    $total_spent = (float) ($stmt->fetchColumn() ?: 0);
-
-} catch (PDOException $e) {
-    error_log("Dashboard Load Error: " . $e->getMessage());
+if ($metrics) {
+    $display_name = $metrics['display_name'];
+    $total_orders = $metrics['total_orders'];
+    $total_spent = $metrics['total_spent'];
+} else {
     $display_name = "User";
     $total_orders = 0;
     $total_spent = 0;

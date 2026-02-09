@@ -33,10 +33,10 @@ require_once '../includes/cart/logic.php';
             <section class="cart-items">
                 <h2 class="visually-hidden">Cart Items</h2>
 
-                <?php include ROOT_PATH . '/includes/cart/components/cart_items.php'; ?>
+                <?php include ROOT_PATH . '/includes/cart/components/cart-items.php'; ?>
             </section>
 
-            <?php include ROOT_PATH . '/includes/cart/components/cart_summary.php'; ?>
+            <?php include ROOT_PATH . '/includes/cart/components/cart-summary.php'; ?>
 
 
 
@@ -54,7 +54,7 @@ require_once '../includes/cart/logic.php';
                     $wishlist_items = [];
                     if (isset($_SESSION['user_id'])) {
                         if (!function_exists('get_user_wishlist_details')) {
-                            require_once ROOT_PATH . '/includes/db_functions.php';
+                            require_once ROOT_PATH . '/includes/db-functions.php';
                         }
                         $wishlist_items = get_user_wishlist_details($_SESSION['user_id']);
                     }

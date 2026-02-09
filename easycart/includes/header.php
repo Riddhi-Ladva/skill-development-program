@@ -13,7 +13,7 @@
 require_once __DIR__ . '/bootstrap/config.php';
 
 // Enforce Cache Control for any page with a header (User/Auth state visible)
-require_once __DIR__ . '/auth/cache_control.php';
+require_once __DIR__ . '/auth/cache-control.php';
 
 // Determine current page and category for navigation highlighting
 $current_page = basename($_SERVER['PHP_SELF']);
@@ -25,7 +25,7 @@ if (!isset($categories)) {
         $categories = $all_categories;
     } else {
         // Fallback: fetch directly if page logic didn't provide
-        require_once __DIR__ . '/db_functions.php';
+        require_once __DIR__ . '/db-functions.php';
         $categories = get_all_categories();
     }
 }
@@ -42,7 +42,7 @@ if (!isset($categories)) {
         if (isset($_SESSION['user_id'])) {
             try {
                 if (!function_exists('get_user_wishlist')) {
-                    require_once __DIR__ . '/db_functions.php';
+                    require_once __DIR__ . '/db-functions.php';
                 }
                 $wishlist_ids = get_user_wishlist($_SESSION['user_id']);
             } catch (Exception $e) {
