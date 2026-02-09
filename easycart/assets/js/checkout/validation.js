@@ -171,6 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             } else {
+                // Confirm before placing order
+                if (!confirm("Are you sure you want to place this order?")) {
+                    e.preventDefault();
+                    return;
+                }
+
                 // Real AJAX order placement
                 const submitBtn = e.target;
                 submitBtn.disabled = true;
