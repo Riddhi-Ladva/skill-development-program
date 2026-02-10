@@ -1,0 +1,6 @@
+Rid, rid
+name: Riddhi Ladva, email: rid@gmail.com
+
+ERROR: Invalid password attempt - Username: rid, Email: rid
+ERROR: Invalid password attempt - Username: rid, Email: rid
+INFO: User logged in - Username: rid, Email: rid
