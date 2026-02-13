@@ -27,23 +27,66 @@ class KiloCrawler:
         }
 
     def setup_directories(self, step='all'):
-        """Creates required folder structure based on step."""
+        """Creates required folder structure based on step and initializes metadata."""
         print(f"[INIT] Setting up directories for {step}...")
         
+        # Define the standard production structure for PDP/Part1
+        self.pdp_subdirs = [
+            'block_diagrams', 'design_resources', 'documentation', 
+            'images', 'markdowns', 'other', 'software_tools', 
+            'tables', 'trainings'
+        ]
+
         # Nav directories
         if step in ['nav', 'all']:
-            os.makedirs(os.path.join(self.dirs['nav'], 'tables'), exist_ok=True)
-            os.makedirs(os.path.join(self.dirs['nav'], 'markdowns'), exist_ok=True)
+            for sub in ['tables', 'markdowns']:
+                path = os.path.join(self.dirs['nav'], sub)
+                os.makedirs(path, exist_ok=True)
+                self.init_metadata(path)
         
         # Listing directories
         if step in ['listing', 'all']:
             for sub in ['images', 'tables', 'markdowns']:
-                os.makedirs(os.path.join(self.dirs['listing'], sub), exist_ok=True)
+                path = os.path.join(self.dirs['listing'], sub)
+                os.makedirs(path, exist_ok=True)
+                self.init_metadata(path)
             
         # PDP directories
         if step in ['pdp', 'all']:
-            for sub in ['images', 'block_diagrams', 'documentation', 'design_resources', 'markdowns', 'tables']:
-                os.makedirs(os.path.join(self.dirs['pdp'], sub), exist_ok=True)
+            for sub in self.pdp_subdirs:
+                path = os.path.join(self.dirs['pdp'], sub)
+                os.makedirs(path, exist_ok=True)
+                self.init_metadata(path)
+                
+                # specific file for block_diagrams matching user image
+                if sub == 'block_diagrams':
+                     map_path = os.path.join(path, 'block_diagram_mappings.json')
+                     if not os.path.exists(map_path):
+                         with open(map_path, 'w') as f:
+                             json.dump([], f, indent=4)
+
+    def init_metadata(self, folder_path):
+        """Creates an empty metadata.json if it doesn't exist."""
+        meta_path = os.path.join(folder_path, 'metadata.json')
+        if not os.path.exists(meta_path):
+            with open(meta_path, 'w') as f:
+                json.dump([], f, indent=4) # Initialize as empty list as requested
+
+    def update_metadata(self, folder_path, new_entry):
+        """Updates metadata.json with a new entry."""
+        meta_path = os.path.join(folder_path, 'metadata.json')
+        data = []
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, 'r') as f:
+                    data = json.load(f)
+            except: data = []
+        
+        # Avoid duplicates based on filename/url if possible, or just append
+        data.append(new_entry)
+        
+        with open(meta_path, 'w') as f:
+            json.dump(data, f, indent=4)
 
     def clean_filename(self, text):
         """Sanitizes strings for filenames."""
@@ -238,11 +281,14 @@ class KiloCrawler:
                 safe_cat = self.clean_filename(cat_name)
                 
                 # JSON
-                with open(os.path.join(self.dirs['listing'], 'tables', f"{safe_cat}.json"), 'w') as f:
+                json_path = os.path.join(self.dirs['listing'], 'tables', f"{safe_cat}.json")
+                with open(json_path, 'w') as f:
                     json.dump({"category": cat_name, "products": products_in_cat}, f, indent=4)
+                self.update_metadata(os.path.join(self.dirs['listing'], 'tables'), {"file": f"{safe_cat}.json", "type": "listing_json"})
                 
                 # Markdown
-                with open(os.path.join(self.dirs['listing'], 'markdowns', f"{safe_cat}.md"), 'w') as f:
+                md_path = os.path.join(self.dirs['listing'], 'markdowns', f"{safe_cat}.md")
+                with open(md_path, 'w') as f:
                     f.write(f"# {cat_name}\n\n")
                     for p in products_in_cat:
                         f.write(f"## {p['name']}\n")
@@ -250,6 +296,7 @@ class KiloCrawler:
                         if p['thumbnail']:
                             f.write(f"**Thumbnail:** {p['thumbnail']}\n")
                         f.write("---\n")
+                self.update_metadata(os.path.join(self.dirs['listing'], 'markdowns'), {"file": f"{safe_cat}.md", "type": "listing_markdown"})
                         
             except Exception as e:
                 print(f"[ERROR] listing fetch for {cat_name}: {e}")
@@ -279,18 +326,47 @@ class KiloCrawler:
                 cat_name = prod['category']
                 safe_name = self.clean_filename(prod['name'])
                 
-                # 1. Description
-                desc_tag = soup.select_one('.product-excerpt')
-                description = desc_tag.get_text(separator=' ', strip=True) if desc_tag else ""
+                # 1. Product Details
+                name_elem = soup.select_one('.product-title, #productName')
+                prod['name'] = name_elem.text.strip() if name_elem else prod['name']
                 
-                # 2. Specs
+                desc_elem = soup.select_one('.product-excerpt, .product-description, #productDescription')
+                description = desc_elem.text.strip() if desc_elem else ""
+                
+                # 2. Specs (existing)
                 specs = [li.get_text(strip=True) for li in soup.select('.product-description ul li')]
                 
-                # 3. Images (High Res)
+                # 3. Files (PDFs / CADs) in description
+                docs = []
+                design_res = []
+                for a in soup.select('.product-description a[href]'):
+                    href = urljoin(self.base_url, a['href'])
+                    txt = a.get_text(strip=True) or "File"
+                    
+                    if href.lower().endswith('.pdf'):
+                        docs.append({'title': txt, 'url': href})
+                    elif href.lower().endswith(('.step', '.igs', '.dwg', '.dxf', '.zip')):
+                        design_res.append({'title': txt, 'url': href})
+
+                # 4. Images (High Res) -> images/
                 image_urls = []
                 seen_imgs = set()
-                
-                # Strategy: Look for all possible image containers
+                local_images = [] # Initialize here for downloads
+
+                # 4. Block Diagrams -> block_diagrams/
+                # Look for images in the description content blocks (Technical Drawings)
+                block_diagram_urls = []
+                for img in soup.select('.sqs-block-image img'):
+                     src = img.get('data-src') or img.get('src')
+                     if src:
+                        full_url = urljoin(self.base_url, src)
+                        print(f"[DEBUG] Found potential block diagram: {full_url}")
+                        if full_url not in seen_imgs: # Avoid dupe if it's also in gallery (rare)
+                            block_diagram_urls.append(full_url)
+                            seen_imgs.add(full_url)
+                        else:
+                            print(f"[DEBUG] Block diagram skipped (duplicate): {full_url}")
+
                 # A. Slideshow slides (often duplicates of thumbs, but high res)
                 for img in soup.select('#productSlideshow .slide img'):
                     src = img.get('data-src') or img.get('src')
@@ -344,21 +420,54 @@ class KiloCrawler:
                     elif href.lower().endswith(('.step', '.igs', '.dwg', '.dxf', '.zip')):
                         design_res.append({'title': txt, 'url': href})
 
-                # Downloads
-                local_images = []
+                # Downloads - Images
+                img_dir = os.path.join(self.dirs['pdp'], 'images')
                 for idx, img_url in enumerate(image_urls):
-                    fname = self.download_file(img_url, os.path.join(self.dirs['pdp'], 'images'), f"{safe_name}_{idx+1}", "jpg")
-                    if fname: local_images.append(f"images/{fname}")
+                    fname = self.download_file(img_url, img_dir, f"{safe_name}_{idx+1}", "jpg")
+                    if fname: 
+                        local_images.append(f"images/{fname}")
+                        self.update_metadata(img_dir, {"filename": fname, "source_url": img_url, "product": prod['name']})
+
+                # Downloads - Block Diagrams
+                local_block_diagrams = []
+                bd_dir = os.path.join(self.dirs['pdp'], 'block_diagrams')
+                
+                for idx, bd_url in enumerate(block_diagram_urls):
+                     # Usually these are PNGs or JPGs, try to guess or default to jpg
+                     ext = "png" if ".png" in bd_url.lower() else "jpg"
+                     fname = self.download_file(bd_url, bd_dir, f"{safe_name}_diagram_{idx+1}", ext)
+                     if fname:
+                         local_block_diagrams.append(f"block_diagrams/{fname}")
+                         self.update_metadata(bd_dir, {"filename": fname, "source_url": bd_url, "product": prod['name']})
+                         
+                         # Update specific mapping file
+                         map_path = os.path.join(bd_dir, 'block_diagram_mappings.json')
+                         if os.path.exists(map_path):
+                             try:
+                                 with open(map_path, 'r') as f:
+                                     mappings = json.load(f)
+                             except: mappings = []
+                             
+                             mappings.append({"file": fname, "type": "block_diagram", "product": prod['name']})
+                             
+                             with open(map_path, 'w') as f:
+                                 json.dump(mappings, f, indent=4)
 
                 local_docs = []
+                doc_dir = os.path.join(self.dirs['pdp'], 'documentation')
                 for d in docs:
-                    fname = self.download_file(d['url'], os.path.join(self.dirs['pdp'], 'documentation'), f"{safe_name}_{self.clean_filename(d['title'])}")
-                    if fname: local_docs.append(f"documentation/{fname}")
+                    fname = self.download_file(d['url'], doc_dir, f"{safe_name}_{self.clean_filename(d['title'])}")
+                    if fname: 
+                        local_docs.append(f"documentation/{fname}")
+                        self.update_metadata(doc_dir, {"filename": fname, "title": d['title'], "source_url": d['url']})
                     
                 local_designs = []
+                design_dir = os.path.join(self.dirs['pdp'], 'design_resources')
                 for d in design_res:
-                    fname = self.download_file(d['url'], os.path.join(self.dirs['pdp'], 'design_resources'), f"{safe_name}_{self.clean_filename(d['title'])}")
-                    if fname: local_designs.append(f"design_resources/{fname}")
+                    fname = self.download_file(d['url'], design_dir, f"{safe_name}_{self.clean_filename(d['title'])}")
+                    if fname: 
+                        local_designs.append(f"design_resources/{fname}")
+                        self.update_metadata(design_dir, {"filename": fname, "title": d['title'], "source_url": d['url']})
 
                 pdp_data = {
                     "category": cat_name,
@@ -368,7 +477,7 @@ class KiloCrawler:
                     "specifications": specs,
                     "technical_details": "",
                     "images": local_images,
-                    "block_diagrams": [],
+                    "block_diagrams": local_block_diagrams,
                     "documentation": local_docs,
                     "design_resources": local_designs
                 }
@@ -379,7 +488,8 @@ class KiloCrawler:
                 categorized_data[cat_name].append(pdp_data)
                 
                 # Save Individual Markdown
-                md_path = os.path.join(self.dirs['pdp'], 'markdowns', f"{safe_name}.md")
+                md_dir = os.path.join(self.dirs['pdp'], 'markdowns')
+                md_path = os.path.join(md_dir, f"{safe_name}.md")
                 with open(md_path, 'w', encoding='utf-8') as f:
                     f.write(f"# {prod['name']}\n")
                     f.write(f"**URL:** {prod['url']}\n\n")
@@ -387,18 +497,31 @@ class KiloCrawler:
                     f.write("## Images\n")
                     for img in local_images:
                         f.write(f"![Image](../{img})\n")
+                self.update_metadata(md_dir, {"filename": f"{safe_name}.md", "product": prod['name']})
                 
             except Exception as e:
                 print(f"[ERROR] PDP Scrape {prod['name']}: {e}")
 
         # Save Aggregated JSONs
         print("\n[SAVING] Saving Aggregated PDP Data...")
+        tables_dir = os.path.join(self.dirs['pdp'], 'tables')
         for cat_name, data in categorized_data.items():
             safe_cat = self.clean_filename(cat_name)
-            path = os.path.join(self.dirs['pdp'], 'tables', f"{safe_cat}_detailed.json")
+            # User output naming convention from image check: products.json or generic?
+            # Reverting to explicit name to avoid overwrite, but logging metadata
+            path = os.path.join(tables_dir, f"{safe_cat}_detailed.json")
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump({"category": cat_name, "products": data}, f, indent=4)
+            self.update_metadata(tables_dir, {"filename": f"{safe_cat}_detailed.json", "type": "aggregated_pdp", "count": len(data)})
             print(f"[INFO] Saved {path}")
+        
+        # Also save a generic 'products.json' if scraping a single thing (often requested in production structure)
+        if len(categorized_data) == 1:
+             path = os.path.join(tables_dir, "products.json")
+             with open(path, 'w', encoding='utf-8') as f:
+                 first_key = list(categorized_data.keys())[0]
+                 json.dump(categorized_data[first_key], f, indent=4)
+             self.update_metadata(tables_dir, {"filename": "products.json", "type": "main_products_export"})
 
     def run(self):
         parser = argparse.ArgumentParser(description="KiloInternational Crawler")
