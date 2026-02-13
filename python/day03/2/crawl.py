@@ -353,19 +353,7 @@ class KiloCrawler:
                 seen_imgs = set()
                 local_images = [] # Initialize here for downloads
 
-                # 4. Block Diagrams -> block_diagrams/
-                # Look for images in the description content blocks (Technical Drawings)
-                block_diagram_urls = []
-                for img in soup.select('.sqs-block-image img'):
-                     src = img.get('data-src') or img.get('src')
-                     if src:
-                        full_url = urljoin(self.base_url, src)
-                        print(f"[DEBUG] Found potential block diagram: {full_url}")
-                        if full_url not in seen_imgs: # Avoid dupe if it's also in gallery (rare)
-                            block_diagram_urls.append(full_url)
-                            seen_imgs.add(full_url)
-                        else:
-                            print(f"[DEBUG] Block diagram skipped (duplicate): {full_url}")
+
 
                 # A. Slideshow slides (often duplicates of thumbs, but high res)
                 for img in soup.select('#productSlideshow .slide img'):
@@ -428,17 +416,69 @@ class KiloCrawler:
                         local_images.append(f"images/{fname}")
                         self.update_metadata(img_dir, {"filename": fname, "source_url": img_url, "product": prod['name']})
 
-                # Downloads - Block Diagrams
+                # 4. Block Diagrams -> block_diagrams/
+                # Look for images in the description content blocks (Technical Drawings)
+                # "take class name" -> rely on the .sqs-block-image container class
+                # "product imagees also store... must not" -> strict exclusion of known product images
+                block_diagram_urls = []
                 local_block_diagrams = []
                 bd_dir = os.path.join(self.dirs['pdp'], 'block_diagrams')
                 
-                for idx, bd_url in enumerate(block_diagram_urls):
-                     # Usually these are PNGs or JPGs, try to guess or default to jpg
-                     ext = "png" if ".png" in bd_url.lower() else "jpg"
+                # 4. Description Content Images (Diagrams vs Product Lookups)
+                # Strategy: 
+                # - Diagrams are typically PNG/GIF/Technical drawings.
+                # - Product Lookups/Photos are typically JPG.
+                # - User wants ALL description images captured, but split into correct folders.
+                
+                block_diagram_urls = []
+                local_block_diagrams = []
+                bd_dir = os.path.join(self.dirs['pdp'], 'block_diagrams')
+                img_dir = os.path.join(self.dirs['pdp'], 'images') # For lookup images found in description
+                
+                # Use strict scope to avoid related products in footer
+                desc_area = soup.select_one('.product-description')
+                
+                if desc_area:
+                    # Iterate ALL images in description
+                    for img in desc_area.select('img'):
+                         src = img.get('data-src') or img.get('src')
+                         if src:
+                            full_url = urljoin(self.base_url, src)
+                            
+                            # Determine type based on extension (heuristic matching user observation)
+                            is_diagram = any(ext in full_url.lower() for ext in ['.png', '.gif'])
+                            
+                            if is_diagram:
+                                # BLOCK DIAGRAM LOGIC
+                                if full_url not in [b['url'] for b in block_diagram_urls]: 
+                                    classes = img.get('class')
+                                    class_str = " ".join(classes) if classes else ""
+                                    block_diagram_urls.append({'url': full_url, 'class': class_str})
+                            
+                            else:
+                                # PRODUCT LOOKUP IMAGE LOGIC
+                                if full_url not in seen_imgs:
+                                    idx = len(seen_imgs) + 1
+                                    fname = self.download_file(full_url, img_dir, f"{safe_name}_desc_{idx}", "jpg")
+                                    if fname:
+                                        local_images.append(f"images/{fname}")
+                                        self.update_metadata(img_dir, {"filename": fname, "source_url": full_url, "product": prod['name'], "type": "description_lookup"})
+                                        seen_imgs.add(full_url) # Mark as seen
+                
+                for idx, bd_item in enumerate(block_diagram_urls):
+                     bd_url = bd_item['url']
+                     bd_class = bd_item['class']
+                     
+                     # "not jpg,png" -> implied relying on source URL or content, but we need an extension for file.
+                     # We'll trust the URL or default to jpg, but ensure we don't treat text as extension.
+                     ext = "jpg" # Default
+                     if ".png" in bd_url.lower(): ext = "png"
+                     elif ".gif" in bd_url.lower(): ext = "gif"
+                     
                      fname = self.download_file(bd_url, bd_dir, f"{safe_name}_diagram_{idx+1}", ext)
                      if fname:
                          local_block_diagrams.append(f"block_diagrams/{fname}")
-                         self.update_metadata(bd_dir, {"filename": fname, "source_url": bd_url, "product": prod['name']})
+                         self.update_metadata(bd_dir, {"filename": fname, "source_url": bd_url, "product": prod['name'], "class": bd_class})
                          
                          # Update specific mapping file
                          map_path = os.path.join(bd_dir, 'block_diagram_mappings.json')
@@ -448,7 +488,7 @@ class KiloCrawler:
                                      mappings = json.load(f)
                              except: mappings = []
                              
-                             mappings.append({"file": fname, "type": "block_diagram", "product": prod['name']})
+                             mappings.append({"file": fname, "type": "block_diagram", "product": prod['name'], "class": bd_class})
                              
                              with open(map_path, 'w') as f:
                                  json.dump(mappings, f, indent=4)
